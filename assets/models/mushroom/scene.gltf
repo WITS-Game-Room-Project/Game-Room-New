@@ -1,0 +1,449 @@
+{
+  "accessors": [
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 1920,
+      "max": [
+        20.291196823120117,
+        7.2147216796875,
+        1.5450191497802734
+      ],
+      "min": [
+        -0.95105785131454468,
+        -9.8932228088378906,
+        -3.1669025421142578
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 23040,
+      "componentType": 5126,
+      "count": 1920,
+      "max": [
+        0.99207758903503418,
+        0.94352233409881592,
+        0.94352412223815918
+      ],
+      "min": [
+        -0.99207758903503418,
+        -0.94352275133132935,
+        -0.94352418184280396
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 1920,
+      "max": [
+        1919
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 46080,
+      "componentType": 5126,
+      "count": 240,
+      "max": [
+        0.95105785131454468,
+        0.99999994039535522,
+        1
+      ],
+      "min": [
+        -0.95105785131454468,
+        -0.99999994039535522,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 48960,
+      "componentType": 5126,
+      "count": 240,
+      "max": [
+        0.99207741022109985,
+        0.94352155923843384,
+        0.94352388381958008
+      ],
+      "min": [
+        -0.99207741022109985,
+        -0.94352155923843384,
+        -0.94352388381958008
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 7680,
+      "componentType": 5125,
+      "count": 240,
+      "max": [
+        239
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 51840,
+      "componentType": 5126,
+      "count": 240,
+      "max": [
+        0.95740330219268799,
+        1.0066720247268677,
+        0.83456861972808838
+      ],
+      "min": [
+        -0.95740330219268799,
+        -1.0066720247268677,
+        -0.87492984533309937
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 54720,
+      "componentType": 5126,
+      "count": 240,
+      "max": [
+        0.93283253908157349,
+        0.88717716932296753,
+        0.94352388381958008
+      ],
+      "min": [
+        -0.93283253908157349,
+        -0.88717716932296753,
+        -0.99849963188171387
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 8640,
+      "componentType": 5125,
+      "count": 240,
+      "max": [
+        239
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "negar (https://sketchfab.com/negar)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/low-poly-mushroom-4b67b1d642b442e5b10114930cb90690",
+      "title": "Low poly mushroom"
+    },
+    "generator": "Sketchfab-10.0.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 9600,
+      "byteOffset": 0,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 57600,
+      "byteOffset": 9600,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 67200,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsRequired": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "extensionsUsed": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        1,
+        1,
+        1
+      ],
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "glossinessFactor": 0.17605827425385731,
+          "specularFactor": [
+            0.52410662188706758,
+            0.52410662188706758,
+            0.52410662188706758
+          ]
+        }
+      },
+      "name": "Material.003"
+    },
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1,
+            0,
+            0.0036213773482540162,
+            1
+          ],
+          "glossinessFactor": 0.17605827425385731,
+          "specularFactor": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "name": "Material.001"
+    },
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1,
+            0.92526723284063062,
+            0.75796976250904491,
+            1
+          ],
+          "glossinessFactor": 0.17605827425385731,
+          "specularFactor": [
+            0.86425920461703509,
+            0.86425920461703509,
+            0.86425920461703509
+          ]
+        }
+      },
+      "name": "Material.002"
+    }
+  ],
+  "meshes": [
+    {
+      "name": "circles_Material.003_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Icosphere.001_Material.001_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 4,
+            "POSITION": 3
+          },
+          "indices": 5,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Icosphere_Material.002_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 7,
+            "POSITION": 6
+          },
+          "indices": 8,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "name": "RootNode (gltf orientation matrix)",
+      "rotation": [
+        -0.70710678118654746,
+        -0,
+        -0,
+        0.70710678118654757
+      ]
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "RootNode (model correction matrix)"
+    },
+    {
+      "children": [
+        3
+      ],
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "name": "b17e22a648644aa9b1b656b1e6fb17c2.fbx"
+    },
+    {
+      "children": [
+        4,
+        6,
+        8
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        5
+      ],
+      "matrix": [
+        -7.0750236511230469,
+        -0,
+        -0,
+        -0,
+        -0,
+        1.1526676599542424e-06,
+        7.0750236511229536,
+        -0,
+        -0,
+        -7.0750236511229536,
+        1.1526676599542424e-06,
+        -0,
+        65.4603271484375,
+        201.83317565917969,
+        11.623087882995605,
+        1
+      ],
+      "name": "circles"
+    },
+    {
+      "mesh": 0,
+      "name": "circles_Material.003_0"
+    },
+    {
+      "children": [
+        7
+      ],
+      "matrix": [
+        108.88787841796875,
+        0,
+        0,
+        0,
+        0,
+        -1.6248211659192131e-05,
+        -99.730812072752585,
+        0,
+        0,
+        56.378692626952379,
+        -9.1852549060064396e-06,
+        0,
+        0,
+        165.50991821289062,
+        0,
+        1
+      ],
+      "name": "Icosphere.001"
+    },
+    {
+      "mesh": 1,
+      "name": "Icosphere.001_Material.001_0"
+    },
+    {
+      "children": [
+        9
+      ],
+      "matrix": [
+        50.939823150634766,
+        0,
+        0,
+        0,
+        0,
+        -6.3759073509661436e-06,
+        -39.135040283202606,
+        0,
+        0,
+        85.932235717772301,
+        -1.400013822479865e-05,
+        0,
+        0,
+        80.472175598144531,
+        0,
+        1
+      ],
+      "name": "Icosphere"
+    },
+    {
+      "mesh": 2,
+      "name": "Icosphere_Material.002_0"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "OSG_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
+

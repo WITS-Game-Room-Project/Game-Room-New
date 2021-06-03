@@ -419,13 +419,13 @@ function addTrees(x, z){
 }
 
 function addHouse(x, z){
-  let houseLocation = '../../assets/models/mushroom_house/scene.gltf';
+  let houseLocation = '../../assets/models/low_poly_house/scene.gltf';
   let loader = new GLTFLoader();
         
   loader.load(houseLocation, function(gltf){
             
     var house = gltf.scene.children[0];            
-    house.scale.set(0.1, 0.1, 0.1);            
+    house.scale.set(1.6, 1.6, 1.6);            
     house.position.set(x, 25, z);            
     scene.add(gltf.scene);       
           

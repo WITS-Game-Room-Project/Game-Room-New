@@ -146,11 +146,26 @@ function setUpControls(){
 }
 
 function addGround(){
-  let geometry = new THREE.BoxGeometry(100,1,100);
-  let material = new THREE.MeshStandardMaterial({color: 0x6db514});
-  ground = new THREE.Mesh(geometry,material);
-  ground.position.set(0,15,0);
-  scene.add(ground);
+  
+  let groundLocation = '../../assets/models/ground/ground.glb';
+  let loader = new GLTFLoader();
+        
+  loader.load(groundLocation, function(glb){
+            
+    var ground = glb.scene;            
+    ground.scale.set(100, 100, 100);            
+    ground.position.set(0, -70, 0);     
+    
+    let material = new THREE.MeshBasicMaterial({color: 0x228B22});
+    ground.material = material;
+    ground.children[0].material = material;
+    let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
+    ground.children[1].material = materialSide;
+
+    scene.add(glb.scene);       
+          
+  });
+
 }
 
 

@@ -1,13 +1,17 @@
 import * as THREE from "three";
 import { Color } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { MapControls } from "three/examples/jsm/controls/OrbitControls";
+import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 
 //=========================== Global Variables =======================================
 
 //Set up Clock
 var clockTime = new THREE.Clock(true);
 var delta;
+
+//Set up GUI
+const gui = new GUI();
 
 //Set up Scene
 const scene = new THREE.Scene();
@@ -44,7 +48,7 @@ setUpPlayer();
 skyBox();
 
 //Set up onEvents
-// setOnEvents();
+setOnEvents();
 
 
 
@@ -63,7 +67,7 @@ export const GameLoop = function(){
 
 //At Each Frame
 function update(){
-
+  controls.update();
 }
 
 //What to Render
@@ -92,8 +96,19 @@ function setUpRenderer(){
 }
 
 function setUpControls(){
-  controls = new OrbitControls(camera, renderer.domElement);
-  // var controls = new PointerLockControls(camera, renderer.domElement);
+  controls = new MapControls(camera, renderer.domElement);
+
+  controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+  controls.dampingFactor = 0.05;
+
+  controls.screenSpacePanning = true;
+
+  controls.minDistance = 10;
+  controls.maxDistance = 300;
+
+  controls.maxPolarAngle = Math.PI / 2;
+
+  gui.add( controls, 'screenSpacePanning' );
 }
 
 function setUpPlayer(){
@@ -103,10 +118,9 @@ function setUpPlayer(){
 
 function addGround(){
   let geometry = new THREE.BoxGeometry(100,1,100);
-  let material = new THREE.MeshBasicMaterial({color: 0xFF3647, wireframe: true});
-  // material.side = THREE.BackSide;
+  let material = new THREE.MeshStandardMaterial({color: 0x00FF00});
   ground = new THREE.Mesh(geometry,material);
-
+  ground.position.set(0,15,0);
   scene.add(ground);
 }
 

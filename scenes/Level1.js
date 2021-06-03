@@ -48,7 +48,7 @@ addGround();
 //Set up Player
 var player;
 var playerMixer;
-addPlayer(-25,50,-25);
+addPlayer(-25,10,-25);
 
 
 
@@ -258,20 +258,20 @@ function skyBox(){
   const skyUniforms = sky.material.uniforms;
 
   skyUniforms[ 'turbidity' ].value = 10;
-  skyUniforms[ 'rayleigh' ].value = 2;
-  skyUniforms[ 'mieCoefficient' ].value = 0.005;
-  skyUniforms[ 'mieDirectionalG' ].value = 0.8;
+  skyUniforms[ 'rayleigh' ].value = 0.3; //Horizon Intesnity in General
+  skyUniforms[ 'mieCoefficient' ].value = 0.00005; //Horizon Intensity at Point
+  skyUniforms[ 'mieDirectionalG' ].value = 1; //Intensity of Sun
 
   const parameters = {
-    elevation: 2,
-    azimuth: 180
+    elevation: 300,
+    azimuth: 50000
   };
 
   const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
   function updateSun() {
 
-    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+    const phi = THREE.MathUtils.degToRad( -45 - parameters.elevation );
     const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
     sun.setFromSphericalCoords( 1, phi, theta );
@@ -286,7 +286,7 @@ function skyBox(){
   updateSun();
 
   const folderSky = gui.addFolder( 'Sky' );
-  folderSky.add( parameters, 'elevation', 0, 90, 0.1 ).onChange( updateSun );
+  folderSky.add( parameters, 'elevation', 0, 180, 0.1 ).onChange( updateSun );
   folderSky.add( parameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
   folderSky.open();
 
@@ -342,7 +342,7 @@ function addPlayer(x,y,z){
 
   loader.load(playerLocation, function (fbx){
     // Three JS Section
-    let scaleplay = 3;
+    let scaleplay = 1.5 ;
     player = fbx;
     console.log(player);
     player.scale.set(scaleplay* 0.05,scaleplay * 0.05,scaleplay * 0.05);

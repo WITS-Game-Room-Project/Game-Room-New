@@ -275,6 +275,7 @@ function skyBox(){
     const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
     sun.setFromSphericalCoords( 1, phi, theta );
+    //sun.set.z = 0;
 
     sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
     water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();

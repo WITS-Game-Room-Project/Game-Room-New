@@ -1,10 +1,12 @@
 import * as THREE from "three";
-import { Color } from "three";
+import { Color, MeshStandardMaterial } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants"
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
+import {Water} from "three/examples/jsm/objects/Water"
+
 
 //=========================== Global Variables =======================================
 
@@ -52,6 +54,11 @@ skyBox();
 
 //Set up onEvents
 setOnEvents();
+
+//Add Ocean
+var water;
+var mirrorMesh;
+addOcean();
 
 
 //Set up trees
@@ -139,7 +146,7 @@ function setUpControls(){
 }
 
 function addGround(){
-  let geometry = new THREE.BoxGeometry(10000,1,10000);
+  let geometry = new THREE.BoxGeometry(100,1,100);
   let material = new THREE.MeshStandardMaterial({color: 0x6db514});
   ground = new THREE.Mesh(geometry,material);
   ground.position.set(0,15,0);
@@ -189,6 +196,42 @@ function onWindowResize() {
 
 
 //=========================== GAME OBJECT FUNCTIONS =======================================
+
+function addOcean(){
+  var oceanSize = 10000;
+  const waterGeometry = new THREE.PlaneBufferGeometry( oceanSize, oceanSize );
+  
+  water = new Water( 
+    waterGeometry, 
+    {
+    textureWidth: 512, 
+    textureHeight: 512,
+    waterNormals: new THREE.TextureLoader().load( '../assets/textures/water/waternormals.jpg', function ( texture ) {
+
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+    } ),
+    sunDirection: new THREE.Vector3(),
+    sunColor: 0xffffff,
+    waterColor: 0x001e0f,
+    distortionScale: 3.7,
+    fog: scene.fog !== undefined
+  } );
+
+
+  water.rotation.x = - Math.PI / 2;
+
+  scene.add( water );
+
+
+
+  let geometry = new THREE.PlaneGeometry(oceanSize,oceanSize);
+  let material = new THREE.MeshStandardMaterial({color: 0x0000ff});
+
+  let bottomOcean = new THREE.Mesh(geometry,material);
+  bottomOcean.position.set(0,-1,0);
+  scene.add(bottomOcean);
+}
 
 function skyBox(){
 

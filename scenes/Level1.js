@@ -102,8 +102,8 @@ function update(){
   }
 
   //Make sure camera is in y axis constant
-  if (camera.position.y < 60){
-    camera.position.y = 60;
+  if (camera.position.y < 10){
+    camera.position.y = 10;
   }else if (camera.position > 150){
     camera.position.y = 150;
   }

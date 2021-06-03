@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Color } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants"
-
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 //=========================== Global Variables =======================================
 
@@ -10,23 +10,31 @@ var clockTime = new THREE.Clock(true);
 var delta;
 
 //Set up Scene
-var scene = new THREE.Scene();
+const scene = new THREE.Scene();
 
 //Set up Camera
-var camera;
+const camera = new THREE.PerspectiveCamera(cameraFOV, window.innerWidth / window.innerHeight, cameraNear, cameraFar);
 setUpCamera();
 
-//Set up World
-var world;
-setUpWorld();
+// //Set up World
+// var world;
+// setUpWorld();
 
 //Set up Renderer
-var renderer;
+var renderer = new THREE.WebGLRenderer({canvas: document.querySelector("#canvas")});
 setUpRenderer();
 
 //Set up Controls
 var controls;
 setUpControls();
+
+//Set up Main Ambient Lighting
+var ambientLightMain = new THREE.AmbientLight(0xfcb46a, 0.4);
+scene.add(ambientLightMain);
+
+//Set up Ground
+var ground;
+addGround();
 
 //Set up Player
 var player;
@@ -39,9 +47,7 @@ skyBox();
 // setOnEvents();
 
 
-//Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xfcb46a, 0.4);
-scene.add(ambientLightMain);
+
 
 
 
@@ -75,18 +81,19 @@ function setUpWorld(){
 }
 
 function setUpCamera(){
-  camera = new THREE.PerspectiveCamera(cameraFOV, window.innerWidth / window.innerHeight, cameraNear, cameraFar);
   camera.position.z = 3;
+  camera.position.y = 10;
+  scene.add(camera);
 }
 
 function setUpRenderer(){
-  renderer =  new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 }
 
 function setUpControls(){
-  controls = null;
+  controls = new OrbitControls(camera, renderer.domElement);
   // var controls = new PointerLockControls(camera, renderer.domElement);
 }
 
@@ -95,21 +102,34 @@ function setUpPlayer(){
   player = null;
 }
 
-// function setOnEvents(){
-//   const onKeyDown = (event)=>{
-//     onKeyBoolean(true, event);
-//   }
-  
-//   const onKeyUp = (event)=>{
-//       onKeyBoolean(false, event);
-//   }
+function addGround(){
+  let geometry = new THREE.BoxGeometry(100,1,100);
+  let material = new THREE.MeshBasicMaterial({color: 0xFF3647, wireframe: true});
+  // material.side = THREE.BackSide;
+  ground = new THREE.Mesh(geometry,material);
 
-//   window.addEventListener("resize", onWindowResize);
+  scene.add(ground);
+}
+
+
+//=========================== HELPE - SET UP FUNCTIONS =======================================
+
+function setOnEvents(){
+
+  window.addEventListener("resize", onWindowResize);
 //   document.addEventListener( 'keydown', onKeyDown );
 //     document.addEventListener( 'keyup', onKeyUp );
-//   document.addEventListener('mousemove', onMouseMove);
-//   // document.addEventListener('pointerlockchange', onMouseMove, false);
-// }
+  // document.addEventListener('mousemove', onMouseMove);
+}
+
+function onWindowResize() {
+  
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
 
 // function onKeyBoolean (isKeyDown, event ) {
 //   let code = event.code;

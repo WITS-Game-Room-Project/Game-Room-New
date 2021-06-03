@@ -63,6 +63,8 @@ addOcean();
 //Set up skybox
 var sun = new THREE.Vector3();
 skyBox();
+//Add mushroom house
+addHouse(400, 300);
 
 
 //Set up trees
@@ -142,7 +144,7 @@ function setUpControls(){
   controls.screenSpacePanning = true;
 
   controls.minDistance = 10;
-  controls.maxDistance = 600;
+  controls.maxDistance = 800;
 
   controls.maxPolarAngle = Math.PI * 2;
 
@@ -416,6 +418,20 @@ function addTrees(x, z){
     var tree = gltf.scene.children[0];            
     tree.scale.set(0.1, 0.1, 0.1);            
     tree.position.set(x, 25, z);            
+    scene.add(gltf.scene);       
+          
+  });
+}
+
+function addHouse(x, z){
+  let houseLocation = '../../assets/models/mushroom_house/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(houseLocation, function(gltf){
+            
+    var house = gltf.scene.children[0];            
+    house.scale.set(0.1, 0.1, 0.1);            
+    house.position.set(x, 25, z);            
     scene.add(gltf.scene);       
           
   });

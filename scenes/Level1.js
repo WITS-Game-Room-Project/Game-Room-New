@@ -81,14 +81,24 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-
+  //Play moving animation
   if (playerMixer != undefined){
     playerMixer.update(delta);  
+  }
+
+  //Make sure camera is in y axis constant
+  if (camera.position.y < 60){
+    camera.position.y = 60;
+  }else if (camera.position > 150){
+    camera.position.y = 150;
   }
 }
 
 //What to Render
 function render(){
+
+
+
   renderer.render(scene,camera);
 }
 
@@ -121,9 +131,9 @@ function setUpControls(){
   controls.screenSpacePanning = true;
 
   controls.minDistance = 10;
-  controls.maxDistance = 300;
+  controls.maxDistance = 600;
 
-  controls.maxPolarAngle = Math.PI / 2;
+  controls.maxPolarAngle = Math.PI * 2;
 
   // gui.add( controls, 'screenSpacePanning' );
 }

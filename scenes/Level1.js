@@ -33,8 +33,8 @@ var ambientLightMain = new THREE.AmbientLight(0xfcb46a, 0.4);
 scene.add(ambientLightMain);
 
 //Set up Ground
-var ground;
-addGround();
+//var ground;
+//addGround();
 
 //Set up Player
 var player;
@@ -81,8 +81,7 @@ function setUpWorld(){
 }
 
 function setUpCamera(){
-  camera.position.z = 3;
-  camera.position.y = 10;
+  camera.position.set(-900,-200,-900);
   scene.add(camera);
 }
 
@@ -159,7 +158,7 @@ function skyBox(){
 
   const skyTexture = "../../assets/textures/sky/cloudySky.jpg";
 
-  let skyboxGeo = new THREE.BoxGeometry( 10000, 10000, 10000);
+  let skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
   
   let frontTexture = new THREE.TextureLoader().load(skyTexture);
   //let backTexture = new THREE.TextureLoader().load(skyTexture);
@@ -167,16 +166,24 @@ function skyBox(){
  // let floorTexture = new THREE.TextureLoader().load( 'arid2_dn.jpg');
  // let rightTexture = new THREE.TextureLoader().load(skyTexture);
  // let leftTexture = new THREE.TextureLoader().load(skyTexture);
-  
+ /* 
+ var materialArray = [
+  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // RIGHT 
+  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // LEFT 
+  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // TOP 
+  new THREE.MeshBasicMaterial({color: 0x00ff00, side:THREE.DoubleSide}), // BOTTOM 
+  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // FRONT 
+  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // BACK
+]*/
   
   //Setting the Textures to Box
   var materialArray = [
-    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // RIGHT 
-    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // LEFT 
-    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // TOP 
-    new THREE.MeshBasicMaterial({color: 0x00ff00, side:THREE.DoubleSide}), // BOTTOM 
-    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // FRONT 
-    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // BACK
+    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // RIGHT 
+    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // LEFT 
+    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // TOP 
+    new THREE.MeshBasicMaterial({color: 0x006400, side:THREE.DoubleSide}), // BOTTOM 
+    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // FRONT 
+    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // BACK
   ]
     
   let skybox = new THREE.Mesh( skyboxGeo, materialArray );

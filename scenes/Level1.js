@@ -145,7 +145,7 @@ function setUpControls(){
 
   controls.screenSpacePanning = true;
 
-  controls.minDistance = 10;
+  controls.minDistance = 1;
   controls.maxDistance = 800;
 
   controls.maxPolarAngle = Math.PI * 2;

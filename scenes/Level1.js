@@ -263,8 +263,8 @@ function skyBox(){
   skyUniforms[ 'mieDirectionalG' ].value = 0.8;
 
   const parameters = {
-    elevation: 2,
-    azimuth: 180
+    elevation: 0.1,
+    azimuth: -180,
   };
 
   const pmremGenerator = new THREE.PMREMGenerator( renderer );
@@ -275,6 +275,7 @@ function skyBox(){
     const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
     sun.setFromSphericalCoords( 1, phi, theta );
+    //sun.set.z = 0;
 
     sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
     water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();

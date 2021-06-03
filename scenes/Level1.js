@@ -220,6 +220,47 @@ function onWindowResize() {
 
 //=========================== GAME OBJECT FUNCTIONS =======================================
 
+function addGrass(x,y,z){
+  let grassLocation = '../../assets/models/grass/Grass.fbx';
+
+  let loader = new FBXLoader();
+  loader.load(grassLocation, function (fbx){
+    // Three JS Section
+    let grass = fbx;
+    grass.scale.set(0.1,0.1,0.1);
+    grass.position.set(x,y,z);
+
+    grass.traverse( function ( child ) {
+
+      if ( child.isMesh ) {
+
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+      }
+
+    } );
+
+
+
+    // let playerTexture = new THREE.TextureLoader().load( playerTextureLocation);
+      
+    // let material = new THREE.MeshStandardMaterial({map: playerTexture});
+
+    // player.material = material;
+    // player.children[0].material = material;
+    scene.add(grass);
+
+    // let light = new THREE.PointLight({color: 0xffffff, intensity: 1.0});
+    // light.position.set(x,y,z);
+
+    // scene.add(light);
+
+    //Ammo JS Section
+  
+  });
+}
+
 function addOcean(){
   var oceanSize = 10000;
   const waterGeometry = new THREE.PlaneBufferGeometry( oceanSize, oceanSize );

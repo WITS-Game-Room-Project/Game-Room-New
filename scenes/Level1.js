@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { Color } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants"
 
 
@@ -31,6 +32,8 @@ setUpControls();
 var player;
 setUpPlayer();
 
+//Set up skybox
+skyBox();
 
 //Set up onEvents
 // setOnEvents();
@@ -132,6 +135,34 @@ function setUpPlayer(){
 
 //=========================== GAME OBJECT FUNCTIONS =======================================
 
+function skyBox(){
+
+  const skyTexture = "../../assets/textures/sky/cloudySky.jpg";
+
+  let skyboxGeo = new THREE.BoxGeometry( 10000, 10000, 10000);
+  
+  let frontTexture = new THREE.TextureLoader().load(skyTexture);
+  //let backTexture = new THREE.TextureLoader().load(skyTexture);
+  //let skyTexture = new THREE.TextureLoader().load(skyTexture);
+ // let floorTexture = new THREE.TextureLoader().load( 'arid2_dn.jpg');
+ // let rightTexture = new THREE.TextureLoader().load(skyTexture);
+ // let leftTexture = new THREE.TextureLoader().load(skyTexture);
+  
+  
+  //Setting the Textures to Box
+  var materialArray = [
+    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // RIGHT 
+    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // LEFT 
+    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // TOP 
+    new THREE.MeshBasicMaterial({color: 0x00ff00, side:THREE.DoubleSide}), // BOTTOM 
+    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // FRONT 
+    new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // BACK
+  ]
+    
+  let skybox = new THREE.Mesh( skyboxGeo, materialArray );
+  scene.add( skybox );
+
+}
 
 
 //=========================== MOVEMENT =======================================

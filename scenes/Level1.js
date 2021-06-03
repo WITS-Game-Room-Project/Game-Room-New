@@ -6,6 +6,7 @@ import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
 import { Water } from "three/examples/jsm/objects/Water"
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 
 
 //=========================== Global Variables =======================================
@@ -49,8 +50,7 @@ var player;
 var playerMixer;
 addPlayer(-25,50,-25);
 
-//Set up skybox
-skyBox();
+
 
 //Set up onEvents
 setOnEvents();
@@ -58,8 +58,11 @@ setOnEvents();
 //Add Ocean
 var water;
 var mirrorMesh;
-
 addOcean();
+
+//Set up skybox
+var sun = new THREE.Vector3();
+skyBox();
 
 
 //Set up trees
@@ -251,40 +254,88 @@ function addOcean(){
 
 function skyBox(){
 
-  const skyTexture = "../../assets/textures/sky/cloudySky.jpg";
+  const sky = new Sky();
+  sky.scale.setScalar( 10000 );
+  scene.add( sky );
 
-  let skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
+  const skyUniforms = sky.material.uniforms;
+
+  skyUniforms[ 'turbidity' ].value = 10;
+  skyUniforms[ 'rayleigh' ].value = 2;
+  skyUniforms[ 'mieCoefficient' ].value = 0.005;
+  skyUniforms[ 'mieDirectionalG' ].value = 0.8;
+
+  const parameters = {
+    elevation: 2,
+    azimuth: 180
+  };
+
+  const pmremGenerator = new THREE.PMREMGenerator( renderer );
+
+  function updateSun() {
+
+    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
+    const theta = THREE.MathUtils.degToRad( parameters.azimuth );
+
+    sun.setFromSphericalCoords( 1, phi, theta );
+
+    sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
+    water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
+
+    scene.environment = pmremGenerator.fromScene( sky ).texture;
+
+  }
+
+  updateSun();
+
+  const folderSky = gui.addFolder( 'Sky' );
+  folderSky.add( parameters, 'elevation', 0, 90, 0.1 ).onChange( updateSun );
+  folderSky.add( parameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
+  folderSky.open();
+
+  const waterUniforms = water.material.uniforms;
+
+  const folderWater = gui.addFolder( 'Water' );
+  folderWater.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
+  folderWater.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
+  folderWater.open();
+
+//   const skyTexture = "../../assets/textures/sky/cloudySky.jpg";
+
+//   let skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
   
-  let frontTexture = new THREE.TextureLoader().load(skyTexture);
-  //let backTexture = new THREE.TextureLoader().load(skyTexture);
-  //let skyTexture = new THREE.TextureLoader().load(skyTexture);
- // let floorTexture = new THREE.TextureLoader().load( 'arid2_dn.jpg');
- // let rightTexture = new THREE.TextureLoader().load(skyTexture);
- // let leftTexture = new THREE.TextureLoader().load(skyTexture);
- /* 
- var materialArray = [
-  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // RIGHT 
-  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // LEFT 
-  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // TOP 
-  new THREE.MeshBasicMaterial({color: 0x00ff00, side:THREE.DoubleSide}), // BOTTOM 
-  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // FRONT 
-  new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // BACK
-]*/
+//   let frontTexture = new THREE.TextureLoader().load(skyTexture);
+//   //let backTexture = new THREE.TextureLoader().load(skyTexture);
+//   //let skyTexture = new THREE.TextureLoader().load(skyTexture);
+//  // let floorTexture = new THREE.TextureLoader().load( 'arid2_dn.jpg');
+//  // let rightTexture = new THREE.TextureLoader().load(skyTexture);
+//  // let leftTexture = new THREE.TextureLoader().load(skyTexture);
+//  /* 
+//  var materialArray = [
+//   new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // RIGHT 
+//   new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // LEFT 
+//   new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // TOP 
+//   new THREE.MeshBasicMaterial({color: 0x00ff00, side:THREE.DoubleSide}), // BOTTOM 
+//   new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // FRONT 
+//   new THREE.MeshBasicMaterial({map:frontTexture, side:THREE.DoubleSide}), // BACK
+// ]*/
   
-  //Setting the Textures to Box
-  var materialArray = [
-    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // RIGHT 
-    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // LEFT 
-    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // TOP 
-    new THREE.MeshBasicMaterial({color: 0x006400, side:THREE.DoubleSide}), // BOTTOM 
-    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // FRONT 
-    new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // BACK
-  ]
+//   //Setting the Textures to Box
+//   var materialArray = [
+//     new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // RIGHT 
+//     new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // LEFT 
+//     new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // TOP 
+//     new THREE.MeshBasicMaterial({color: 0x006400, side:THREE.DoubleSide}), // BOTTOM 
+//     new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // FRONT 
+//     new THREE.MeshBasicMaterial({color: 0x87ceeb, side:THREE.DoubleSide}), // BACK
+//   ]
     
-  let skybox = new THREE.Mesh( skyboxGeo, materialArray );
-  scene.add( skybox );
+//   let skybox = new THREE.Mesh( skyboxGeo, materialArray );
+//   scene.add( skybox );
 
 }
+
+
 
 function addPlayer(x,y,z){
   let playerLocation = '../../assets/models/player/slime.fbx';

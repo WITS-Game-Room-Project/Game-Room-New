@@ -4,6 +4,7 @@ import { cameraFOV, cameraNear, cameraFar } from "../utils/constants"
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
 
 //=========================== Global Variables =======================================
 
@@ -34,7 +35,7 @@ var controls;
 setUpControls();
 
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.4);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLightMain);
 
 //Set up Ground
@@ -43,7 +44,8 @@ addGround();
 
 //Set up Player
 var player;
-setUpPlayer();
+var playerMixer;
+addPlayer(-25,50,-25);
 
 //Set up skybox
 skyBox();
@@ -76,7 +78,13 @@ export const GameLoop = function(){
 
 //At Each Frame
 function update(){
+  delta = clockTime.getDelta();
   controls.update();
+
+
+  if (playerMixer != undefined){
+    playerMixer.update(delta);  
+  }
 }
 
 //What to Render
@@ -117,17 +125,12 @@ function setUpControls(){
 
   controls.maxPolarAngle = Math.PI / 2;
 
-  gui.add( controls, 'screenSpacePanning' );
-}
-
-function setUpPlayer(){
-  //Set up player
-  player = null;
+  // gui.add( controls, 'screenSpacePanning' );
 }
 
 function addGround(){
   let geometry = new THREE.BoxGeometry(10000,1,10000);
-  let material = new THREE.MeshStandardMaterial({color: 0x00FF00});
+  let material = new THREE.MeshStandardMaterial({color: 0x6db514});
   ground = new THREE.Mesh(geometry,material);
   ground.position.set(0,15,0);
   scene.add(ground);
@@ -214,11 +217,81 @@ function skyBox(){
 
 }
 
+function addPlayer(x,y,z){
+  let playerLocation = '../../assets/models/player/slime.fbx';
+  let playerTextureLocation = '../../assets/models/player/textures/slime.jpeg';
+
+  let loader = new FBXLoader();
+
+  loader.load(playerLocation, function (fbx){
+    // Three JS Section
+    let scaleplay = 3;
+    player = fbx;
+    console.log(player);
+    player.scale.set(scaleplay* 0.05,scaleplay * 0.05,scaleplay * 0.05);
+    player.position.set(x,y,z);
+
+    player.traverse( function ( child ) {
+
+      if ( child.isMesh ) {
+
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+      }
+
+    } );
+
+    let animations = fbx.animations;
+    playerMixer = new THREE.AnimationMixer( player );
+    let action = playerMixer.clipAction( animations[ 0 ] );
+    action.play();
+
+
+
+    let playerTexture = new THREE.TextureLoader().load( playerTextureLocation);
+      
+    let material = new THREE.MeshStandardMaterial({map: playerTexture});
+
+    player.material = material;
+    player.children[0].material = material;
+    scene.add(player);
+
+    // let light = new THREE.PointLight({color: 0xffffff, intensity: 1.0});
+    // light.position.set(x,y,z);
+
+    // scene.add(light);
+
+    //Ammo JS Section
+  })
+
+
+  // let playerLocation = '../../assets/models/player/slime.glb';
+  // let loader = new GLTFLoader();
+
+  // loader.load(playerLocation, function(gltf){
+  //   //Three JS Section
+  //   gltf.scene.
+  //   player = gltf.scene.children[0];
+  //   console.log(player);
+  //   player.scale.set(3,3,3);
+  //   player.position.set(x,y,z);
+  //   scene.add(player);
+
+  //   // let light = new THREE.PointLight({color: 0xffffff, intensity: 1.0});
+  //   // light.position.set(x,y,z);
+
+  //   // scene.add(light);
+
+  //   //Ammo JS Section
+  // });
+}
+
 function addTrees(x, z){
-  
-  var loader = new GLTFLoader();
+  let treeLocation = '../../assets/models/trees/pineTree/scene.gltf';
+  let loader = new GLTFLoader();
         
-  loader.load('../../assets/models/trees/pineTree/scene.gltf', function(gltf){
+  loader.load(treeLocation, function(gltf){
             
     var tree = gltf.scene.children[0];            
     tree.scale.set(0.1, 0.1, 0.1);            

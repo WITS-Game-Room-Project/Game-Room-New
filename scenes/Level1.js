@@ -11,6 +11,8 @@ import * as Ammo from "ammo.js"
 
 //=========================== Global Variables =======================================
 
+var diamond;
+
 //Player Movement
 const playerMovement = 50;
 
@@ -91,11 +93,11 @@ addHouse(400, 300);
 
 
 let arrTreePositions = [
-  [0, 0], [50, 1000]
+  [-420,700]
 ];
 
 for (var i = 0; i < arrTreePositions.length; i++){
-  addTrees(arrTreePositions[i][0], [i][1]);
+  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
 }
 
 //Add mushrooms
@@ -127,6 +129,29 @@ let arrFencePositions = [
 for (var i = 0; i < arrFencePositions.length; i++){
   addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
 }
+
+
+//Add Diamonds
+
+addDiamond(125,250.5,0);
+addDiamond(50,225.5,0);
+addDiamond(75,65,0);
+addDiamond(-207,-125,0);
+addDiamond(-262,-198,0);
+addDiamond(-246,-295,0);
+addDiamond(-356,-163,0);
+addDiamond(-350,200,0);
+addDiamond(-274,263,0);
+addDiamond(-305,369,0);
+addDiamond(50,19,0);
+addDiamond(200,195,0);
+addDiamond(308,205,0);
+addDiamond(105,-205,0);
+addDiamond(305,-205,0);
+addDiamond(205,405,0);
+addDiamond(270,367,0);
+addDiamond(357,10,0);
+
 
 
 var axesHelper = new THREE.AxesHelper(100);
@@ -229,6 +254,8 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
+  diamond.rotation.z+=0.05;
+
   //Play moving animation
   if (playerMixer != undefined){
     playerMixer.update(delta);  
@@ -245,7 +272,7 @@ function update(){
 //What to Render
 function render(){
 
-  water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+  water.material.uniforms['time'].value += 1.0 / 60.0;
 
   movePlayer();
   updatePhysics();
@@ -651,27 +678,23 @@ function addPlayer(x,y,z){
 
     //Ammo JS Section
   })
-
-
-  // let playerLocation = '../../assets/models/player/slime.glb';
-  // let loader = new GLTFLoader();
-
-  // loader.load(playerLocation, function(gltf){
-  //   //Three JS Section
-  //   gltf.scene.
-  //   player = gltf.scene.children[0];
-  //   player.scale.set(3,3,3);
-  //   player.position.set(x,y,z);
-  //   scene.add(player);
-
-  //   // let light = new THREE.PointLight({color: 0xffffff, intensity: 1.0});
-  //   // light.position.set(x,y,z);
-
-  //   // scene.add(light);
-
-  //   //Ammo JS Section
-  // });
 }
+
+function addDiamond(x, z, r){
+  let diamondLocation = '../../assets/models/diamond/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(diamondLocation, function(gltf){
+            
+    diamond = gltf.scene.children[0];            
+    diamond.scale.set(0.1,0.1,0.1);            
+    diamond.position.set(x, 10, z); 
+    diamond.rotation.z = r           
+    scene.add(gltf.scene);       
+          
+  });
+}
+
 
 function addTrees(x, z){
   let treeLocation = '../../assets/models/trees/pineTree/scene.gltf';
@@ -682,8 +705,30 @@ function addTrees(x, z){
     var tree = gltf.scene.children[0];            
     tree.scale.set(0.1, 0.1, 0.1);            
     tree.position.set(x, 19, z);            
-    scene.add(gltf.scene);       
-          
+    scene.add(tree);       
+    
+    let treeSize = new THREE.Box3().setFromObject(tree).getSize;
+
+    let tempTree = tree;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempTree.position.x , tempTree.position.y  ,tempTree.position.z  ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x *0.5, treeSize.y * 0.5, treeSize.z * 0.5) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massP, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
   });
 }
 
@@ -697,13 +742,30 @@ function addTrees2(x, z){
     var tree = gltf.scene.children[0];            
     tree.scale.set(3, 3, 3);            
     tree.position.set(x, 10, z);            
-    scene.add(gltf.scene);   
+    scene.add(tree);   
+
+    let treeSize = new THREE.Box3().setFromObject(tree).getSize;
     
-    // let material = new THREE.MeshBasicMaterial({color: 0xFFFF00});
-    // tree.material = material;
-    // tree.children[0].material = material;
-    // let materialSide = new THREE.MeshBasicMaterial({color: 0xFFFF00});
-    // tree.children[1].material = materialSide;
+    let tempTree = tree;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempTree.position.x , tempTree.position.y  ,tempTree.position.z  ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x *0.5, treeSize.y * 0.5, treeSize.z * 0.5) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massP, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
           
   });
 
@@ -720,13 +782,30 @@ function addTrees3(x, z){
     var tree = gltf.scene.children[0];            
     tree.scale.set(35, 35, 35);            
     tree.position.set(x, 10, z);            
-    scene.add(gltf.scene);   
+    scene.add(tree);   
+
+    let treeSize = new THREE.Box3().setFromObject(tree).getSize;
     
-    // let material = new THREE.MeshBasicMaterial({color: 0xFFFF00});
-    // tree.material = material;
-    // tree.children[0].material = material;
-    // let materialSide = new THREE.MeshBasicMaterial({color: 0xFFFF00});
-    // tree.children[1].material = materialSide;
+    let tempTree = tree;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempTree.position.x , tempTree.position.y  ,tempTree.position.z  ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x *0.5, treeSize.y*  0.5, treeSize.z * 0.5) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massP, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
           
   });
 

@@ -747,7 +747,7 @@ function addDiamond(x, z, r){
 
     diamond.scale.set(0.1,0.1,0.1);            
     diamond.position.set(x, 10, z); 
-    diamond.rotation.z = r           
+    diamond.rotation.z = r;       
     scene.add(diamond);       
           
     tempDiamond = diamond;
@@ -1143,26 +1143,13 @@ function detectCollision(){
     if (tag0 == "player" && tag1 == "diamond"){
       scene.remove(threeObject1);
       diamondCount++;
+      physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
       scene.remove(threeObject0);
       diamondCount++;
+      physicsWorld.removeRigidBody(rb0);
     }
-    //console.log(diamondCount);
-		// let numContacts = contactManifold.getNumContacts();
-
-		// for ( let j = 0; j < numContacts; j++ ) {
-
-		// 	let contactPoint = contactManifold.getContactPoint( j );
-		// 	let distance = contactPoint.getDistance();
-
-    //   // if (distance < 0.0){
-    //   //   continue;
-    //   // }
-
-			
-		// }
-
-
+	
 	}
 
 }

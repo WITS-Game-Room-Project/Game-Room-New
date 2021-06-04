@@ -136,7 +136,7 @@ for (var i = 0; i < arrFencePositions.length; i++){
 
 
 //Add Diamonds
-
+//body of island
 addDiamond(125,250.5,0);
 addDiamond(50,225.5,0);
 addDiamond(75,65,0);
@@ -167,9 +167,12 @@ addTrees2(450, 500);
 addTrees(500, 500);
 
 //three near house
+addDiamond(-200, -175, 0);
 addTrees3(-250, -150);
+addDiamond(-300, -275, 0);
 addTrees2(-200, -200); 
 addTrees(-250, -200);
+addDiamond(-300, -175, 0);
 addTrees2(-300, -175);
 //addBush(-200,-200);
 
@@ -190,25 +193,50 @@ addTrees(-200, 400);
 
 //loop one
 //mouth
+addDiamond(450, -200, 0);
+addDiamond(450, -150, 0);
 addTrees(400, -250);
 addTrees2(400, -475);
 addTrees(250, -500);
 //inside
 addTrees(550, -600);
+addDiamond(550, -625, 0);
+addDiamond(550, -650, 0);
 addTrees2(550, -675);
 //addBush(550,-600);
+addDiamond(550, -725, 0);
+addDiamond(575, -750, 0);
 addTrees3(550, -700);
+
+addDiamond(620, -750, 0);
+addDiamond(660, -750, 0);
+addDiamond(700, -740, 0);
 addTrees(600, -750);
+
+addDiamond(775, -700, 0);
+addDiamond(830, -600, 0);
+addDiamond(880, -550, 0);
+addDiamond(950, -350, 0);
+addDiamond(900, -200, 0);
+addDiamond(900, -150, 0);
+addDiamond(850, -150, 0);
+addDiamond(800, -175, 0);
+addDiamond(800, -175, 0);
 addTrees(750, -700);
 addTrees2(800, -600);
 addTrees(850, -500);
+addDiamond(800, -500, 0);
 addTrees2(900, -400);
 addTrees2(875, -350);
 addTrees3(850, -450);
+addDiamond(850, -500, 0);
 addTrees(900, -250);
 addTrees2(850, -200);
+addDiamond(900, -200, 0);
+addDiamond(600, -75, 0);
 addTrees(725, -250);
 addTrees(700, -300);
+addDiamond(500, 0, 0);
 
 //arrow bit
 addTrees2(-400, 950); //arrow tip
@@ -220,25 +248,38 @@ addTrees3(-300, 625);
 
 //near cave
 addTrees(200, -550);
+addDiamond(600, -575, 0);
 addTrees2(200, -675);
+addDiamond(100, -475, 0);
+addDiamond(150, -275, 0);
+addDiamond(50, -675, 0);
+addDiamond(-50, -275, 0);
 addTrees(50, -650);
 addTrees3(100, -625);
 
 //near cave - other side
 addTrees(-450, -350);
+
 addTrees2(-600, 50);
 addTrees(-550, -200);
 addTrees3(-500, -325);
 
 //loop two
 addTrees(-750, 50);
+addDiamond(-700, 75, 0);
 addTrees3(-850, 50);
+addDiamond(-800, 100, 0);
 addTrees2(-875, 150);
+addDiamond(-900, 200, 0);
 addTrees(-900, 250);
 addTrees(-900, 300);
+addDiamond(-900, 275, 0);
 addTrees2(-900, 400);
 addTrees(-650, 500);
+addDiamond(-600, 425, 0);
+addDiamond(-600, 475, 0);
 addTrees3(-600, 350);
+addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
 
 addCave(-480, -680);

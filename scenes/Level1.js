@@ -67,8 +67,15 @@ skyBox();
 addHouse(400, 300);
 
 //Set up trees
+// let arrTreePositions = [
+//   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
+// ];
+
+//trees
+
+
 let arrTreePositions = [
-  [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
+  [0, 0], [50, 1000]
 ];
 
 for (var i = 0; i < arrTreePositions.length; i++){
@@ -110,45 +117,84 @@ var axesHelper = new THREE.AxesHelper(100);
 scene.add( axesHelper );
 
 addTrees(0, 100); //origin - house ish - near blob
-addTrees(450, 500);
+addTrees2(450, 500);
+//addBush(450,500);
 addTrees(500, 500);
 
 //three near house
-addTrees(-200, -200); 
+addTrees3(-250, -150);
+addTrees2(-200, -200); 
 addTrees(-250, -200);
-addTrees(-300, -175);
+addTrees2(-300, -175);
+//addBush(-200,-200);
 
 //across path
 addTrees(150, -150);
+addTrees3(160, -100);
+
+//behind house
+addTrees3(650, 350);
+addTrees2(500, 200);
+//addBush(500,-50);
+//addBush(550,0);
 
 //border near house
-addTrees(150, 600); 
+addTrees3(200, 550);
+addTrees2(150, 600); 
 addTrees(-200, 400);
 
 //loop one
 //mouth
 addTrees(400, -250);
-addTrees(400, -475);
+addTrees2(400, -475);
 addTrees(250, -500);
 //inside
 addTrees(550, -600);
-addTrees(550, -675);
+addTrees2(550, -675);
+//addBush(550,-600);
+addTrees3(550, -700);
 addTrees(600, -750);
 addTrees(750, -700);
-addTrees(800, -600);
+addTrees2(800, -600);
 addTrees(850, -500);
-addTrees(900, -400);
-addTrees(875, -350);
+addTrees2(900, -400);
+addTrees2(875, -350);
+addTrees3(850, -450);
 addTrees(900, -250);
-addTrees(850, -200);
+addTrees2(850, -200);
 addTrees(725, -250);
 addTrees(700, -300);
 
 //arrow bit
-addTrees(-400, 950); //arrow tip
+addTrees2(-400, 950); //arrow tip
 addTrees(-500, 800); //right
-addTrees(-250, 825); //left
+addTrees2(-250, 825); //left
 addTrees(-300, 575); //branch things
+addTrees3(-300, 625);
+
+
+//near cave
+addTrees(200, -550);
+addTrees2(200, -675);
+addTrees(50, -650);
+addTrees3(100, -625);
+
+//near cave - other side
+addTrees(-450, -350);
+addTrees2(-600, 50);
+addTrees(-550, -200);
+addTrees3(-500, -325);
+
+//loop two
+addTrees(-750, 50);
+addTrees3(-850, 50);
+addTrees2(-875, 150);
+addTrees(-900, 250);
+addTrees(-900, 300);
+addTrees2(-900, 400);
+addTrees(-650, 500);
+addTrees3(-600, 350);
+addTrees2(-700, 500);
 
 //=========================== EACH FRAME =======================================
 
@@ -533,6 +579,53 @@ function addTrees(x, z){
   });
 }
 
+function addTrees2(x, z){
+  let treeLocation = '../../assets/models/trees4/flat/scene.gltf';
+  let loader = new GLTFLoader();
+
+        
+  loader.load(treeLocation, function(gltf){
+
+    var tree = gltf.scene.children[0];            
+    tree.scale.set(3, 3, 3);            
+    tree.position.set(x, 10, z);            
+    scene.add(gltf.scene);   
+    
+    // let material = new THREE.MeshBasicMaterial({color: 0xFFFF00});
+    // tree.material = material;
+    // tree.children[0].material = material;
+    // let materialSide = new THREE.MeshBasicMaterial({color: 0xFFFF00});
+    // tree.children[1].material = materialSide;
+          
+  });
+
+    
+}
+
+function addTrees3(x, z){
+  let treeLocation = '../../assets/models/trees5/blue/scene.gltf';
+  let loader = new GLTFLoader();
+
+        
+  loader.load(treeLocation, function(gltf){
+
+    var tree = gltf.scene.children[0];            
+    tree.scale.set(35, 35, 35);            
+    tree.position.set(x, 10, z);            
+    scene.add(gltf.scene);   
+    
+    // let material = new THREE.MeshBasicMaterial({color: 0xFFFF00});
+    // tree.material = material;
+    // tree.children[0].material = material;
+    // let materialSide = new THREE.MeshBasicMaterial({color: 0xFFFF00});
+    // tree.children[1].material = materialSide;
+          
+  });
+
+    
+}
+
+
 function addMushroom(x, z){
   let mushroomLocation = '../../assets/models/mushroom/scene.gltf';
   let loader = new GLTFLoader();
@@ -590,6 +683,7 @@ function addHouse(x, z){
           
   });
 }
+
 
 
 //=========================== MOVEMENT =======================================

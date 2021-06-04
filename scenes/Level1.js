@@ -212,6 +212,8 @@ addTrees(-650, 500);
 addTrees3(-600, 350);
 addTrees2(-700, 500);
 
+addCave(-480, -680);
+
 //=========================== EACH FRAME =======================================
 
 //Game Loop
@@ -861,6 +863,22 @@ function addHouse(x, z){
     body.setRollingFriction(10);
 
     physicsWorld.addRigidBody( body );
+          
+  });
+}
+
+function addCave(x, z){
+
+  let caveLocation = '../../assets/models/cave/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(caveLocation, function(gltf){
+            
+    var cave = gltf.scene;            
+    cave.scale.set(0.3, 0.3, 0.3);            
+    cave.position.set(x, 10, z);
+    cave.rotation.y = Math.PI;            
+    scene.add(gltf.scene);       
           
   });
 }

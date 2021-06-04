@@ -707,22 +707,23 @@ function addTrees(x, z){
     tree.position.set(x, 19, z);            
     scene.add(tree);       
     
-    let treeSize = new THREE.Box3().setFromObject(tree).getSize;
-
+    //Ammojs Section
     let tempTree = tree;
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin( new Ammo.btVector3( tempTree.position.x , tempTree.position.y  ,tempTree.position.z  ) );
+    transform.setOrigin( new Ammo.btVector3( tempTree.position.x, tempTree.position.y,tempTree.position.z ) );
     transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
     let motionState = new Ammo.btDefaultMotionState( transform );
 
-    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x *0.5, treeSize.y * 0.5, treeSize.z * 0.5) );
+    let treeSize = new THREE.Box3().setFromObject(tree).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x/2, treeSize.y/2, treeSize.z/2) );
     colShape.setMargin( 0.05 );
 
     let localInertia = new Ammo.btVector3( 0, 0, 0 );
-    colShape.calculateLocalInertia( massP, localInertia );
+    colShape.calculateLocalInertia( massG, localInertia );
 
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
     let body = new Ammo.btRigidBody( rbInfo );
 
     body.setFriction(4);
@@ -744,22 +745,23 @@ function addTrees2(x, z){
     tree.position.set(x, 10, z);            
     scene.add(tree);   
 
-    let treeSize = new THREE.Box3().setFromObject(tree).getSize;
-    
+    //Ammojs Section
     let tempTree = tree;
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin( new Ammo.btVector3( tempTree.position.x , tempTree.position.y  ,tempTree.position.z  ) );
+    transform.setOrigin( new Ammo.btVector3( tempTree.position.x, tempTree.position.y,tempTree.position.z ) );
     transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
     let motionState = new Ammo.btDefaultMotionState( transform );
 
-    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x *0.5, treeSize.y * 0.5, treeSize.z * 0.5) );
+    let treeSize = new THREE.Box3().setFromObject(tree).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x/2, treeSize.y, treeSize.z/2) );
     colShape.setMargin( 0.05 );
 
     let localInertia = new Ammo.btVector3( 0, 0, 0 );
-    colShape.calculateLocalInertia( massP, localInertia );
+    colShape.calculateLocalInertia( massG, localInertia );
 
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
     let body = new Ammo.btRigidBody( rbInfo );
 
     body.setFriction(4);
@@ -784,22 +786,23 @@ function addTrees3(x, z){
     tree.position.set(x, 10, z);            
     scene.add(tree);   
 
-    let treeSize = new THREE.Box3().setFromObject(tree).getSize;
-    
+    //Ammojs Section
     let tempTree = tree;
     let transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin( new Ammo.btVector3( tempTree.position.x , tempTree.position.y  ,tempTree.position.z  ) );
+    transform.setOrigin( new Ammo.btVector3( tempTree.position.x, tempTree.position.y,tempTree.position.z ) );
     transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
     let motionState = new Ammo.btDefaultMotionState( transform );
 
-    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x *0.5, treeSize.y*  0.5, treeSize.z * 0.5) );
+    let treeSize = new THREE.Box3().setFromObject(tree).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( treeSize.x/2, treeSize.y/2, treeSize.z/2) );
     colShape.setMargin( 0.05 );
 
     let localInertia = new Ammo.btVector3( 0, 0, 0 );
-    colShape.calculateLocalInertia( massP, localInertia );
+    colShape.calculateLocalInertia( massG, localInertia );
 
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
     let body = new Ammo.btRigidBody( rbInfo );
 
     body.setFriction(4);

@@ -13,6 +13,10 @@ import * as Ammo from "ammo.js"
 
 var diamond;
 
+//////////////////////////KIATA 
+var diamondCount = 0;
+
+
 //Player Movement
 const playerMovement = 50;
 
@@ -667,8 +671,16 @@ function addPlayer(x,y,z){
 
 
      physicsWorld.addRigidBody( body );
-     
+     body.threeObject = player;
      tempPlayer.userData.physicsBody = body;
+     
+
+
+     player.userData.physicsBody = body;
+
+     player.userData.tag = "player";
+
+
      rigidBodies.push(tempPlayer);
 
     // let light = new THREE.PointLight({color: 0xffffff, intensity: 1.0});
@@ -685,13 +697,42 @@ function addDiamond(x, z, r){
   let loader = new GLTFLoader();
         
   loader.load(diamondLocation, function(gltf){
+
+    var unreasonableScale = 2;
             
-    diamond = gltf.scene.children[0];            
+    diamond = gltf.scene.children[0];   
+
     diamond.scale.set(0.1,0.1,0.1);            
     diamond.position.set(x, 10, z); 
     diamond.rotation.z = r           
-    scene.add(gltf.scene);       
+    scene.add(diamond);       
           
+    let tempDiamond = diamond;
+    let transform = new Ammo.btTransform();
+
+    transform.setIdentity();
+
+    transform.setOrigin(new Ammo.btVector3(tempDiamond.position.x, tempDiamond.position.y, tempDiamond.position.z));
+    transform.setRotation(new Ammo.btQuaternion(0,0,0,1));
+    
+    let diamondSize = new THREE.Box3().setFromObject(diamond).getSize();
+
+    let colShape = new Ammo.btBoxShape(new Ammo.btVector3(unreasonableScale*diamondSize.x/2,unreasonableScale*diamondSize.y/2,unreasonableScale*diamondSize.z/2));
+    colShape.setMargin(0.05);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, Ammo.NULL, colShape, Ammo.NULL );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    physicsWorld.addRigidBody( body );
+
+    body.threeObject = diamond;
+    tempDiamond.userData.physicsBody = body;
+    diamond.userData.physicsBody = body;
+
+    diamond.userData.tag = "diamond";
+       
+
+    rigidBodies.push(tempPlayer);
   });
 }
 
@@ -1033,5 +1074,52 @@ function updatePhysics(){
   }
 
   tempPlayer.rotation.set(0,0,0);
-  console.log(tempPlayer.position);
+  detectCollision();
+}
+
+function detectCollision(){
+
+	let dispatcher = physicsWorld.getDispatcher();
+	let numManifolds = dispatcher.getNumManifolds();
+
+	for ( let i = 0; i < numManifolds; i ++ ) {
+
+		let contactManifold = dispatcher.getManifoldByIndexInternal( i );
+
+    let rb0 = Ammo.castObject( contactManifold.getBody0(), Ammo.btRigidBody );
+    let rb1 = Ammo.castObject( contactManifold.getBody1(), Ammo.btRigidBody );
+    let threeObject0 = rb0.threeObject;
+    let threeObject1 = rb1.threeObject;
+    if ( ! threeObject0 && ! threeObject1 ) continue;
+    let userData0 = threeObject0 ? threeObject0.userData : null;
+    let userData1 = threeObject1 ? threeObject1.userData : null;
+    let tag0 = userData0 ? userData0.tag : "none";
+    let tag1 = userData1 ? userData1.tag : "none";
+    if (tag0 == "player" && tag1 == "diamond"){
+      scene.remove(threeObject1);
+      diamondCount++;
+      console.log("Destroyed some diamond");
+    }else if (tag0 == "diamond" && tag1 == "player"){
+      scene.remove(threeObject0);
+      diamondCount++;
+      console.log("Destroyed some diamond");
+    }
+
+		// let numContacts = contactManifold.getNumContacts();
+
+		// for ( let j = 0; j < numContacts; j++ ) {
+
+		// 	let contactPoint = contactManifold.getContactPoint( j );
+		// 	let distance = contactPoint.getDistance();
+
+    //   // if (distance < 0.0){
+    //   //   continue;
+    //   // }
+
+			
+		// }
+
+
+	}
+
 }

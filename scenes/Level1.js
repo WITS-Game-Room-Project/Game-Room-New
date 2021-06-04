@@ -241,7 +241,6 @@ function update(){
 
 //What to Render
 function render(){
-  delta = clockTime.getDelta();
 
   water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 
@@ -318,7 +317,7 @@ function addGround(){
      tempGround = ground;
      let transform = new Ammo.btTransform();
      transform.setIdentity();
-     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y,tempGround.position.z ) );
+     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y +77,tempGround.position.z ) );
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
 
@@ -820,10 +819,6 @@ function movePlayer(){
   let moveX =  moveDirection.right - moveDirection.left;
   let moveZ =  moveDirection.back - moveDirection.forward;
 
-  console.log("move x:")
-  console.log(moveX)
-  console.log("move z:")
-  console.log(moveZ);
   let moveY =  0; 
 
   if( moveX == 0 && moveY == 0 && moveZ == 0) return;
@@ -857,4 +852,5 @@ function updatePhysics(){
   }
 
   tempPlayer.rotation.set(0,0,0);
+  console.log(tempPlayer.position);
 }

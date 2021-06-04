@@ -282,9 +282,9 @@ function addOcean(){
     fog: scene.fog !== undefined
   } );
 
-  addMushroom(-340,820);
-  addMushroom(-350,860);
-  addMushroom(-368,910);
+  addMushroom(-350,820);
+  addMushroom(-365,865);
+  addMushroom(-380,914);
   addBush(100,100);
 
 

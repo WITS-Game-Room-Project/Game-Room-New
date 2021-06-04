@@ -7,9 +7,20 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
 import { Water } from "three/examples/jsm/objects/Water"
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
-
+import * as Ammo from "ammo.js"
 
 //=========================== Global Variables =======================================
+
+// Physics stuff
+let physicsWorld,rigidBodies = [], tmpTrans;
+let moveDirection = { left: 0, right: 0, forward: 0, back: 0 }
+
+const STATE = { DISABLE_DEACTIVATION : 4 }
+
+let massG = 0;
+let massP = 1;
+
+setUpPhysicsWorld();
 
 //Set up Clock
 var clockTime = new THREE.Clock(true);
@@ -43,11 +54,13 @@ scene.add(ambientLightMain);
 
 //Set up Ground
 var ground;
+var tempGround;
 addGround();
 
 //Set up Player
 var player;
 var playerMixer;
+var tempPlayer;
 addPlayer(-25,10,-25);
 
 
@@ -226,8 +239,11 @@ function update(){
 
 //What to Render
 function render(){
-  var time = performance.now() * 0.001;
   water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+
+  movePlayer();
+  updatePhysics();
+
 
   renderer.render(scene,camera);
 }
@@ -235,10 +251,16 @@ function render(){
 
 //=========================== SET UP FUNCTIONS =======================================
 
-function setUpWorld(){
-  // var world = new CANNON.World();
-  // world.gravity.set(0,0,0);
-  // world.broadphase = new CANNON.NaiveBroadphase();
+function setUpPhysicsWorld(){
+
+  tmpTrans = new Ammo.btTransform(); 
+  let collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
+  dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration),
+  overlappingPairCache = new Ammo.btDbvtBroadphase(),
+  solver = new Ammo.btSequentialImpulseConstraintSolver();
+
+  physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+  physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
 }
 
 function setUpCamera(){
@@ -275,7 +297,7 @@ function addGround(){
         
   loader.load(groundLocation, function(glb){
             
-    var ground = glb.scene;            
+    ground = glb.scene;            
     ground.scale.set(100, 100, 100);            
     ground.position.set(0, -70, 0);     
     
@@ -285,7 +307,7 @@ function addGround(){
     let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;
 
-    scene.add(glb.scene);       
+    scene.add(glb.scene);    
           
   });
 
@@ -297,8 +319,8 @@ function addGround(){
 function setOnEvents(){
 
   window.addEventListener("resize", onWindowResize);
-//   document.addEventListener( 'keydown', onKeyDown );
-//     document.addEventListener( 'keyup', onKeyUp );
+  window.addEventListener( 'keydown',handleKeyDown, false );
+  window.addEventListener( 'keyup', handleKeyUp,false );
   // document.addEventListener('mousemove', onMouseMove);
 }
 
@@ -311,25 +333,54 @@ function onWindowResize() {
 }
 
 
-// function onKeyBoolean (isKeyDown, event ) {
-//   let code = event.code;
+function handleKeyDown(event){
+  let keyCode = event.keyCode;
 
-//   if (code == "ArrowUp" || code == "KeyW"){
-//     moveForward = isKeyDown;
-//   }
+  switch(keyCode){
 
-//   if (code == "ArrowLeft" || code == "KeyA"){
-//     moveRight = isKeyDown;
-//   }
+      case 87: //W: FORWARD
+          moveDirection.forward = 1
+          break;
+          
+      case 83: //S: BACK
+          moveDirection.back = 1
+          break;
+          
+      case 65: //A: LEFT
+          moveDirection.left = 1
+          break;
+          
+      case 68: //D: RIGHT
+          moveDirection.right = 1
+          break;
+          
+  }
+}
 
-//   if (code == "ArrowDown" || code == "KeyS"){
-//     moveBackward = isKeyDown;
-//   }
 
-//   if (code == "ArrowRight" || code == "KeyD"){
-//     moveLeft = isKeyDown;
-//   }
-// }
+function handleKeyUp(event){
+  let keyCode = event.keyCode;
+
+  switch(keyCode){
+      case 87: //FORWARD
+          moveDirection.forward = 0
+          break;
+          
+      case 83: //BACK
+          moveDirection.back = 0
+          break;
+          
+      case 65: //LEFT
+          moveDirection.left = 0
+          break;
+          
+      case 68: //RIGHT
+          moveDirection.right = 0
+          break;
+          
+  }
+
+}
 
 
 
@@ -535,6 +586,37 @@ function addPlayer(x,y,z){
     player.children[0].material = material;
     scene.add(player);
 
+
+     //Ammojs Section
+     tempPlayer = player;
+     let transform = new Ammo.btTransform();
+     transform.setIdentity();
+    //  console.log(tempPlayer.position.x);
+    //  console.log(tempPlayer.position.y);
+     transform.setOrigin( new Ammo.btVector3( tempPlayer.position.x, tempPlayer.position.y,tempPlayer.position.z ) );
+     transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+     let motionState = new Ammo.btDefaultMotionState( transform );
+
+     let colShape = new Ammo.btSphereShape( 2.5 );
+     colShape.setMargin( 0.05 );
+
+     let localInertia = new Ammo.btVector3( 0, 0, 0 );
+     colShape.calculateLocalInertia( massP, localInertia );
+
+     let rbInfo = new Ammo.btRigidBodyConstructionInfo( massP, motionState, colShape, localInertia );
+     let body = new Ammo.btRigidBody( rbInfo );
+
+     body.setFriction(4);
+     body.setRollingFriction(10);
+
+     body.setActivationState( STATE.DISABLE_DEACTIVATION )
+
+
+     physicsWorld.addRigidBody( body );
+     
+     tempPlayer.userData.physicsBody = body;
+     rigidBodies.push(tempPlayer);
+
     // let light = new THREE.PointLight({color: 0xffffff, intensity: 1.0});
     // light.position.set(x,y,z);
 
@@ -691,4 +773,44 @@ function addHouse(x, z){
 
 
 
-//=========================== MOVEMENT =======================================
+//=========================== PHYSICS =======================================
+
+function movePlayer(){
+  let scalingFactor = 20;
+
+  let moveX =  moveDirection.right - moveDirection.left;
+  let moveZ =  moveDirection.back - moveDirection.forward;
+  let moveY =  0; 
+
+  if( moveX == 0 && moveY == 0 && moveZ == 0) return;
+
+  let resultantImpulse = new Ammo.btVector3( moveX, moveY, moveZ )
+  resultantImpulse.op_mul(scalingFactor);
+
+  let physicsBody = tempPlayer.userData.physicsBody;
+  physicsBody.setLinearVelocity( resultantImpulse );
+
+}
+
+function updatePhysics(){
+  // Step world
+  physicsWorld.stepSimulation( delta, 10 );
+
+  // Update rigid bodies
+  for ( let i = 0; i < rigidBodies.length; i++ ) {
+      let objThree = rigidBodies[ i ];
+      let objAmmo = objThree.userData.physicsBody;
+      let ms = objAmmo.getMotionState();
+      if ( ms ) {
+
+          ms.getWorldTransform( tmpTrans );
+          let p = tmpTrans.getOrigin();
+          let q = tmpTrans.getRotation();
+          objThree.position.set( p.x(), p.y(), p.z() );
+          objThree.quaternion.set( q.x(), q.y(), q.z(), q.w() );
+
+      }
+  }
+
+  tempPlayer.rotation.set(0,0,0);
+}

@@ -11,6 +11,9 @@ import * as Ammo from "ammo.js"
 
 //=========================== Global Variables =======================================
 
+//Player Movement
+const playerMovement = 50;
+
 // Physics stuff
 let physicsWorld,rigidBodies = [], tmpTrans;
 let moveDirection = { left: 0, right: 0, forward: 0, back: 0 }
@@ -753,7 +756,31 @@ function addFence(x, z, r){
     fence.scale.set(0.38,0.25,0.25);            
     fence.position.set(x, 10, z); 
     fence.rotation.z = r           
-    scene.add(gltf.scene);       
+    scene.add(gltf.scene);     
+    
+    //Ammojs Section
+    let tempFence = fence;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempFence.position.x, tempFence.position.y,tempFence.position.z ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let fenceSize = new THREE.Box3().setFromObject(fence).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( fenceSize.x/2, fenceSize.y/2, fenceSize.z/2) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massG, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
           
   });
 }
@@ -774,6 +801,29 @@ function addBush(x, z, r){
     bush.material = new THREE.MeshStandardMaterial({color: 0x6428a6});
     scene.add(gltf.scene);       
           
+    //Ammojs Section
+    let tempBush = bush;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempBush.position.x, tempBush.position.y,tempBush.position.z ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let bushSize = new THREE.Box3().setFromObject(bush).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( bushSize.x/2, bushSize.y/2, bushSize.z/2) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massG, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
   });
 }
 
@@ -786,7 +836,31 @@ function addHouse(x, z){
     var house = gltf.scene.children[0];            
     house.scale.set(1.6, 1.6, 1.6);            
     house.position.set(x, 10, z);            
-    scene.add(gltf.scene);       
+    scene.add(gltf.scene);     
+    
+    //Ammojs Section
+    let tempHouse = house;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempHouse.position.x, tempHouse.position.y,tempHouse.position.z ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let houseSize = new THREE.Box3().setFromObject(house).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( houseSize.x/2, houseSize.y/2, houseSize.z/2) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massG, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
           
   });
 }
@@ -796,7 +870,6 @@ function addHouse(x, z){
 //=========================== PHYSICS =======================================
 
 function movePlayer(){
-  let scalingFactor = 20;
 
   let moveX =  moveDirection.right - moveDirection.left;
   let moveZ =  moveDirection.back - moveDirection.forward;
@@ -806,7 +879,7 @@ function movePlayer(){
   if( moveX == 0 && moveY == 0 && moveZ == 0) return;
 
   let resultantImpulse = new Ammo.btVector3( moveX, moveY, moveZ )
-  resultantImpulse.op_mul(scalingFactor);
+  resultantImpulse.op_mul(playerMovement);
 
   let physicsBody = tempPlayer.userData.physicsBody;
   physicsBody.setLinearVelocity( resultantImpulse );

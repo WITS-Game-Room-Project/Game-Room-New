@@ -66,9 +66,6 @@ skyBox();
 //Add mushroom house
 addHouse(400, 300);
 
-
-
-
 //Set up trees
 let arrTreePositions = [
   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
@@ -78,6 +75,34 @@ for (var i = 0; i < arrTreePositions.length; i++){
   addTrees(arrTreePositions[i][0], [i][1]);
 }
 
+//Add mushrooms
+
+let arrMushroomPositions = [
+  [-345,818], [-363,865], [-380,914], [-395,798], [-431,898], [-415,850]
+];
+
+for (var i = 0; i < arrTreePositions.length; i++){
+  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1]);
+}
+
+//Add bush
+
+addBush(-420,700);
+
+//Add fence
+
+addFence(250,350,0);
+addFence(250,250,0);
+addFence(199,240,-Math.PI/8);
+addFence(199,340,-Math.PI/8);
+addFence(155,218,-Math.PI/6);
+addFence(155,317,-Math.PI/6);
+
+
+//addFence(230,320);
+
+var axesHelper = new THREE.AxesHelper(100);
+scene.add( axesHelper );
 
 addTrees(0, 100); //origin - house ish - near blob
 addTrees(450, 500);
@@ -321,10 +346,7 @@ function addOcean(){
     fog: scene.fog !== undefined
   } );
 
-  addMushroom(-350,820);
-  addMushroom(-365,865);
-  addMushroom(-380,914);
-  addBush(100,100);
+
 
 
   water.rotation.x = - Math.PI / 2;
@@ -500,7 +522,7 @@ function addTrees(x, z){
             
     var tree = gltf.scene.children[0];            
     tree.scale.set(0.1, 0.1, 0.1);            
-    tree.position.set(x, 25, z);            
+    tree.position.set(x, 19, z);            
     scene.add(gltf.scene);       
           
   });
@@ -514,7 +536,22 @@ function addMushroom(x, z){
             
     var mushroom = gltf.scene.children[0];            
     mushroom.scale.set(0.05, 0.05, 0.05);            
-    mushroom.position.set(x, 13, z);            
+    mushroom.position.set(x, 8, z);            
+    scene.add(gltf.scene);       
+          
+  });
+}
+
+function addFence(x, z, r){
+  let fenceLocation = '../../assets/models/fence/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(fenceLocation, function(gltf){
+            
+    var fence = gltf.scene.children[0];            
+    fence.scale.set(0.38,0.25,0.25);            
+    fence.position.set(x, 10, z); 
+    fence.rotation.z = r           
     scene.add(gltf.scene);       
           
   });
@@ -527,8 +564,8 @@ function addBush(x, z){
   loader.load(bushLocation, function(gltf){
             
     var bush = gltf.scene.children[0];            
-    bush.scale.set(10,10,10);            
-    bush.position.set(x, 25, z);            
+    bush.scale.set(13,17,13);            
+    bush.position.set(x, 14, z);            
     scene.add(gltf.scene);       
           
   });
@@ -542,7 +579,7 @@ function addHouse(x, z){
             
     var house = gltf.scene.children[0];            
     house.scale.set(1.6, 1.6, 1.6);            
-    house.position.set(x, 25, z);            
+    house.position.set(x, 10, z);            
     scene.add(gltf.scene);       
           
   });

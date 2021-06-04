@@ -67,6 +67,8 @@ skyBox();
 addHouse(400, 300);
 
 
+
+
 //Set up trees
 let arrTreePositions = [
   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
@@ -175,7 +177,7 @@ function addGround(){
 }
 
 
-//=========================== HELPE - SET UP FUNCTIONS =======================================
+//=========================== HELPER - SET UP FUNCTIONS =======================================
 
 function setOnEvents(){
 
@@ -238,6 +240,11 @@ function addOcean(){
     distortionScale: 3.7,
     fog: scene.fog !== undefined
   } );
+
+  addMushroom(-340,820);
+  addMushroom(-350,860);
+  addMushroom(-368,910);
+  addBush(100,100);
 
 
   water.rotation.x = - Math.PI / 2;
@@ -413,6 +420,34 @@ function addTrees(x, z){
     var tree = gltf.scene.children[0];            
     tree.scale.set(0.1, 0.1, 0.1);            
     tree.position.set(x, 25, z);            
+    scene.add(gltf.scene);       
+          
+  });
+}
+
+function addMushroom(x, z){
+  let mushroomLocation = '../../assets/models/mushroom/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(mushroomLocation, function(gltf){
+            
+    var mushroom = gltf.scene.children[0];            
+    mushroom.scale.set(0.05, 0.05, 0.05);            
+    mushroom.position.set(x, 25, z);            
+    scene.add(gltf.scene);       
+          
+  });
+}
+
+function addBush(x, z){
+  let bushLocation = '../../assets/models/bush/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(bushLocation, function(gltf){
+            
+    var bush = gltf.scene.children[0];            
+    bush.scale.set(10,10,10);            
+    bush.position.set(x, 25, z);            
     scene.add(gltf.scene);       
           
   });

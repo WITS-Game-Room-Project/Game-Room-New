@@ -1,3 +1,3 @@
-export const cameraFOV = 55;
-export const cameraNear = 1;
-export const cameraFar = 30000;
+export const cameraFOV = 65;
+export const cameraNear = 10;
+export const cameraFar = 10000;

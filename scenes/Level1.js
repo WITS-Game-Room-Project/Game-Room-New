@@ -304,16 +304,16 @@ function update(){
   myDiv.innerHTML = "Diamond Count : " +diamondCount;
 
 
-  for (let i = 0; i < scene.children.length; i++){
-    if (scene.children[i].userData){
-      if (scene.children[i].userData.tag){
-        if (scene.children[i].userData.tag == 'diamond'){
-          scene.children[i].rotateZ(2 * Math.PI * delta);
-        }
-      }
-    }
+  // for (let i = 0; i < scene.children.length; i++){
+  //   if (scene.children[i].userData){
+  //     if (scene.children[i].userData.tag){
+  //       if (scene.children[i].userData.tag == 'diamond'){
+  //         scene.children[i].rotateZ(2 * Math.PI * delta);
+  //       }
+  //     }
+  //   }
     
-  }
+  // }
   
 
   //Play moving animation
@@ -329,28 +329,44 @@ function update(){
   }
 
   let playerPos = player.position;
+  let distanceAway = 100;
+  let yFactor = 3;
   camera.lookAt(new THREE.Vector3(playerPos.x,playerPos.y,playerPos.z));
 
-  let cameraMoveRate = 10*delta;
-  let horiSpeed = 5;
-  if (camera.position.x < playerPos.x + 180){
-    camera.position.x += cameraMoveRate * horiSpeed;
+  if (tempPlayer != undefined){
+    if (tempPlayer.userData != null){
+      if(tempPlayer.userData.physicsBody != null){
+        let velocity = tempPlayer.userData.physicsBody.getLinearVelocity().length();
+        
+        let diffX = Math.abs(camera.position.x - playerPos.x + distanceAway);
+        let diffZ = Math.abs(camera.position.z - playerPos.z + distanceAway);
+        if (velocity > 0.01 || diffX > 1 || diffZ > 1){
+          let cameraMoveRate = 10*delta;
+          let horiSpeed = 2;
+          if (camera.position.x < playerPos.x + distanceAway){
+            camera.position.x += cameraMoveRate * horiSpeed;
+          }
+          if (camera.position.x > playerPos.x + distanceAway){
+            camera.position.x -= cameraMoveRate * horiSpeed;
+          }
+          if (camera.position.y < playerPos.y + distanceAway*yFactor){
+            camera.position.y += cameraMoveRate;
+          }
+          if (camera.position.y > playerPos.y + distanceAway*yFactor){
+            camera.position.y -= cameraMoveRate;
+          }
+          if (camera.position.z < playerPos.z + distanceAway){
+            camera.position.z += cameraMoveRate * horiSpeed;
+          }
+          if (camera.position.z > playerPos.z + distanceAway){
+            camera.position.z -= cameraMoveRate * horiSpeed;
+          }
+        }
+      }
+    }
   }
-  if (camera.position.x > playerPos.x + 180){
-    camera.position.x -= cameraMoveRate * horiSpeed;
-  }
-  if (camera.position.y < playerPos.y + 180){
-    camera.position.y += cameraMoveRate;
-  }
-  if (camera.position.y > playerPos.y + 180){
-    camera.position.y -= cameraMoveRate;
-  }
-  if (camera.position.z < playerPos.z + 180){
-    camera.position.z += cameraMoveRate * horiSpeed;
-  }
-  if (camera.position.z > playerPos.z + 180){
-    camera.position.z -= cameraMoveRate * horiSpeed;
-  }
+  
+  
   
 
   // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
@@ -403,8 +419,8 @@ function setUpControls(){
 
   controls.screenSpacePanning = true;
 
-  controls.minDistance = 1;
-  controls.maxDistance = 800;
+  controls.minDistance = 10;
+  controls.maxDistance = 100;
 
   controls.maxPolarAngle = Math.PI * 2;
 
@@ -761,6 +777,8 @@ function addPlayer(x,y,z){
      body.setFriction(4);
      body.setRollingFriction(10);
 
+     
+
      body.setActivationState( STATE.DISABLE_DEACTIVATION )
 
 
@@ -1099,7 +1117,8 @@ function addCave(x, z){
     var cave = gltf.scene;            
     cave.scale.set(0.3, 0.3, 0.3);            
     cave.position.set(x, 10, z);
-    cave.rotation.y = Math.PI;            
+    cave.rotation.y = Math.PI;    
+ 
     scene.add(cave);
     
     

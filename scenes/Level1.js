@@ -81,25 +81,30 @@ let arrMushroomPositions = [
   [-345,818], [-363,865], [-380,914], [-395,798], [-431,898], [-415,850]
 ];
 
-for (var i = 0; i < arrTreePositions.length; i++){
+for (var i = 0; i < arrMushroomPositions.length; i++){
   addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1]);
 }
 
-//Add bush
+//Add bushes
 
-addBush(-420,700);
+let arrBushPositions = [
+  [-420,700,0], [125,300,Math.PI/6],[125,205,-Math.PI/6]
+]
 
-//Add fence
+for (var i = 0; i < arrBushPositions.length; i++){
+  addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
+}
 
-addFence(250,350,0);
-addFence(250,250,0);
-addFence(199,240,-Math.PI/8);
-addFence(199,340,-Math.PI/8);
-addFence(155,218,-Math.PI/6);
-addFence(155,317,-Math.PI/6);
+//Add fences
 
+let arrFencePositions = [
+  [250,350,0], [250,250,0], [199,240,-Math.PI/8], [199,340,-Math.PI/8], [155,218,-Math.PI/6], [155,317,-Math.PI/6]
+];
 
-//addFence(230,320);
+for (var i = 0; i < arrFencePositions.length; i++){
+  addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
+}
+
 
 var axesHelper = new THREE.AxesHelper(100);
 scene.add( axesHelper );
@@ -557,15 +562,16 @@ function addFence(x, z, r){
   });
 }
 
-function addBush(x, z){
-  let bushLocation = '../../assets/models/bush/scene.gltf';
+function addBush(x, z, r){
+  let bushLocation = '../../assets/models/bush/scene.glb';
   let loader = new GLTFLoader();
         
   loader.load(bushLocation, function(gltf){
             
-    var bush = gltf.scene.children[0];            
-    bush.scale.set(13,17,13);            
-    bush.position.set(x, 14, z);            
+    var bush = gltf.scene.children[2];            
+    bush.scale.set(1,1,1);            
+    bush.position.set(x, 14, z);
+    bush.rotation.z = r;            
     scene.add(gltf.scene);       
           
   });

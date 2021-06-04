@@ -1,18 +1,17 @@
 import * as THREE from "three";
 import { Color, MeshStandardMaterial } from "three";
-import { cameraFOV, cameraNear, cameraFar } from "../utils/constants"
+import { cameraFOV, cameraNear, cameraFar } from "../utils/constants";
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader"
-import { Water } from "three/examples/jsm/objects/Water"
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
-import * as Ammo from "ammo.js"
+import * as Ammo from "ammo.js";
 
 //=========================== Global Variables =======================================
 
 var diamond;
-
 //////////////////////////KIATA 
 var diamondCount = 0;
 
@@ -299,8 +298,15 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-  if (diamond != undefined){
-    diamond.rotation.z+=0.05;
+  for (let i = 0; i < scene.children.length; i++){
+    if (scene.children[i].userData){
+      if (scene.children[i].userData.tag){
+        if (scene.children[i].userData.tag == 'diamond'){
+          scene.children[i].rotateZ(2 * Math.PI * delta);
+        }
+      }
+    }
+    
   }
   
 
@@ -315,6 +321,34 @@ function update(){
   }else if (camera.position > 150){
     camera.position.y = 150;
   }
+
+  let playerPos = player.position;
+  camera.lookAt(new THREE.Vector3(playerPos.x,playerPos.y,playerPos.z));
+
+  let cameraMoveRate = 10*delta;
+  let horiSpeed = 5;
+  if (camera.position.x < playerPos.x + 180){
+    camera.position.x += cameraMoveRate * horiSpeed;
+  }
+  if (camera.position.x > playerPos.x + 180){
+    camera.position.x -= cameraMoveRate * horiSpeed;
+  }
+  if (camera.position.y < playerPos.y + 180){
+    camera.position.y += cameraMoveRate;
+  }
+  if (camera.position.y > playerPos.y + 180){
+    camera.position.y -= cameraMoveRate;
+  }
+  if (camera.position.z < playerPos.z + 180){
+    camera.position.z += cameraMoveRate * horiSpeed;
+  }
+  if (camera.position.z > playerPos.z + 180){
+    camera.position.z -= cameraMoveRate * horiSpeed;
+  }
+  
+
+  // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
+  // camera.position.y = playerPos.y + 220;
 }
 
 //What to Render
@@ -747,8 +781,11 @@ function addDiamond(x, z, r){
 
     diamond.scale.set(0.1,0.1,0.1);            
     diamond.position.set(x, 10, z); 
-    diamond.rotation.z = r;       
-    scene.add(diamond);       
+    diamond.rotation.z = r;  
+    diamond.userData.tag = "diamond";     
+    scene.add(diamond);  
+    
+    
           
     tempDiamond = diamond;
     let transform = new Ammo.btTransform();
@@ -756,7 +793,7 @@ function addDiamond(x, z, r){
     transform.setIdentity();
 
     transform.setOrigin(new Ammo.btVector3(tempDiamond.position.x, tempDiamond.position.y, tempDiamond.position.z));
-    transform.setRotation(new Ammo.btQuaternion(0,0,0,1));
+    transform.setRotation(new Ammo.btQuaternion(-Math.PI/2,0,0,1));
     let motionState = new Ammo.btDefaultMotionState( transform );
     let diamondSize = new THREE.Box3().setFromObject(diamond).getSize();
 
@@ -765,7 +802,7 @@ function addDiamond(x, z, r){
 
     let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, motionState, colShape, Ammo.NULL );
     let body = new Ammo.btRigidBody( rbInfo );
-
+    
     body.setActivationState( STATE.DISABLE_DEACTIVATION )
     physicsWorld.addRigidBody( body );
 
@@ -777,6 +814,7 @@ function addDiamond(x, z, r){
        
 
     rigidBodies.push(tempDiamond);
+
   });
 }
 
@@ -1012,7 +1050,7 @@ function addHouse(x, z){
     let transform = new Ammo.btTransform();
     transform.setIdentity();
     transform.setOrigin( new Ammo.btVector3( tempHouse.position.x, tempHouse.position.y,tempHouse.position.z ) );
-    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
     let motionState = new Ammo.btDefaultMotionState( transform );
 
     let houseSize = new THREE.Box3().setFromObject(house).getSize();

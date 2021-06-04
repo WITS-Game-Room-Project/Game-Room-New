@@ -61,7 +61,7 @@ addGround();
 var player;
 var playerMixer;
 var tempPlayer;
-addPlayer(-25,20,-25);
+addPlayer(-50,20,-50);
 
 
 
@@ -801,6 +801,11 @@ function movePlayer(){
 
   let moveX =  moveDirection.right - moveDirection.left;
   let moveZ =  moveDirection.back - moveDirection.forward;
+
+  console.log("move x:")
+  console.log(moveX)
+  console.log("move z:")
+  console.log(moveZ);
   let moveY =  0; 
 
   if( moveX == 0 && moveY == 0 && moveZ == 0) return;

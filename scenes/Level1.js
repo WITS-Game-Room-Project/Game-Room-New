@@ -241,12 +241,7 @@ function addOcean(){
 
 
 
-  let geometry = new THREE.PlaneGeometry(oceanSize,oceanSize);
-  let material = new THREE.MeshStandardMaterial({color: 0x0000ff});
 
-  let bottomOcean = new THREE.Mesh(geometry,material);
-  bottomOcean.position.set(0,-1,0);
-  scene.add(bottomOcean);
 }
 
 function skyBox(){

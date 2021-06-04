@@ -434,7 +434,7 @@ function addMushroom(x, z){
             
     var mushroom = gltf.scene.children[0];            
     mushroom.scale.set(0.05, 0.05, 0.05);            
-    mushroom.position.set(x, 25, z);            
+    mushroom.position.set(x, 13, z);            
     scene.add(gltf.scene);       
           
   });

@@ -59,11 +59,6 @@ setOnEvents();
 var water;
 var mirrorMesh;
 
-var waveGeometry = new THREE.BoxGeometry( 30, 30, 30 );
-const waveMaterial = new THREE.MeshStandardMaterial( { roughness: 0 } );
-
-var oceanMesh = new THREE.Mesh( waveGeometry, waveMaterial );
-scene.add( oceanMesh );
 addOcean();
 
 
@@ -110,11 +105,6 @@ function update(){
 //What to Render
 function render(){
   var time = performance.now() * 0.001;
-
-  oceanMesh.position.y = Math.sin( time ) * 20 + 5;
-  oceanMesh.rotation.x = time * 0.5;
-  oceanMesh.rotation.z = time * 0.51;
-
   water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 
   renderer.render(scene,camera);

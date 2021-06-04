@@ -656,15 +656,20 @@ function addFence(x, z, r){
 }
 
 function addBush(x, z, r){
-  let bushLocation = '../../assets/models/bush/scene.glb';
+  let bushLocation = '../../assets/models/bush/bush.glb';
   let loader = new GLTFLoader();
         
   loader.load(bushLocation, function(gltf){
-            
-    var bush = gltf.scene.children[2];            
-    bush.scale.set(1,1,1);            
-    bush.position.set(x, 14, z);
-    bush.rotation.z = r;            
+  let scaleTemp = 10;
+  
+    var bush = gltf.scene.children[0];    
+    console.log(bush);          
+    bush.scale.set(scaleTemp,scaleTemp,scaleTemp);            
+    bush.position.set(x, 10, z);
+    bush.rotation.y = r;            
+
+
+    bush.material = new THREE.MeshStandardMaterial({color: 0x6428a6});
     scene.add(gltf.scene);       
           
   });

@@ -71,7 +71,7 @@ var player;
 var playerMixer;
 var tempPlayer;
 addPlayer(-50,20,-50);
-
+var tempDiamond;
 
 
 //Set up onEvents
@@ -750,22 +750,23 @@ function addDiamond(x, z, r){
     diamond.rotation.z = r           
     scene.add(diamond);       
           
-    let tempDiamond = diamond;
+    tempDiamond = diamond;
     let transform = new Ammo.btTransform();
 
     transform.setIdentity();
 
     transform.setOrigin(new Ammo.btVector3(tempDiamond.position.x, tempDiamond.position.y, tempDiamond.position.z));
     transform.setRotation(new Ammo.btQuaternion(0,0,0,1));
-    
+    let motionState = new Ammo.btDefaultMotionState( transform );
     let diamondSize = new THREE.Box3().setFromObject(diamond).getSize();
 
     let colShape = new Ammo.btBoxShape(new Ammo.btVector3(unreasonableScale*diamondSize.x/2,unreasonableScale*diamondSize.y/2,unreasonableScale*diamondSize.z/2));
     colShape.setMargin(0.05);
 
-    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, Ammo.NULL, colShape, Ammo.NULL );
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, motionState, colShape, Ammo.NULL );
     let body = new Ammo.btRigidBody( rbInfo );
 
+    body.setActivationState( STATE.DISABLE_DEACTIVATION )
     physicsWorld.addRigidBody( body );
 
     body.threeObject = diamond;
@@ -775,7 +776,7 @@ function addDiamond(x, z, r){
     diamond.userData.tag = "diamond";
        
 
-    rigidBodies.push(tempPlayer);
+    rigidBodies.push(tempDiamond);
   });
 }
 
@@ -1138,20 +1139,15 @@ function detectCollision(){
     let userData1 = threeObject1 ? threeObject1.userData : null;
     let tag0 = userData0 ? userData0.tag : "none";
     let tag1 = userData1 ? userData1.tag : "none";
-
-    console.log(tag0);
-    console.log(tag1);
     
     if (tag0 == "player" && tag1 == "diamond"){
       scene.remove(threeObject1);
       diamondCount++;
-      console.log("Destroyed some diamond");
     }else if (tag0 == "diamond" && tag1 == "player"){
       scene.remove(threeObject0);
       diamondCount++;
-      console.log("Destroyed some diamond");
     }
-
+    //console.log(diamondCount);
 		// let numContacts = contactManifold.getNumContacts();
 
 		// for ( let j = 0; j < numContacts; j++ ) {

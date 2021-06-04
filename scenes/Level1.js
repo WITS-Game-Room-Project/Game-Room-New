@@ -878,8 +878,34 @@ function addCave(x, z){
     cave.scale.set(0.3, 0.3, 0.3);            
     cave.position.set(x, 10, z);
     cave.rotation.y = Math.PI;            
-    scene.add(gltf.scene);       
+    scene.add(cave);
+    
+    
+    //Ammojs Section
+    let tempCave = cave;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempCave.position.x, tempCave.position.y,tempCave.position.z ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let caveSize = new THREE.Box3().setFromObject(cave).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( caveSize.x/2, caveSize.y/2, caveSize.z/2) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massG, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
           
+    
   });
 }
 

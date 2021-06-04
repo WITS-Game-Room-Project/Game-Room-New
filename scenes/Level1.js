@@ -14,6 +14,7 @@ import { Sky } from 'three/examples/jsm/objects/Sky.js';
 //Set up Clock
 var clockTime = new THREE.Clock(true);
 var delta;
+var diamond;
 
 //Set up GUI
 const gui = new GUI();
@@ -75,11 +76,11 @@ addHouse(400, 300);
 
 
 let arrTreePositions = [
-  [0, 0], [50, 1000]
+  [-420,700]
 ];
 
 for (var i = 0; i < arrTreePositions.length; i++){
-  addTrees(arrTreePositions[i][0], [i][1]);
+  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
 }
 
 //Add mushrooms
@@ -101,6 +102,37 @@ let arrBushPositions = [
 for (var i = 0; i < arrBushPositions.length; i++){
   addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
 }
+
+// Add Diamonds
+
+addDiamond(125,250.5,0);
+addDiamond(50,225.5,0);
+addDiamond(75,65,0);
+addDiamond(-207,-125,0);
+addDiamond(-262,-198,0);
+addDiamond(-246,-295,0);
+addDiamond(-356,-163,0);
+addDiamond(-350,200,0);
+addDiamond(-274,263,0);
+addDiamond(-305,369,0);
+addDiamond(50,19,0);
+addDiamond(200,195,0);
+addDiamond(308,205,0);
+addDiamond(105,-205,0);
+addDiamond(305,-205,0);
+addDiamond(205,405,0);
+addDiamond(270,367,0);
+addDiamond(357,10,0);
+
+
+
+
+
+
+
+
+
+
 
 //Add fences
 
@@ -222,12 +254,15 @@ function update(){
   }else if (camera.position > 150){
     camera.position.y = 150;
   }
+
+  diamond.rotation.z+=0.05;
 }
 
 //What to Render
 function render(){
   var time = performance.now() * 0.001;
-  water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+  water.material.uniforms['time'].value += 1.0 / 60.0;
+
 
   renderer.render(scene,camera);
 }
@@ -655,6 +690,21 @@ function addFence(x, z, r){
   });
 }
 
+function addDiamond(x, z, r){
+  let diamondLocation = '../../assets/models/diamond/scene.gltf';
+  let loader = new GLTFLoader();
+        
+  loader.load(diamondLocation, function(gltf){
+            
+    diamond = gltf.scene.children[0];            
+    diamond.scale.set(0.1,0.1,0.1);            
+    diamond.position.set(x, 10, z); 
+    diamond.rotation.z = r           
+    scene.add(gltf.scene);       
+          
+  });
+}
+
 function addBush(x, z, r){
   let bushLocation = '../../assets/models/bush/bush.glb';
   let loader = new GLTFLoader();
@@ -674,6 +724,8 @@ function addBush(x, z, r){
           
   });
 }
+
+
 
 function addHouse(x, z){
   let houseLocation = '../../assets/models/low_poly_house/scene.gltf';

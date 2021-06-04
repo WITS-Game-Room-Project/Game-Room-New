@@ -61,7 +61,7 @@ addGround();
 var player;
 var playerMixer;
 var tempPlayer;
-addPlayer(-25,10,-25);
+addPlayer(-25,20,-25);
 
 
 
@@ -239,6 +239,8 @@ function update(){
 
 //What to Render
 function render(){
+  delta = clockTime.getDelta();
+
   water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 
   movePlayer();
@@ -307,7 +309,31 @@ function addGround(){
     let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;
 
-    scene.add(glb.scene);    
+    scene.add(ground);  
+    
+    
+     //Ammojs Section
+     tempGround = ground;
+     let transform = new Ammo.btTransform();
+     transform.setIdentity();
+     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y,tempGround.position.z ) );
+     transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+     let motionState = new Ammo.btDefaultMotionState( transform );
+
+     let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 10000* 0.5, 1 * 0.5, 10000* 0.5 ) );
+     colShape.setMargin( 0.05 );
+
+     let localInertia = new Ammo.btVector3( 0, 0, 0 );
+     colShape.calculateLocalInertia( massG, localInertia );
+
+     let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+     let body = new Ammo.btRigidBody( rbInfo );
+
+     body.setFriction(4);
+     body.setRollingFriction(10);
+
+     physicsWorld.addRigidBody( body );
+     
           
   });
 
@@ -556,7 +582,6 @@ function addPlayer(x,y,z){
     // Three JS Section
     let scaleplay = 1.5 ;
     player = fbx;
-    console.log(player);
     player.scale.set(scaleplay* 0.05,scaleplay * 0.05,scaleplay * 0.05);
     player.position.set(x,y,z);
 
@@ -591,8 +616,6 @@ function addPlayer(x,y,z){
      tempPlayer = player;
      let transform = new Ammo.btTransform();
      transform.setIdentity();
-    //  console.log(tempPlayer.position.x);
-    //  console.log(tempPlayer.position.y);
      transform.setOrigin( new Ammo.btVector3( tempPlayer.position.x, tempPlayer.position.y,tempPlayer.position.z ) );
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
@@ -633,7 +656,6 @@ function addPlayer(x,y,z){
   //   //Three JS Section
   //   gltf.scene.
   //   player = gltf.scene.children[0];
-  //   console.log(player);
   //   player.scale.set(3,3,3);
   //   player.position.set(x,y,z);
   //   scene.add(player);
@@ -744,8 +766,7 @@ function addBush(x, z, r){
   loader.load(bushLocation, function(gltf){
   let scaleTemp = 10;
   
-    var bush = gltf.scene.children[0];    
-    console.log(bush);          
+    var bush = gltf.scene.children[0];
     bush.scale.set(scaleTemp,scaleTemp,scaleTemp);            
     bush.position.set(x, 10, z);
     bush.rotation.y = r;            

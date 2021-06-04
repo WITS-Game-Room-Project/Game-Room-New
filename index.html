@@ -5,19 +5,41 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
+    <style>
+      #bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+      #text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 40px;
+        color: rgb(0, 0, 0);
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+      }
+    </style>
   </head>
 
-  <div id="info">
-    <a href="https://threejs.org" target="_blank" rel="noopener">three.js webgl
-    </a> - molecules</div>
-
   <body>
-    <div id="app"></div>
-    
+
+<div id="overlay">
+  <div id="text">Diamonds : </div>
+</div>
     <canvas id="canvas"></canvas>
   
     <script type="module" src="/main.js"></script>
     <script src ="js/ammo.js"></script>
+    <script type="text/javascript">
+	
+      function myfunctionName(a){
+    
+        alert(a);
+        
+      }
+    </script>
   </body>
 
 </html>

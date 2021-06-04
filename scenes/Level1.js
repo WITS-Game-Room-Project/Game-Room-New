@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Color, MeshStandardMaterial } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants";
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
-import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
+import index, { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { Water } from "three/examples/jsm/objects/Water";
@@ -43,6 +43,7 @@ const scene = new THREE.Scene();
 //Set up Camera
 const camera = new THREE.PerspectiveCamera(cameraFOV, window.innerWidth / window.innerHeight, cameraNear, cameraFar);
 setUpCamera();
+
 
 // //Set up World
 // var world;
@@ -154,6 +155,7 @@ addDiamond(305,-205,0);
 addDiamond(205,405,0);
 addDiamond(270,367,0);
 addDiamond(357,10,0);
+on();
 
 
 
@@ -298,6 +300,10 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
+  var myDiv = document.getElementById("text");
+  myDiv.innerHTML = "Diamond Count : " +diamondCount;
+
+
   for (let i = 0; i < scene.children.length; i++){
     if (scene.children[i].userData){
       if (scene.children[i].userData.tag){
@@ -350,6 +356,7 @@ function update(){
   // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
   // camera.position.y = playerPos.y + 220;
 }
+
 
 //What to Render
 function render(){
@@ -404,6 +411,14 @@ function setUpControls(){
   // gui.add( controls, 'screenSpacePanning' );
 }
 
+function on() {
+  document.getElementById("overlay").style.display = "block";
+}
+
+function off() {
+  document.getElementById("overlay").style.display = "none";
+}
+
 function addGround(){
   
   let groundLocation = '../../assets/models/ground/ground.glb';
@@ -420,6 +435,8 @@ function addGround(){
     ground.children[0].material = material;
     let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;
+
+    
 
     scene.add(ground);  
     

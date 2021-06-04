@@ -79,7 +79,46 @@ for (var i = 0; i < arrTreePositions.length; i++){
 }
 
 
+addTrees(0, 100); //origin - house ish - near blob
+addTrees(450, 500);
+addTrees(500, 500);
 
+//three near house
+addTrees(-200, -200); 
+addTrees(-250, -200);
+addTrees(-300, -175);
+
+//across path
+addTrees(150, -150);
+
+//border near house
+addTrees(150, 600); 
+addTrees(-200, 400);
+
+//loop one
+//mouth
+addTrees(400, -250);
+addTrees(400, -475);
+addTrees(250, -500);
+//inside
+addTrees(550, -600);
+addTrees(550, -675);
+addTrees(600, -750);
+addTrees(750, -700);
+addTrees(800, -600);
+addTrees(850, -500);
+addTrees(900, -400);
+addTrees(875, -350);
+addTrees(900, -250);
+addTrees(850, -200);
+addTrees(725, -250);
+addTrees(700, -300);
+
+//arrow bit
+addTrees(-400, 950); //arrow tip
+addTrees(-500, 800); //right
+addTrees(-250, 825); //left
+addTrees(-300, 575); //branch things
 
 //=========================== EACH FRAME =======================================
 

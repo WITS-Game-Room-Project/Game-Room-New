@@ -159,7 +159,7 @@ addDiamond(357,10,0);
 
 
 var axesHelper = new THREE.AxesHelper(100);
-scene.add( axesHelper );
+//scene.add( axesHelper );
 
 addTrees(0, 100); //origin - house ish - near blob
 addTrees2(450, 500);
@@ -258,7 +258,10 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-  diamond.rotation.z+=0.05;
+  if (diamond != undefined){
+    diamond.rotation.z+=0.05;
+  }
+  
 
   //Play moving animation
   if (playerMixer != undefined){
@@ -280,7 +283,6 @@ function render(){
 
   movePlayer();
   updatePhysics();
-
 
   renderer.render(scene,camera);
 }
@@ -1095,6 +1097,10 @@ function detectCollision(){
     let userData1 = threeObject1 ? threeObject1.userData : null;
     let tag0 = userData0 ? userData0.tag : "none";
     let tag1 = userData1 ? userData1.tag : "none";
+
+    console.log(tag0);
+    console.log(tag1);
+    
     if (tag0 == "player" && tag1 == "diamond"){
       scene.remove(threeObject1);
       diamondCount++;

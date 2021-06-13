@@ -68,7 +68,7 @@ addGround();
 
 //Set up Player
 var player;
-var playerMixer;
+var playerMixer; 
 var tempPlayer;
 addPlayer(-50,20,-50);
 var tempDiamond;

@@ -70,7 +70,7 @@ addGround();
 var player;
 var playerMixer; 
 var tempPlayer;
-addPlayer(-50,20,-50);
+addPlayer(-50,30,-50);
 var tempDiamond;
 
 
@@ -259,7 +259,7 @@ function addGround(){
      tempGround = ground;
      let transform = new Ammo.btTransform();
      transform.setIdentity();
-     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y+29,tempGround.position.z ) );
+     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y+132,tempGround.position.z ) );
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
 

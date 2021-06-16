@@ -71,7 +71,16 @@ var player;
 var playerMixer; 
 var tempPlayer;
 addPlayer(-50,20,-50);
+
 var tempDiamond;
+
+
+var fire;
+var fireMixer; 
+var scale = 1.5; 
+var kaboom = true;
+var tempfire;
+addFire(-50,20,-50);
 
 
 //Set up onEvents
@@ -314,7 +323,21 @@ function update(){
   //   }
     
   // }
-  
+  if (fire != undefined && kaboom == true){
+    scale += delta;
+    console.log(scale);
+    fire.scale.set(0.1 * scale, 0.1 * scale, 0.1 * scale);
+
+    if (scale > 10){
+      scale = 1.5;
+      kaboom = false;
+      scene.remove(fire);
+    }
+  }
+
+  if (fireMixer != undefined) {
+    fireMixer.update(delta);
+  }
 
   //Play moving animation
   if (playerMixer != undefined){
@@ -420,7 +443,7 @@ function setUpControls(){
   controls.screenSpacePanning = true;
 
   controls.minDistance = 10;
-  controls.maxDistance = 100;
+  controls.maxDistance = 500;
 
   controls.maxPolarAngle = Math.PI * 2;
 
@@ -1226,4 +1249,61 @@ function detectCollision(){
 	
 	}
 
+}
+
+
+function addFire(x, y, z){
+
+  let fireLocation = '../../assets/models/sun-animated-test/source/sunanimated.fbx';
+  let fireTextureLocation = '../../assets/models/sun-animated-test/textures/8k_sun.jpeg';
+
+  let loader = new FBXLoader();
+
+  loader.load(fireLocation, function (fbx){
+    
+    // Three JS Section   
+    console.log(scale);
+    fire = fbx;
+    fire.scale.set(0.01 * scale, 0.01 * scale, 0.01 * scale);
+    fire.position.set(x, y, z);
+
+    scene.add(fire);
+
+    fire.traverse( function ( child ) {
+
+      if ( child.isMesh ) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+
+    });
+
+
+    console.log(fire);
+
+    let fireAnimations = fbx.animations;
+    fireMixer = new THREE.AnimationMixer(fire);
+
+    if(fire.animations[0])
+          {
+            var action = fireMixer.clipAction(fireAnimations[0]);
+           // action.timeScale=2;
+            action.play();
+          } else {
+            console.log("No animations");
+          }
+
+    // let action = fireMixer.clipAction( fireAnimations[0] );
+    // action.play();
+
+
+    let fireTexture = new THREE.TextureLoader().load(fireTextureLocation);
+      
+    let fireMaterial = new THREE.MeshStandardMaterial({map: fireTexture});
+
+    fire.material = fireMaterial;
+    fire.children[0].material = fireMaterial;
+    
+
+  })
 }

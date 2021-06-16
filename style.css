@@ -6,12 +6,30 @@ canvas{
   
 }
 #overlay {
-  position: fixed; /* Sit on top of the page content */
+  position: absolute; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 30%; /* Full width (cover the whole page) */
+  height: 10%; /* Full height (cover the whole page) */
+  top: 0;
+  font-size: 25px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0); /* Black background with opacity */
+  z-index: 1; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+#healthbar {
+  position: absolute; 
+  align-content: center;
+  text-align: center;
+  font-size: 25px;
   display: none; /* Hidden by default */
   width: 20%; /* Full width (cover the whole page) */
   height: 10%; /* Full height (cover the whole page) */
-  top: 0;
-  left: 0;
+  left: 700px;
+  top: 0px;
   right: 0;
   bottom: 0;
   background-color: rgba(0,0,0,0); /* Black background with opacity */

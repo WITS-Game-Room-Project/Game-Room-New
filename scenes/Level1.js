@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Color, MeshStandardMaterial } from "three";
+import { Color, Mesh, MeshStandardMaterial, Vector3 } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants";
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import index, { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
@@ -7,6 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
+import coord from '../classes/coord.class';
 import * as Ammo from "ammo.js";
 
 //=========================== Global Variables =======================================
@@ -52,7 +53,7 @@ setUpCamera();
 // setUpWorld();
 
 //Set up Renderer
-var renderer = new THREE.WebGLRenderer({canvas: document.querySelector("#canvas")});
+var renderer = new THREE.WebGLRenderer({canvas: document.querySelector("#canvas"), antialias: true});
 setUpRenderer();
 
 //Set up Controls
@@ -62,6 +63,11 @@ setUpControls();
 //Set up Main Ambient Lighting
 var ambientLightMain = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLightMain);
+
+//Set up Light Post Lighting
+var lightPostLight = new THREE.SpotLight(0xffa200,25,200,  Math.PI * 0.5);
+lightPostLight.position.set(350,150,300);
+scene.add(lightPostLight);
 
 //Set up Ground
 var ground;
@@ -76,12 +82,21 @@ addPlayer(-50,20,-50);
 
 var tempDiamond;
 
-
+//Set up Fire
 var fire;
 var fireMixer; 
 var scale = 1.5; 
 var kaboom = false;
 addFire();
+
+//Add Enemy
+var enemy;
+const enemyStepsThreshold = 150;
+var enemyMoveDiff = 5;
+var enemySteps = enemyStepsThreshold + 1;
+var enemyCurrPathIdx = 0;
+var enemyPathList = [new coord(100,100), new coord(407, -150)]
+addEnemy(100,25,100);
 
 
 
@@ -178,155 +193,7 @@ for (var i = 0; i < arrFencePositions.length; i++){
 }
 
 
-//Add Diamonds
-//body of island
-addDiamond(125,250.5,0);
-addDiamond(50,225.5,0);
-addDiamond(75,65,0);
-addDiamond(-207,-125,0);
-addDiamond(-262,-198,0);
-addDiamond(-246,-295,0);
-addDiamond(-356,-163,0);
-addDiamond(-350,200,0);
-addDiamond(-274,263,0);
-addDiamond(-305,369,0);
-addDiamond(50,19,0);
-addDiamond(200,195,0);
-addDiamond(308,205,0);
-addDiamond(105,-205,0);
-addDiamond(305,-205,0);
-addDiamond(205,405,0);
-addDiamond(270,367,0);
-addDiamond(357,10,0);
-on();
-
-
-
-var axesHelper = new THREE.AxesHelper(100);
-//scene.add( axesHelper );
-
-addTrees(0, 100); //origin - house ish - near blob
-addTrees2(450, 500);
-//addBush(450,500);
-addTrees(500, 500);
-
-//three near house
-addDiamond(-200, -175, 0);
-addTrees3(-250, -150);
-addDiamond(-300, -275, 0);
-addTrees2(-200, -200); 
-addTrees(-250, -200);
-addDiamond(-300, -175, 0);
-addTrees2(-300, -175);
-//addBush(-200,-200);
-
-//across path
-addTrees(150, -150);
-addTrees3(160, -100);
-
-//behind house
-addTrees3(650, 350);
-addTrees2(500, 200);
-//addBush(500,-50);
-//addBush(550,0);
-
-//border near house
-addTrees3(200, 550);
-addTrees2(150, 600); 
-addTrees(-200, 400);
-
-//loop one
-//mouth
-addDiamond(450, -200, 0);
-addDiamond(450, -150, 0);
-addTrees(400, -250);
-addTrees2(400, -475);
-addTrees(250, -500);
-//inside
-addTrees(550, -600);
-addDiamond(550, -625, 0);
-addDiamond(550, -650, 0);
-addTrees2(550, -675);
-//addBush(550,-600);
-addDiamond(550, -725, 0);
-addDiamond(575, -750, 0);
-addTrees3(550, -700);
-
-addDiamond(620, -750, 0);
-addDiamond(660, -750, 0);
-addDiamond(700, -740, 0);
-addTrees(600, -750);
-
-addDiamond(775, -700, 0);
-addDiamond(830, -600, 0);
-addDiamond(880, -550, 0);
-addDiamond(950, -350, 0);
-addDiamond(900, -200, 0);
-addDiamond(900, -150, 0);
-addDiamond(850, -150, 0);
-addDiamond(800, -175, 0);
-addDiamond(800, -175, 0);
-addTrees(750, -700);
-addTrees2(800, -600);
-addTrees(850, -500);
-addDiamond(800, -500, 0);
-addTrees2(900, -400);
-addTrees2(875, -350);
-addTrees3(850, -450);
-addDiamond(850, -500, 0);
-addTrees(900, -250);
-addTrees2(850, -200);
-addDiamond(900, -200, 0);
-addDiamond(600, -25, 0);
-addTrees(725, -250);
-addTrees(700, -300);
-addDiamond(500, 0, 0);
-
-//arrow bit
-addTrees2(-400, 950); //arrow tip
-addTrees(-500, 800); //right
-addTrees2(-250, 825); //left
-addTrees(-300, 575); //branch things
-addTrees3(-300, 625);
-
-
-//near cave
-addTrees(200, -550);
-addDiamond(600, -575, 0);
-addTrees2(200, -675);
-addDiamond(100, -475, 0);
-addDiamond(150, -275, 0);
-addDiamond(50, -675, 0);
-addDiamond(-50, -275, 0);
-addTrees(50, -650);
-addTrees3(100, -625);
-
-//near cave - other side
-addTrees(-450, -350);
-
-addTrees2(-600, 50);
-addTrees(-550, -200);
-addTrees3(-500, -325);
-
-//loop two
-addTrees(-750, 50);
-addDiamond(-700, 75, 0);
-addTrees3(-850, 50);
-addDiamond(-800, 100, 0);
-addTrees2(-875, 150);
-addDiamond(-900, 200, 0);
-addTrees(-900, 250);
-addTrees(-900, 300);
-addDiamond(-900, 275, 0);
-addTrees2(-900, 400);
-addTrees(-650, 500);
-addDiamond(-600, 425, 0);
-addDiamond(-600, 475, 0);
-addTrees3(-600, 350);
-addDiamond(-800, 475, 0);
-addTrees2(-700, 500);
-
-addCave(-480, -680);
+addProps();
 
 //=========================== EACH FRAME =======================================
 
@@ -342,6 +209,10 @@ export const GameLoop = function(){
 function update(){
   delta = clockTime.getDelta();
   controls.update();
+
+  if (typeof player !== "undefined" && player != null){
+    // console.log(player.position);
+  }
 
   var myDiv = document.getElementById("text");
   myDiv.innerHTML = "Diamond Count : " + diamondCount;
@@ -360,7 +231,7 @@ function update(){
   // }
 
 
-  if (fire != undefined && kaboom == true){
+  if (fire != undefined && kaboom){
     scale += 0.1;
     fire.scale.set(scale, scale, scale);
 
@@ -420,6 +291,52 @@ function update(){
         }
       }
     }
+  }
+
+  //Move enemy up and down its path
+  if (typeof enemy !== "undefined" && enemy != null){
+    console.log(enemy.position);
+    let currX = enemy.position.x;
+    let currZ = enemy.position.z;
+
+    let pathX = enemyPathList[enemyCurrPathIdx].x;
+    let pathZ = enemyPathList[enemyCurrPathIdx].z;
+
+    console.log(enemySteps)
+    //Change direction
+    let reachedEnd = (Math.abs(parseInt(currX) - parseInt(pathX)) < enemyMoveDiff&& Math.abs(parseInt(currZ) - parseInt(pathZ)) < enemyMoveDiff);
+
+    if ( reachedEnd && (enemySteps > enemyStepsThreshold)){
+      if (enemyCurrPathIdx == 0){
+        enemyCurrPathIdx++;
+      }else{
+        enemyCurrPathIdx--;
+      }
+
+      pathX = enemyPathList[enemyCurrPathIdx].x;
+      pathZ = enemyPathList[enemyCurrPathIdx].z;
+
+      enemySteps = 0;
+    }    
+
+    //Move player to path
+    let enemyMovementSpeed = 15;
+
+    let diffX = currX - pathX;
+    let diffZ = currZ - pathZ;
+
+    let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
+
+    diffX /= normLength;
+    diffZ /= normLength;
+
+    diffX *= enemyMovementSpeed;
+    diffZ *= enemyMovementSpeed;
+
+    enemy.translateX(-diffX * delta);
+    enemy.translateZ(-diffZ * delta);
+
+    enemySteps++;
   }
   
   
@@ -1278,6 +1195,154 @@ function addCave(x, z){
   });
 }
 
+function addProps(){
+  //Add Diamonds
+//body of island
+addDiamond(125,250.5,0);
+addDiamond(50,225.5,0);
+addDiamond(75,65,0);
+addDiamond(-207,-125,0);
+addDiamond(-262,-198,0);
+addDiamond(-246,-295,0);
+addDiamond(-356,-163,0);
+addDiamond(-350,200,0);
+addDiamond(-274,263,0);
+addDiamond(-305,369,0);
+addDiamond(50,19,0);
+addDiamond(200,195,0);
+addDiamond(308,205,0);
+addDiamond(105,-205,0);
+addDiamond(305,-205,0);
+addDiamond(205,405,0);
+addDiamond(270,367,0);
+addDiamond(357,10,0);
+on();
+
+
+addTrees(0, 100); //origin - house ish - near blob
+addTrees2(450, 500);
+//addBush(450,500);
+addTrees(500, 500);
+
+//three near house
+addDiamond(-200, -175, 0);
+addTrees3(-250, -150);
+addDiamond(-300, -275, 0);
+addTrees2(-200, -200); 
+addTrees(-250, -200);
+addDiamond(-300, -175, 0);
+addTrees2(-300, -175);
+//addBush(-200,-200);
+
+//across path
+addTrees(150, -150);
+addTrees3(160, -100);
+
+//behind house
+addTrees3(650, 350);
+addTrees2(500, 200);
+//addBush(500,-50);
+//addBush(550,0);
+
+//border near house
+addTrees3(200, 550);
+addTrees2(150, 600); 
+addTrees(-200, 400);
+
+//loop one
+//mouth
+addDiamond(450, -200, 0);
+addDiamond(450, -150, 0);
+addTrees(400, -250);
+addTrees2(400, -475);
+addTrees(250, -500);
+//inside
+addTrees(550, -600);
+addDiamond(550, -625, 0);
+addDiamond(550, -650, 0);
+addTrees2(550, -675);
+//addBush(550,-600);
+addDiamond(550, -725, 0);
+addDiamond(575, -750, 0);
+addTrees3(550, -700);
+
+addDiamond(620, -750, 0);
+addDiamond(660, -750, 0);
+addDiamond(700, -740, 0);
+addTrees(600, -750);
+
+addDiamond(775, -700, 0);
+addDiamond(830, -600, 0);
+addDiamond(880, -550, 0);
+addDiamond(950, -350, 0);
+addDiamond(900, -200, 0);
+addDiamond(900, -150, 0);
+addDiamond(850, -150, 0);
+addDiamond(800, -175, 0);
+addDiamond(800, -175, 0);
+addTrees(750, -700);
+addTrees2(800, -600);
+addTrees(850, -500);
+addDiamond(800, -500, 0);
+addTrees2(900, -400);
+addTrees2(875, -350);
+addTrees3(850, -450);
+addDiamond(850, -500, 0);
+addTrees(900, -250);
+addTrees2(850, -200);
+addDiamond(900, -200, 0);
+addDiamond(600, -25, 0);
+addTrees(725, -250);
+addTrees(700, -300);
+addDiamond(500, 0, 0);
+
+//arrow bit
+addTrees2(-400, 950); //arrow tip
+addTrees(-500, 800); //right
+addTrees2(-250, 825); //left
+addTrees(-300, 575); //branch things
+addTrees3(-300, 625);
+
+
+//near cave
+addTrees(200, -550);
+addDiamond(600, -575, 0);
+addTrees2(200, -675);
+addDiamond(100, -475, 0);
+addDiamond(150, -275, 0);
+addDiamond(50, -675, 0);
+addDiamond(-50, -275, 0);
+addTrees(50, -650);
+addTrees3(100, -625);
+
+//near cave - other side
+addTrees(-450, -350);
+
+addTrees2(-600, 50);
+addTrees(-550, -200);
+addTrees3(-500, -325);
+
+//loop two
+addTrees(-750, 50);
+addDiamond(-700, 75, 0);
+addTrees3(-850, 50);
+addDiamond(-800, 100, 0);
+addTrees2(-875, 150);
+addDiamond(-900, 200, 0);
+addTrees(-900, 250);
+addTrees(-900, 300);
+addDiamond(-900, 275, 0);
+addTrees2(-900, 400);
+addTrees(-650, 500);
+addDiamond(-600, 425, 0);
+addDiamond(-600, 475, 0);
+addTrees3(-600, 350);
+addDiamond(-800, 475, 0);
+addTrees2(-700, 500);
+
+addCave(-480, -680);
+}
+
 
 
 //=========================== PHYSICS =======================================
@@ -1390,6 +1455,63 @@ function detectCollision(){
 
 }
 
+//Hierachial Modelling Enemy
+function addEnemy(x,y,z){
+  //Entire Enemy Object
+  enemy = new THREE.Group();
+
+
+  //Big Body
+  let geometry = new THREE.SphereGeometry(5,32,32);
+  let material = new THREE.MeshStandardMaterial({color: 0xff0000, emissive: 0xff3c00});
+  let bigBody = new THREE.Mesh(geometry, material);
+  bigBody.scale.set(1,2,1);
+
+  enemy.add(bigBody);
+
+  //Face Game object
+  let face = new THREE.Group();
+
+  
+  geometry = new THREE.SphereGeometry(3,32,32);
+  material = new THREE.MeshStandardMaterial({color: 0xff0000, emissive: 0xff3c00});
+  let faceNoEyes = new THREE.Mesh(geometry, material);
+
+
+  let eye1 = enemyEye();
+  
+  let eye2 = enemyEye();
+
+  face.add(faceNoEyes);
+
+  eye1.position.set(0.5*4,0.5,1*1.5);
+
+  eye2.position.set(-0.5*4,0.5,1*1.5);
+
+  face.add(eye1);
+  face.add(eye2);
+
+  //Adding face to enemy
+
+  face.position.set(0,11.5,0)
+  enemy.add(face);
+
+  enemy.position.set(x,y,z);
+  enemy.scale.set(2,2,2);
+
+  scene.add(enemy);
+}
+
+function enemyEye(){
+  let geometry = new THREE.SphereGeometry(1,32,32);
+  let material = new THREE.MeshStandardMaterial({color: 0x000000});
+
+  let eye = new Mesh(geometry, material);
+
+  eye.scale.set(1,1,0.5);
+
+  return eye;
+}
 
 function addFire(){
 
@@ -1413,3 +1535,4 @@ function addFire(){
 
 } );
 }
+

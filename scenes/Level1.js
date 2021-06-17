@@ -96,6 +96,7 @@ var enemyMoveDiff = 5;
 var enemySteps = enemyStepsThreshold + 1;
 var enemyCurrPathIdx = 0;
 var enemyPathList = [new coord(100,100), new coord(407, -150)]
+const enemyBurnDistance = 10;
 addEnemy(100,25,100);
 
 
@@ -255,16 +256,17 @@ function update(){
     camera.position.y = 150;
   }
 
-  let playerPos = player.position;
-  let distanceAway = 100;
-  let yFactor = 3;
-  camera.lookAt(new THREE.Vector3(playerPos.x,playerPos.y,playerPos.z));
+  // if (typeof player !== "undefined" && player != null && typeof player.position !== "undefined"){
+    
+  // }
 
   if (tempPlayer != undefined){
     if (tempPlayer.userData != null){
       if(tempPlayer.userData.physicsBody != null){
+        let playerPos = player.position;
+        let yFactor = 3;
+        let distanceAway = 500;
         let velocity = tempPlayer.userData.physicsBody.getLinearVelocity().length();
-        
         let diffX = Math.abs(camera.position.x - playerPos.x + distanceAway);
         let diffZ = Math.abs(camera.position.z - playerPos.z + distanceAway);
         if (velocity > 0.01 || diffX > 1 || diffZ > 1){
@@ -294,15 +296,15 @@ function update(){
   }
 
   //Move enemy up and down its path
-  if (typeof enemy !== "undefined" && enemy != null){
-    console.log(enemy.position);
+  if (typeof enemy !== "undefined" && enemy != null && typeof enemy.position !== "undefined"){
+    // console.log(enemy.position);
     let currX = enemy.position.x;
     let currZ = enemy.position.z;
 
     let pathX = enemyPathList[enemyCurrPathIdx].x;
     let pathZ = enemyPathList[enemyCurrPathIdx].z;
 
-    console.log(enemySteps)
+    // console.log(enemySteps)
     //Change direction
     let reachedEnd = (Math.abs(parseInt(currX) - parseInt(pathX)) < enemyMoveDiff&& Math.abs(parseInt(currZ) - parseInt(pathZ)) < enemyMoveDiff);
 
@@ -320,7 +322,7 @@ function update(){
     }    
 
     //Move player to path
-    let enemyMovementSpeed = 15;
+    let enemyMovementSpeed = 5;
 
     let diffX = currX - pathX;
     let diffZ = currZ - pathZ;
@@ -337,10 +339,29 @@ function update(){
     enemy.translateZ(-diffZ * delta);
 
     enemySteps++;
+    
+    if (typeof camera  !== "undefined"){
+      // console.log(enemy.position)
+      // enemy.lookAt(camera.position);
+    }
   }
   
   
-  
+  if (typeof enemy !== "undefined" && enemy != null){
+    if (typeof player !== "undefined" && player != null){
+      let playerPos = player.position;
+      let enemyPos = enemy.position;
+
+      let distanceBetw = Math.sqrt((playerPos.x - enemyPos.x)^2 + (playerPos.y - enemyPos.y)^2 + (playerPos.z - enemyPos.z)^2)
+      
+      if (distanceBetw < enemyBurnDistance){
+        if (distanceBetw < 2){
+          health.value -= 10000;
+        }
+        health.value -= 10 *delta ;
+      }
+    }
+  }
 
   // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
   // camera.position.y = playerPos.y + 220;
@@ -424,6 +445,11 @@ function addGround(){
     let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;
 
+    ground.traverse( function (child){
+        if (child.isMesh){
+          child.receiveShadow = true;
+        }
+    })
     
 
     scene.add(ground);  
@@ -1500,6 +1526,7 @@ function addEnemy(x,y,z){
 
   enemy.position.set(x,y,z);
   enemy.scale.set(2,2,2);
+  enemy.userData.tag = "enemy";
 
   scene.add(enemy);
 }

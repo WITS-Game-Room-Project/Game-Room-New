@@ -67,8 +67,8 @@ setSunLight();
 
 
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.5);
-//scene.add(ambientLightMain);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.1);
+scene.add(ambientLightMain);
 
 //Set up Light Post Lighting
 var lightPostLight = new THREE.SpotLight(0xffa200,25,200,  Math.PI * 0.5);
@@ -331,7 +331,7 @@ function setUpRenderer(){
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+  renderer.shadowMap.type = THREE.PCFShadowMap; // default THREE.PCFShadowMap
 
   document.body.appendChild(renderer.domElement);
 }
@@ -387,14 +387,7 @@ function addGround(){
     } );
 
     let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
-    ground.children[1].material = materialSide;
-
-    ground.traverse( function (child){
-        if (child.isMesh){
-          child.receiveShadow = true;
-        }
-    })
-    
+    ground.children[1].material = materialSide;    
 
     scene.add(ground);  
     
@@ -424,28 +417,36 @@ function addGround(){
           
   });
 
-  const planeGeometry = new THREE.PlaneGeometry( 20, 20, 32, 32 );
-  const planeMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } )
-  const plane = new THREE.Mesh( planeGeometry, planeMaterial );
-  plane.receiveShadow = true;
-  scene.add( plane );
+  let geometry = new THREE.BoxGeometry(10000,10000,500);
+  let maty = new THREE.MeshStandardMaterial({color: 0x0000ff});
+
+  let planetset = new THREE.Mesh(geometry, maty);
+  planetset.position.set(0,15,0);
+  planetset.rotateX(Math.PI/2);
+  planetset.receiveShadow = true;
+  //scene.add(planetset);
 
 }
 
 
 function setSunLight(){
 
-  light  = new THREE.DirectionalLight( 0xffffff, 2 );
-  light.maxPolarAngle = Math.PI/2;
+  light  = new THREE.DirectionalLight( 0xffffff, 3 );
+  light.maxPolarAngle = Math.PI/4;
   light.position.set( -90, 50, -100 ); //default; light shining from top
   light.castShadow = true; // default false
+  light.shadow.camera.left = -500;
+  light.shadow.camera.right = 500;
+  light.shadow.camera.top = 500;
+  light.shadow.camera.bottom = -500;
+
   scene.add( light );
 
   //Set up shadow properties for the light
-  light.shadow.mapSize.width = 512; // default
-  light.shadow.mapSize.height = 512; // default
+  light.shadow.mapSize.width = 10000; // default
+  light.shadow.mapSize.height = 10000; // default
   light.shadow.camera.near = 0.5; // default
-  light.shadow.camera.far = 500; // default
+  light.shadow.camera.far = 100; // default
 
 }
 

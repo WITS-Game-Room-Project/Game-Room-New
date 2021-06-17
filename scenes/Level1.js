@@ -12,6 +12,8 @@ import * as Ammo from "ammo.js";
 //=========================== Global Variables =======================================
 
 var diamond;
+var mushroom;
+var tempMushroom;
 //////////////////////////KIATA 
 var diamondCount = 0;
 
@@ -71,7 +73,16 @@ var player;
 var playerMixer; 
 var tempPlayer;
 addPlayer(-50,20,-50);
+
 var tempDiamond;
+
+
+var fire;
+var fireMixer; 
+var scale = 1.5; 
+var kaboom = false;
+addFire();
+
 
 
 //Set up onEvents
@@ -93,7 +104,8 @@ addHouse(400, 300);
 //   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
 // ];
 
-//trees
+let health = document.getElementById("health")
+health.value -= 0; 
 
 
 let arrTreePositions = [
@@ -301,7 +313,8 @@ function update(){
   controls.update();
 
   var myDiv = document.getElementById("text");
-  myDiv.innerHTML = "Diamond Count : " +diamondCount;
+  myDiv.innerHTML = "Diamond Count : " + diamondCount;
+  myDiv.style.fontSize = "30px";
 
 
   // for (let i = 0; i < scene.children.length; i++){
@@ -314,7 +327,25 @@ function update(){
   //   }
     
   // }
-  
+
+  // console.log("===============================");
+  // console.log(fire);
+  // console.log("===============================");
+
+  if (fire != undefined && kaboom == true){
+    scale += 0.5;
+    fire.scale.set(scale, scale, scale);
+
+    if (scale > 30){
+      scale = 1;
+      kaboom = false;
+      scene.remove(fire);
+    }
+  }
+
+  // if (fireMixer != undefined) {
+  //   fireMixer.update(delta);
+  // }
 
   //Play moving animation
   if (playerMixer != undefined){
@@ -420,7 +451,7 @@ function setUpControls(){
   controls.screenSpacePanning = true;
 
   controls.minDistance = 10;
-  controls.maxDistance = 100;
+  controls.maxDistance = 500;
 
   controls.maxPolarAngle = Math.PI * 2;
 
@@ -429,11 +460,10 @@ function setUpControls(){
 
 function on() {
   document.getElementById("overlay").style.display = "block";
+  document.getElementById("healthbar").style.display = "block";
+
 }
 
-function off() {
-  document.getElementById("overlay").style.display = "none";
-}
 
 function addGround(){
   
@@ -455,13 +485,13 @@ function addGround(){
     
 
     scene.add(ground);  
-    
+  
     
      //Ammojs Section
-     tempGround = ground;
+    tempGround = ground;
      let transform = new Ammo.btTransform();
      transform.setIdentity();
-     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y +77,tempGround.position.z ) );
+     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y + 77,tempGround.position.z ) );
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
 
@@ -725,9 +755,8 @@ function addPlayer(x,y,z){
 
   loader.load(playerLocation, function (fbx){
     // Three JS Section
-    let scaleplay = 1.5 ;
     player = fbx;
-    player.scale.set(scaleplay* 0.05,scaleplay * 0.05,scaleplay * 0.05);
+    player.scale.set(0.05, 0.05, 0.05);
     player.position.set(x,y,z);
 
     player.traverse( function ( child ) {
@@ -979,11 +1008,41 @@ function addMushroom(x, z){
   let loader = new GLTFLoader();
         
   loader.load(mushroomLocation, function(gltf){
+
+    var unreasonableScale = 1;
             
-    var mushroom = gltf.scene.children[0];            
-    mushroom.scale.set(0.05, 0.05, 0.05);            
+    mushroom = gltf.scene.children[0];            
+    mushroom.scale.set(0.07, 0.07, 0.07);            
     mushroom.position.set(x, 8, z);            
-    scene.add(gltf.scene);       
+    scene.add(mushroom);    
+    
+    tempMushroom = mushroom;
+    let transformMush = new Ammo.btTransform();
+
+    transformMush.setIdentity();
+
+    transformMush.setOrigin(new Ammo.btVector3(tempMushroom.position.x, tempMushroom.position.y, tempMushroom.position.z));
+    transformMush.setRotation(new Ammo.btQuaternion(-Math.PI/2,0,0,1));
+    let motionState = new Ammo.btDefaultMotionState( transformMush );
+    let mushroomSize = new THREE.Box3().setFromObject(mushroom).getSize();
+
+    let colShape = new Ammo.btBoxShape(new Ammo.btVector3(unreasonableScale*mushroomSize.x/2,unreasonableScale*mushroomSize.y/2,unreasonableScale*mushroomSize.z/2));
+    colShape.setMargin(0.05);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, motionState, colShape, Ammo.NULL );
+    let body = new Ammo.btRigidBody( rbInfo );
+    
+    body.setActivationState( STATE.DISABLE_DEACTIVATION )
+    physicsWorld.addRigidBody( body );
+
+    body.threeObject = mushroom;
+    tempMushroom.userData.physicsBody = body;
+    mushroom.userData.physicsBody = body;
+
+    mushroom.userData.tag = "mushroom";
+       
+
+    rigidBodies.push(tempMushroom);
           
   });
 }
@@ -1213,17 +1272,169 @@ function detectCollision(){
     let userData1 = threeObject1 ? threeObject1.userData : null;
     let tag0 = userData0 ? userData0.tag : "none";
     let tag1 = userData1 ? userData1.tag : "none";
-    
+
     if (tag0 == "player" && tag1 == "diamond"){
+      var pos = threeObject1.position;
+      //console.log(pos);
       scene.remove(threeObject1);
+      
       diamondCount++;
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
+      var pos = threeObject0.position;
+      //console.log(pos);
       scene.remove(threeObject0);
       diamondCount++;
       physicsWorld.removeRigidBody(rb0);
     }
+
+    if (tag0 == "player" && tag1 == "mushroom"){  
+
+      fire.position.set(player.position.x, player.position.y, player.position.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
+    else if (tag0 == "mushroom" && tag1 == "player"){
+            
+      fire.position.set(player.position.x, player.position.y, player.position.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
 	
 	}
 
+}
+
+
+function addFire(){
+
+  let fireLocation = '../../assets/models/sun-animated-test/source/boom.glb';
+  let fireTextureLocation = '../../assets/models/sun-animated-test/textures/FLAME.jpg';
+
+
+  let loaders = new GLTFLoader();
+
+  loaders.load(fireLocation, function ( gltf ) {
+
+    fire = gltf.scene.children[0];
+
+    fire.scale.set(5, 5, 5);
+
+    let fireTexture = new THREE.TextureLoader().load(fireTextureLocation);
+      
+    let fireMaterial = new THREE.MeshStandardMaterial({map: fireTexture});
+
+    fire.material = fireMaterial;
+    fire.children[0].material = fireMaterial;
+
+    
+
+    // let half = new CANNON.Vec3((roomData.roomDoor1Model.x)/2,(roomData.roomDoor1Model.y)/2,(roomData.roomDoor1Model.z)/2);
+    // let shape = new CANNON.Box(half);
+    // roomData.medievalDoorPhys = new CANNON.Body({mass, shape});
+
+    // data.world.add(roomData.medievalDoorPhys);
+
+    // var Tempbox = new THREE.Box3().setFromObject(medievalDoor);
+    // TMins = Tempbox.min;
+    // ActualMin = [TMins[0],TMins[1]];
+    
+    // Maxs = Tempbox.max;
+    // ActualMax = [Maxs[0],Maxs[1]];
+  
+    // drawObstical(ActualMin,ActualMax,2);
+
+
+    // fireMixer = new THREE.AnimationMixer( gltf.scene );
+
+    // fireMixer.timeScale = 1/2 ; 
+    // fireMixer.update(delta);
+    
+    
+    // gltf.animations.forEach( function ( clip )  {
+    
+    //   fireMixer.clipAction( clip ).play();
+    
+    // } );
+
+
+} );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // let loader = new FBXLoader();
+
+  // loader.load(fireLocation, function (fbx){
+    
+  //   // Three JS Section   
+  //   console.log(scale);
+  //   fire = fbx;
+  //   fire.scale.set(0.01 * scale, 0.01 * scale, 0.01 * scale);
+  //   fire.position.set(x, y, z);
+
+  //   scene.add(fire);
+
+  //   fire.traverse( function ( child ) {
+
+  //     if ( child.isMesh ) {
+  //       child.castShadow = true;
+  //       child.receiveShadow = true;
+  //     }
+
+  //   });
+
+
+  //   console.log(fire);
+
+  //   let fireAnimations = fbx.animations;
+  //   fireMixer = new THREE.AnimationMixer(fire);
+
+  //   if(fire.animations[0])
+  //         {
+  //           var action = fireMixer.clipAction(fireAnimations[0]);
+  //          // action.timeScale=2;
+  //           action.play();
+  //         } else {
+  //           console.log("No animations");
+  //         }
+
+  //   // let action = fireMixer.clipAction( fireAnimations[0] );
+  //   // action.play();
+
+
+     
+    
+
+  // })
+}
+
+//still attempting mapping the physics models
+function criarConvexHullPhysicsShape(geometry) {
+  var coords = geometry.attributes.position.array;
+  var tempBtVec3_1 = new Ammo.btVector3(0, 0, 0);
+  var shape = new Ammo.btConvexHullShape();
+      tempBtVec3_1.setValue(coords[i], coords[i + 1], coords[i + 2]);
+      var lastOne = (i >= (il - 3));
+      shape.addPoint(tempBtVec3_1, lastOne);
+  
+  return shape;
 }

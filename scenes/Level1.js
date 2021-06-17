@@ -12,6 +12,8 @@ import * as Ammo from "ammo.js";
 //=========================== Global Variables =======================================
 
 var diamond;
+var mushroom;
+var tempMushroom;
 //////////////////////////KIATA 
 var diamondCount = 0;
 
@@ -1003,11 +1005,41 @@ function addMushroom(x, z){
   let loader = new GLTFLoader();
         
   loader.load(mushroomLocation, function(gltf){
+
+    var unreasonableScale = 1;
             
-    var mushroom = gltf.scene.children[0];            
-    mushroom.scale.set(0.05, 0.05, 0.05);            
+    mushroom = gltf.scene.children[0];            
+    mushroom.scale.set(0.07, 0.07, 0.07);            
     mushroom.position.set(x, 8, z);            
-    scene.add(gltf.scene);       
+    scene.add(mushroom);    
+    
+    tempMushroom = mushroom;
+    let transformMush = new Ammo.btTransform();
+
+    transformMush.setIdentity();
+
+    transformMush.setOrigin(new Ammo.btVector3(tempMushroom.position.x, tempMushroom.position.y, tempMushroom.position.z));
+    transformMush.setRotation(new Ammo.btQuaternion(-Math.PI/2,0,0,1));
+    let motionState = new Ammo.btDefaultMotionState( transformMush );
+    let mushroomSize = new THREE.Box3().setFromObject(mushroom).getSize();
+
+    let colShape = new Ammo.btBoxShape(new Ammo.btVector3(unreasonableScale*mushroomSize.x/2,unreasonableScale*mushroomSize.y/2,unreasonableScale*mushroomSize.z/2));
+    colShape.setMargin(0.05);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, motionState, colShape, Ammo.NULL );
+    let body = new Ammo.btRigidBody( rbInfo );
+    
+    body.setActivationState( STATE.DISABLE_DEACTIVATION )
+    physicsWorld.addRigidBody( body );
+
+    body.threeObject = mushroom;
+    tempMushroom.userData.physicsBody = body;
+    mushroom.userData.physicsBody = body;
+
+    mushroom.userData.tag = "mushroom";
+       
+
+    rigidBodies.push(tempMushroom);
           
   });
 }
@@ -1246,6 +1278,14 @@ function detectCollision(){
       scene.remove(threeObject0);
       diamondCount++;
       physicsWorld.removeRigidBody(rb0);
+    }
+
+    if (tag0 == "player" && tag1 == "mushroom"){      
+      health.value -= 0.1;
+      kaboom = true;
+    }else if (tag0 == "mushroom" && tag1 == "player"){
+      health.value -= 0.1;
+      kaboom = true;
     }
 	
 	}

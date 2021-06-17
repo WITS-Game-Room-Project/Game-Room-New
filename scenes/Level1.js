@@ -93,7 +93,8 @@ addHouse(400, 300);
 //   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
 // ];
 
-//trees
+let health = document.getElementById("health")
+health.value -= 0; 
 
 
 let arrTreePositions = [
@@ -301,7 +302,8 @@ function update(){
   controls.update();
 
   var myDiv = document.getElementById("text");
-  myDiv.innerHTML = "Diamond Count : " +diamondCount;
+  myDiv.innerHTML = "Diamond Count : " + diamondCount;
+  myDiv.style.fontSize = "30px";
 
 
   // for (let i = 0; i < scene.children.length; i++){
@@ -429,11 +431,10 @@ function setUpControls(){
 
 function on() {
   document.getElementById("overlay").style.display = "block";
+  document.getElementById("healthbar").style.display = "block";
+
 }
 
-function off() {
-  document.getElementById("overlay").style.display = "none";
-}
 
 function addGround(){
   

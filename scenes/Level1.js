@@ -107,14 +107,6 @@ addEnemy(100,25,100);
 
 
 
-var fire;
-var fireMixer; 
-var scale = 1.5; 
-var kaboom = false;
-addFire();
-
-
-
 //Set up onEvents
 setOnEvents();
 
@@ -129,203 +121,6 @@ addOcean();
 //Add mushroom house
 addHouse(400, 300);
 
-//Set up trees
-// let arrTreePositions = [
-//   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
-// ];
-
-let health = document.getElementById("health")
-health.value -= 0; 
-
-
-let arrTreePositions = [
-  [-420,700]
-];
-
-for (var i = 0; i < arrTreePositions.length; i++){
-  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
-}
-
-//Add mushrooms
-
-let arrMushroomPositions = [
-  [-345,818], [-363,865], [-380,914], [-395,798], [-431,898], [-415,850]
-];
-
-for (var i = 0; i < arrMushroomPositions.length; i++){
-  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1]);
-}
-
-//Add bushes
-
-let arrBushPositions = [
-  [-420,700,0], [125,300,Math.PI/6],[125,205,-Math.PI/6]
-]
-
-for (var i = 0; i < arrBushPositions.length; i++){
-  addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
-}
-
-//Add fences
-
-let arrFencePositions = [
-  [250,350,0], [250,250,0], [199,240,-Math.PI/8], [199,340,-Math.PI/8], [155,218,-Math.PI/6], [155,317,-Math.PI/6]
-];
-
-for (var i = 0; i < arrFencePositions.length; i++){
-  addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
-}
-
-
-//Add Diamonds
-//body of island
-addDiamond(125,250.5,0);
-addDiamond(50,225.5,0);
-addDiamond(75,65,0);
-addDiamond(-207,-125,0);
-addDiamond(-262,-198,0);
-addDiamond(-246,-295,0);
-addDiamond(-356,-163,0);
-addDiamond(-350,200,0);
-addDiamond(-274,263,0);
-addDiamond(-305,369,0);
-addDiamond(50,19,0);
-addDiamond(200,195,0);
-addDiamond(308,205,0);
-addDiamond(105,-205,0);
-addDiamond(305,-205,0);
-addDiamond(205,405,0);
-addDiamond(270,367,0);
-addDiamond(357,10,0);
-on();
-
-
-
-var axesHelper = new THREE.AxesHelper(100);
-//scene.add( axesHelper );
-
-addTrees(0, 100); //origin - house ish - near blob
-addTrees2(450, 500);
-//addBush(450,500);
-addTrees(500, 500);
-
-//three near house
-addDiamond(-200, -175, 0);
-addTrees3(-250, -150);
-addDiamond(-300, -275, 0);
-addTrees2(-200, -200); 
-addTrees(-250, -200);
-addDiamond(-300, -175, 0);
-addTrees2(-300, -175);
-//addBush(-200,-200);
-
-//across path
-addTrees(150, -150);
-addTrees3(160, -100);
-
-//behind house
-addTrees3(650, 350);
-addTrees2(500, 200);
-//addBush(500,-50);
-//addBush(550,0);
-
-//border near house
-addTrees3(200, 550);
-addTrees2(150, 600); 
-addTrees(-200, 400);
-
-//loop one
-//mouth
-addDiamond(450, -200, 0);
-addDiamond(450, -150, 0);
-addTrees(400, -250);
-addTrees2(400, -475);
-addTrees(250, -500);
-//inside
-addTrees(550, -600);
-addDiamond(550, -625, 0);
-addDiamond(550, -650, 0);
-addTrees2(550, -675);
-//addBush(550,-600);
-addDiamond(550, -725, 0);
-addDiamond(575, -750, 0);
-addTrees3(550, -700);
-
-addDiamond(620, -750, 0);
-addDiamond(660, -750, 0);
-addDiamond(700, -740, 0);
-addTrees(600, -750);
-
-addDiamond(775, -700, 0);
-addDiamond(830, -600, 0);
-addDiamond(880, -550, 0);
-addDiamond(950, -350, 0);
-addDiamond(900, -200, 0);
-addDiamond(900, -150, 0);
-addDiamond(850, -150, 0);
-addDiamond(800, -175, 0);
-addDiamond(800, -175, 0);
-addTrees(750, -700);
-addTrees2(800, -600);
-addTrees(850, -500);
-addDiamond(800, -500, 0);
-addTrees2(900, -400);
-addTrees2(875, -350);
-addTrees3(850, -450);
-addDiamond(850, -500, 0);
-addTrees(900, -250);
-addTrees2(850, -200);
-addDiamond(900, -200, 0);
-addDiamond(600, -75, 0);
-addTrees(725, -250);
-addTrees(700, -300);
-addDiamond(500, 0, 0);
-
-//arrow bit
-addTrees2(-400, 950); //arrow tip
-addTrees(-500, 800); //right
-addTrees2(-250, 825); //left
-addTrees(-300, 575); //branch things
-addTrees3(-300, 625);
-
-
-//near cave
-addTrees(200, -550);
-addDiamond(600, -575, 0);
-addTrees2(200, -675);
-addDiamond(100, -475, 0);
-addDiamond(150, -275, 0);
-addDiamond(50, -675, 0);
-addDiamond(-50, -275, 0);
-addTrees(50, -650);
-addTrees3(100, -625);
-
-//near cave - other side
-addTrees(-450, -350);
-
-addTrees2(-600, 50);
-addTrees(-550, -200);
-addTrees3(-500, -325);
-
-//loop two
-addTrees(-750, 50);
-addDiamond(-700, 75, 0);
-addTrees3(-850, 50);
-addDiamond(-800, 100, 0);
-addTrees2(-875, 150);
-addDiamond(-900, 200, 0);
-addTrees(-900, 250);
-addTrees(-900, 300);
-addDiamond(-900, 275, 0);
-addTrees2(-900, 400);
-addTrees(-650, 500);
-addDiamond(-600, 425, 0);
-addDiamond(-600, 475, 0);
-addTrees3(-600, 350);
-addDiamond(-800, 475, 0);
-addTrees2(-700, 500);
-
-addCave(-480, -680);
 //Add props
 var flower;
 var tempFlower;
@@ -334,10 +129,6 @@ health.value -= 0;
 var purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
 var orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
 addProps();
-
-
-
-
 
 //=========================== EACH FRAME =======================================
 
@@ -354,7 +145,6 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-  
   if (typeof player !== "undefined" && player != null){
     // console.log(player.position);
   }

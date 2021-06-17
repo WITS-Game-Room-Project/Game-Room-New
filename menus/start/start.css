@@ -1,0 +1,67 @@
+@import url(https://fonts.googleapis.com/css?family=Shadows+Into+Light);
+
+html{
+    height:100%
+  }
+  body{
+    height:100%;
+    /* background: url(https://78.media.tumblr.com/ab5d1b5e315a2eca8f7ceecbac7fd622/tumblr_oz2jfje5Jn1u6t6uao1_1280.jpg) center center no-repeat; */
+    background-image: url("./2.jpg");  /*change to 2 for green*/
+    background-size:cover;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:sans-serif;
+    margin:0;
+    overflow:hidden
+    
+  }
+
+  #name{
+      /* title */
+    position: relative;
+    position:absolute;
+    top: -150;
+    /* place at top */
+    font-size:700%;
+    font-weight: 10000;
+    font-family:shadows into light;
+    color: white;
+    text-align:center;
+    text-shadow: #778899;   
+  }
+
+  #brand{  
+    text-align:center;
+    cursor:pointer;
+    border:3px solid white;
+    margin-top: 60;
+    
+  }
+  #brand img{
+    display:block;
+    width:80vw;
+    max-width:700px;
+    height:auto;
+    transition:0.2s
+    
+  }
+  #brand a{
+    display:block;
+    font-family:shadows into light;
+    font-size:3em;
+    color:#fff;
+    font-weight:800;
+    text-decoration:none;
+    /* background:rgba(0,0,40,0); */
+    padding:5px 15px;
+    transition:0.4s
+
+    
+  }
+  #brand:hover a{  
+    color:#006400;
+    /* color: #C71585; */
+  }
+
+  

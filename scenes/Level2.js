@@ -322,14 +322,14 @@ export const GameLoop = function(){
 
   // start of aerial view
   // SET X AND Y OF OBJECT YOU WANNA LOOK AT FROM ABOVE
-  let x = 600;
-  let z = 550;
-  // SET HEIGHT
-  let height = 700;
+  // let x = 600;
+  // let z = 550;
+  // // SET HEIGHT
+  // let height = 700;
 
-  camera.position.set( x, height, z); 
-  camera.lookAt( x, 0, z); 
-  camera.up.set( 0, 0, 1 );
+  // camera.position.set( x, height, z); 
+  // camera.lookAt( x, 0, z); 
+  // camera.up.set( 0, 0, 1 );
   // end of aerial view
 
 

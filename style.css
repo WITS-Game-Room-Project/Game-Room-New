@@ -1,9 +1,7 @@
 canvas{
   position: fixed;
   top: 0;
-  left: 0;
-
-  
+  left: 0;  
 }
 #overlay {
   position: absolute; /* Sit on top of the page content */
@@ -21,16 +19,16 @@ canvas{
 }
 
 #healthbar {
-  position: absolute; 
+  position: relative; 
   align-content: center;
   text-align: center;
   font-size: 25px;
   display: none; /* Hidden by default */
-  width: 20%; /* Full width (cover the whole page) */
+  width: 30%; /* Full width (cover the whole page) */
   height: 10%; /* Full height (cover the whole page) */
-  left: 700px;
+  left: 35%;
   top: 0px;
-  right: 0;
+  right: 50%;
   bottom: 0;
   background-color: rgba(0,0,0,0); /* Black background with opacity */
   z-index: 1; /* Specify a stack order in case you're using a different order for other elements */

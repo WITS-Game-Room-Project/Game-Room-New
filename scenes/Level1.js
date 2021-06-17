@@ -50,7 +50,7 @@ setUpCamera();
 // setUpWorld();
 
 //Set up Renderer
-var renderer = new THREE.WebGLRenderer({canvas: document.querySelector("#canvas")});
+var renderer = new THREE.WebGLRenderer({canvas: document.querySelector("#canvas"), antialias: true});
 setUpRenderer();
 
 //Set up Controls
@@ -60,6 +60,11 @@ setUpControls();
 //Set up Main Ambient Lighting
 var ambientLightMain = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLightMain);
+
+//Set up Light Post Lighting Math.PI * 3/2
+var lightPostLight = new THREE.SpotLight(0xffa200,25,200,  Math.PI * 0.5);
+lightPostLight.position.set(350,150,300);
+scene.add(lightPostLight);
 
 //Set up Ground
 var ground;
@@ -299,6 +304,10 @@ export const GameLoop = function(){
 function update(){
   delta = clockTime.getDelta();
   controls.update();
+
+  if (typeof player !== "undefined" || player != null){
+    // console.log(player.position);
+  }
 
   var myDiv = document.getElementById("text");
   myDiv.innerHTML = "Diamond Count : " +diamondCount;

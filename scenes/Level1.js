@@ -115,83 +115,7 @@ skyBox();
 //Add mushroom house
 addHouse(400, 300);
 
-//Set up trees
-// let arrTreePositions = [
-//   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
-// ];
 
-let health = document.getElementById("health")
-health.value -= 0; 
-
-
-let arrTreePositions = [
-  [-420,700]
-];
-
-for (var i = 0; i < arrTreePositions.length; i++){
-  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
-}
-
-//Add mushrooms
-
-let arrMushroomPositions = [
-  [-345, 818, true], [-363, 865, true], [-380, 914, true], [-395, 798, true], [-431, 898, true], [-415, 850, true], [170, 200, true], 
-  [170, 340, true], [-720, 60, true], [220, 175, true], [540, 200, false], [560, 205, false], [550, 180, false], [575, 230, false], 
-  [350, 230, true], [-700, 90, true], [-650, 100, true], [-680, 150, true], [-600, 120, true], [-660, 200, true], [-750, 250, true],
-  [350, 0, true], [790, -480, true], [830, -300, false], [920, -450, true], [870, -250, false], [960, -250, true], [850, -350, false],
-  [450, -450, true], [270, -250, false], [160, -250, true], [50, -350, false],
-];
-
-for (var i = 0; i < arrMushroomPositions.length; i++){
-  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1], arrMushroomPositions[i][2]);
-}
-
-// Add flowers
-var flower;
-var tempFlower;
-let purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
-let orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
-
-
-let arrFlowerPositions = [
-  [-310, 710], [100, -15], [10, -10], [-5, -150], [15, -455], [-230, 400], [-15, 250], [-500, 15], [-60, 10], [650, 120], [75, 425],
-  [350, -610], [620, 20], [430, -30], [80, -450], [40, 450], [270, -20], [60, -50], [50, -300], [70, -50], [60, -20], 
-  [500, 400], [-50, 120]
-];
-
-let arrFlowerInfo = [
-  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], 
-  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15], [false, purpleFlower, 80], 
-  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, purpleFlower, 80],
-  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80],
-  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, orangeFlower, 15],
-  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15]
-];
-
-for (var i = 0; i < arrFlowerPositions.length; i++){
-  addFlowers(arrFlowerPositions[i][0], arrFlowerPositions[i][1], arrFlowerInfo[i][0], arrFlowerInfo[i][1], arrFlowerInfo[i][2]);
-}
-
-
-//Add bushes
-
-let arrBushPositions = [
-  [-420,700,0], [125,310,Math.PI/6],[125,190,-Math.PI/6]
-]
-
-for (var i = 0; i < arrBushPositions.length; i++){
-  addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
-}
-
-//Add fences
-
-let arrFencePositions = [
-  [250,350,0], [250,250,0], [199,240,-Math.PI/8], [199,340,-Math.PI/8], [155,218,-Math.PI/6], [155,317,-Math.PI/6]
-];
-
-for (var i = 0; i < arrFencePositions.length; i++){
-  addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
-}
 
 
 addProps();
@@ -1367,6 +1291,84 @@ addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
 
 addCave(-480, -680);
+
+//Set up trees
+// let arrTreePositions = [
+//   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
+// ];
+
+let health = document.getElementById("health")
+health.value -= 0; 
+
+
+let arrTreePositions = [
+  [-420,700]
+];
+
+for (var i = 0; i < arrTreePositions.length; i++){
+  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
+}
+
+//Add mushrooms
+
+let arrMushroomPositions = [
+  [-345, 818, true], [-363, 865, true], [-380, 914, true], [-395, 798, true], [-431, 898, true], [-415, 850, true], [170, 200, true], 
+  [170, 340, true], [-720, 60, true], [220, 175, true], [540, 200, false], [560, 205, false], [550, 180, false], [575, 230, false], 
+  [350, 230, true], [-700, 90, true], [-650, 100, true], [-680, 150, true], [-600, 120, true], [-660, 200, true], [-750, 250, true],
+  [350, 0, true], [790, -480, true], [830, -300, false], [920, -450, true], [870, -250, false], [960, -250, true], [850, -350, false],
+  [450, -450, true], [270, -250, false], [160, -250, true], [50, -350, false],
+];
+
+for (var i = 0; i < arrMushroomPositions.length; i++){
+  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1], arrMushroomPositions[i][2]);
+}
+
+// Add flowers
+var flower;
+var tempFlower;
+let purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
+let orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
+
+
+let arrFlowerPositions = [
+  [-310, 710], [100, -15], [10, -10], [-5, -150], [15, -455], [-230, 400], [-15, 250], [-500, 15], [-60, 10], [650, 120], [75, 425],
+  [350, -610], [620, 20], [430, -30], [80, -450], [40, 450], [270, -20], [60, -50], [50, -300], [70, -50], [60, -20], 
+  [500, 400], [-50, 120]
+];
+
+let arrFlowerInfo = [
+  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], 
+  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15], [false, purpleFlower, 80], 
+  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, purpleFlower, 80],
+  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80],
+  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, orangeFlower, 15],
+  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15]
+];
+
+for (var i = 0; i < arrFlowerPositions.length; i++){
+  addFlowers(arrFlowerPositions[i][0], arrFlowerPositions[i][1], arrFlowerInfo[i][0], arrFlowerInfo[i][1], arrFlowerInfo[i][2]);
+}
+
+
+//Add bushes
+
+let arrBushPositions = [
+  [-420,700,0], [125,310,Math.PI/6],[125,190,-Math.PI/6]
+]
+
+for (var i = 0; i < arrBushPositions.length; i++){
+  addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
+}
+
+//Add fences
+
+let arrFencePositions = [
+  [250,350,0], [250,250,0], [199,240,-Math.PI/8], [199,340,-Math.PI/8], [155,218,-Math.PI/6], [155,317,-Math.PI/6]
+];
+
+for (var i = 0; i < arrFencePositions.length; i++){
+  addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
+}
 }
 
 

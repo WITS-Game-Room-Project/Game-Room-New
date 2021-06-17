@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { Color, MeshStandardMaterial, Vector3 } from "three";
 import { Color, Mesh, MeshStandardMaterial, Vector3 } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants";
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
@@ -12,13 +11,6 @@ import coord from '../classes/coord.class';
 import * as Ammo from "ammo.js";
 
 //=========================== Global Variables =======================================
-
-
-
-
-
-
-
 
 var diamond;
 var mushroom;
@@ -128,8 +120,6 @@ var sun = new THREE.Vector3();
 skyBox();
 //Add mushroom house
 addHouse(400, 300);
-
-
 
 
 addProps();

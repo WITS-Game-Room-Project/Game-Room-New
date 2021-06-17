@@ -119,17 +119,48 @@ for (var i = 0; i < arrTreePositions.length; i++){
 //Add mushrooms
 
 let arrMushroomPositions = [
-  [-345,818], [-363,865], [-380,914], [-395,798], [-431,898], [-415,850]
+  [-345, 818, true], [-363, 865, true], [-380, 914, true], [-395, 798, true], [-431, 898, true], [-415, 850, true], [170, 200, true], 
+  [170, 340, true], [-720, 60, true], [220, 175, true], [540, 200, false], [560, 205, false], [550, 180, false], [575, 230, false], 
+  [350, 230, true], [-700, 90, true], [-650, 100, true], [-680, 150, true], [-600, 120, true], [-660, 200, true], [-750, 250, true],
+  [350, 0, true], [790, -480, true], [830, -300, false], [920, -450, true], [870, -250, false], [960, -250, true], [850, -350, false],
+  [450, -450, true], [270, -250, false], [160, -250, true], [50, -350, false],
 ];
 
 for (var i = 0; i < arrMushroomPositions.length; i++){
-  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1]);
+  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1], arrMushroomPositions[i][2]);
 }
+
+// Add flowers
+var flower;
+var tempFlower;
+let purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
+let orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
+
+
+let arrFlowerPositions = [
+  [-310, 710], [100, -15], [10, -10], [-5, -150], [15, -455], [-230, 400], [-15, 250], [-500, 15], [-60, 10], [650, 120], [75, 425],
+  [350, -610], [620, 20], [430, -30], [80, -450], [40, 450], [270, -20], [60, -50], [50, -300], [70, -50], [60, -20], 
+  [500, 400], [-50, 120]
+];
+
+let arrFlowerInfo = [
+  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], 
+  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15], [false, purpleFlower, 80], 
+  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, purpleFlower, 80],
+  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80],
+  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, orangeFlower, 15],
+  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15]
+];
+
+for (var i = 0; i < arrFlowerPositions.length; i++){
+  addFlowers(arrFlowerPositions[i][0], arrFlowerPositions[i][1], arrFlowerInfo[i][0], arrFlowerInfo[i][1], arrFlowerInfo[i][2]);
+}
+
 
 //Add bushes
 
 let arrBushPositions = [
-  [-420,700,0], [125,300,Math.PI/6],[125,205,-Math.PI/6]
+  [-420,700,0], [125,310,Math.PI/6],[125,190,-Math.PI/6]
 ]
 
 for (var i = 0; i < arrBushPositions.length; i++){
@@ -246,7 +277,7 @@ addDiamond(850, -500, 0);
 addTrees(900, -250);
 addTrees2(850, -200);
 addDiamond(900, -200, 0);
-addDiamond(600, -75, 0);
+addDiamond(600, -25, 0);
 addTrees(725, -250);
 addTrees(700, -300);
 addDiamond(500, 0, 0);
@@ -328,24 +359,18 @@ function update(){
     
   // }
 
-  // console.log("===============================");
-  // console.log(fire);
-  // console.log("===============================");
 
   if (fire != undefined && kaboom == true){
-    scale += 0.5;
+    scale += 0.1;
     fire.scale.set(scale, scale, scale);
 
-    if (scale > 30){
+    if (scale > 12){
       scale = 1;
       kaboom = false;
       scene.remove(fire);
     }
   }
 
-  // if (fireMixer != undefined) {
-  //   fireMixer.update(delta);
-  // }
 
   //Play moving animation
   if (playerMixer != undefined){
@@ -1003,7 +1028,7 @@ function addTrees3(x, z){
 }
 
 
-function addMushroom(x, z){
+function addMushroom(x, z, explode){
   let mushroomLocation = '../../assets/models/mushroom/scene.gltf';
   let loader = new GLTFLoader();
         
@@ -1039,10 +1064,54 @@ function addMushroom(x, z){
     tempMushroom.userData.physicsBody = body;
     mushroom.userData.physicsBody = body;
 
-    mushroom.userData.tag = "mushroom";
+    if (explode){ mushroom.userData.tag = "mushroom"; }
        
 
     rigidBodies.push(tempMushroom);
+          
+  });
+}
+
+function addFlowers(x, z, explode, flowerLocation, flowerScale){
+    
+  let loader = new GLTFLoader();
+        
+  loader.load(flowerLocation, function(gltf){
+
+    var unreasonableScale = 1;
+            
+    flower = gltf.scene.children[0];            
+    flower.scale.set(flowerScale, flowerScale, flowerScale);            
+    flower.position.set(x, 8, z);            
+    scene.add(flower);    
+    
+    tempFlower = flower;
+    let transformFlow = new Ammo.btTransform();
+
+    transformFlow.setIdentity();
+
+    transformFlow.setOrigin(new Ammo.btVector3(tempFlower.position.x, tempFlower.position.y, tempFlower.position.z));
+    transformFlow.setRotation(new Ammo.btQuaternion(-Math.PI/2,0,0,1));
+    let motionState = new Ammo.btDefaultMotionState( transformFlow );
+    let flowerSize = new THREE.Box3().setFromObject(flower).getSize();
+
+    let colShape = new Ammo.btBoxShape(new Ammo.btVector3(unreasonableScale*flowerSize.x/2,unreasonableScale*flowerSize.y/2,unreasonableScale*flowerSize.z/2));
+    colShape.setMargin(0.05);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, motionState, colShape, Ammo.NULL );
+    let body = new Ammo.btRigidBody( rbInfo );
+    
+    body.setActivationState( STATE.DISABLE_DEACTIVATION )
+    physicsWorld.addRigidBody( body );
+
+    body.threeObject = flower;
+    tempFlower.userData.physicsBody = body;
+    flower.userData.physicsBody = body;
+
+    if (explode){ flower.userData.tag = "flower"; }
+       
+
+    rigidBodies.push(tempFlower);
           
   });
 }
@@ -1297,6 +1366,21 @@ function detectCollision(){
       health.value -= 0.1;
       kaboom = true;
     }
+
+    if (tag0 == "player" && tag1 == "flower"){  
+
+      fire.position.set(player.position.x, player.position.y, player.position.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
+    else if (tag0 == "flower" && tag1 == "player"){
+            
+      fire.position.set(player.position.x, player.position.y, player.position.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
 	
 	}
 
@@ -1315,109 +1399,13 @@ function addFire(){
 
     fire = gltf.scene.children[0];
 
-    fire.scale.set(5, 5, 5);
+    fire.scale.set(0, 0, 0);
 
     let fireTexture = new THREE.TextureLoader().load(fireTextureLocation);
       
     let fireMaterial = new THREE.MeshStandardMaterial({map: fireTexture});
 
     fire.material = fireMaterial;
-    fire.children[0].material = fireMaterial;
-
-    
-
-    // let half = new CANNON.Vec3((roomData.roomDoor1Model.x)/2,(roomData.roomDoor1Model.y)/2,(roomData.roomDoor1Model.z)/2);
-    // let shape = new CANNON.Box(half);
-    // roomData.medievalDoorPhys = new CANNON.Body({mass, shape});
-
-    // data.world.add(roomData.medievalDoorPhys);
-
-    // var Tempbox = new THREE.Box3().setFromObject(medievalDoor);
-    // TMins = Tempbox.min;
-    // ActualMin = [TMins[0],TMins[1]];
-    
-    // Maxs = Tempbox.max;
-    // ActualMax = [Maxs[0],Maxs[1]];
-  
-    // drawObstical(ActualMin,ActualMax,2);
-
-
-    // fireMixer = new THREE.AnimationMixer( gltf.scene );
-
-    // fireMixer.timeScale = 1/2 ; 
-    // fireMixer.update(delta);
-    
-    
-    // gltf.animations.forEach( function ( clip )  {
-    
-    //   fireMixer.clipAction( clip ).play();
-    
-    // } );
-
 
 } );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // let loader = new FBXLoader();
-
-  // loader.load(fireLocation, function (fbx){
-    
-  //   // Three JS Section   
-  //   console.log(scale);
-  //   fire = fbx;
-  //   fire.scale.set(0.01 * scale, 0.01 * scale, 0.01 * scale);
-  //   fire.position.set(x, y, z);
-
-  //   scene.add(fire);
-
-  //   fire.traverse( function ( child ) {
-
-  //     if ( child.isMesh ) {
-  //       child.castShadow = true;
-  //       child.receiveShadow = true;
-  //     }
-
-  //   });
-
-
-  //   console.log(fire);
-
-  //   let fireAnimations = fbx.animations;
-  //   fireMixer = new THREE.AnimationMixer(fire);
-
-  //   if(fire.animations[0])
-  //         {
-  //           var action = fireMixer.clipAction(fireAnimations[0]);
-  //          // action.timeScale=2;
-  //           action.play();
-  //         } else {
-  //           console.log("No animations");
-  //         }
-
-  //   // let action = fireMixer.clipAction( fireAnimations[0] );
-  //   // action.play();
-
-
-     
-    
-
-  // })
 }

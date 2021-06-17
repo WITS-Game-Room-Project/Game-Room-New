@@ -116,12 +116,18 @@ var mirrorMesh;
 addOcean();
 
 //Set up skybox
-var sun = new THREE.Vector3();
-skyBox();
+// var sun = new THREE.Vector3();
+// skyBox();
 //Add mushroom house
 addHouse(400, 300);
 
-
+//Add props
+var flower;
+var tempFlower;
+var health = document.getElementById("health")
+health.value -= 0; 
+var purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
+var orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
 addProps();
 
 //=========================== EACH FRAME =======================================
@@ -380,7 +386,7 @@ function addGround(){
 
       if ( child.isMesh ) {
 
-        child.castShadow = true;
+        // child.castShadow = true;
         child.receiveShadow = true;
       }
 
@@ -1357,8 +1363,7 @@ addCave(-480, -680);
 //   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
 // ];
 
-let health = document.getElementById("health")
-health.value -= 0; 
+
 
 
 let arrTreePositions = [
@@ -1384,10 +1389,7 @@ for (var i = 0; i < arrMushroomPositions.length; i++){
 }
 
 // Add flowers
-var flower;
-var tempFlower;
-let purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
-let orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
+
 
 
 let arrFlowerPositions = [

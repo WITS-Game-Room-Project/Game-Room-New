@@ -864,7 +864,7 @@ function addDiamond(x, z, r){
         
   loader.load(diamondLocation, function(gltf){
 
-    var unreasonableScale = 2;
+    var unreasonableScale = 1;
             
     diamond = gltf.scene.children[0];   
 
@@ -1354,14 +1354,16 @@ function detectCollision(){
 
     if (tag0 == "player" && tag1 == "mushroom"){  
 
-      fire.position.set(player.position.x, player.position.y, player.position.z);
+      var pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
       kaboom = true;
     }
     else if (tag0 == "mushroom" && tag1 == "player"){
             
-      fire.position.set(player.position.x, player.position.y, player.position.z);
+      var pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
       kaboom = true;
@@ -1369,14 +1371,16 @@ function detectCollision(){
 
     if (tag0 == "player" && tag1 == "flower"){  
 
-      fire.position.set(player.position.x, player.position.y, player.position.z);
+      var pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
       kaboom = true;
     }
     else if (tag0 == "flower" && tag1 == "player"){
             
-      fire.position.set(player.position.x, player.position.y, player.position.z);
+      var pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
       kaboom = true;

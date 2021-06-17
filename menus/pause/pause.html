@@ -1,0 +1,114 @@
+<head>
+    <link rel="stylesheet" href="./pause.css">
+    <title>Pause</title>
+</head>
+
+<div id="name">
+    <h1>RIMURU</h1>
+
+</div>
+
+<div id="brand1">
+    <a href="#">CONTINUE</a> 
+    <!-- change # when you have destination file probs level1.js -->
+</div>
+
+<div id="brand2">
+    <a href="#">RESTART</a> 
+    <!-- change # when you have destination file probs level1.js -->
+</div>
+
+<div class="footer">
+    <p>
+        Brought to you by <strong> GameRoom </strong>
+    </p>
+</div>
+
+<style>
+
+.footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      color: white;
+      text-align: center;
+      font-size: 30;
+      margin-bottom: 5;
+}
+
+    h1 {
+        -webkit-text-stroke: 2px black;
+    }
+
+</style>
+
+
+<script>
+    //DRY code, shoutout to Venkat Subramaniam
+let continues = document.querySelector('#brand1');
+let restart = document.querySelector('#brand2')
+let ex = 10;
+
+function swing(element) {
+
+    function update(time) {
+        
+        const x = Math.sin(time / 1231) * ex;
+        const y = Math.sin(time / 1458) * ex;
+
+        element.style.transform = [
+            `rotateX(${x}deg)`,
+            `rotateY(${y}deg)`
+        ].join(' ');
+
+        requestAnimationFrame(update);
+    }
+    update(0); //love your nested functions
+}
+
+swing(continues);
+swing(restart);
+
+
+let cont_button = continues.querySelector('a');
+let restart_button = restart.querySelector('a');
+let og_color = cont_button.style.color;
+let og_color2 = restart_button.style.color;
+let inter = 0;
+let inter2 = 0;
+
+continues.addEventListener('mouseover', (e) => {
+  
+ ex = 20;  
+ inter = setInterval(()=>{  
+    cont_button.style.color = '#'+Math.floor(Math.random()*16777215).toString(16); 
+  }, 1000); 
+  
+});
+
+restart.addEventListener('mouseover', (e) => {
+  
+  ex = 20;  
+  inter2 = setInterval(()=>{  
+     restart_button.style.color = '#'+Math.floor(Math.random()*16777215).toString(16); 
+   }, 1000); 
+   
+ });
+
+continues.addEventListener('mouseout', (e) => {
+  
+  ex = 10;
+  clearInterval(inter);
+  cont_button.style.color = og_color; 
+});
+
+restart.addEventListener('mouseout', (e) => {
+  
+  ex = 10;
+  clearInterval(inter2);
+  restart_button.style.color = og_color; 
+});
+
+
+</script>

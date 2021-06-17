@@ -297,6 +297,10 @@ addTrees2(-700, 500);
 
 addCave(-480, -680);
 
+
+
+
+
 //=========================== EACH FRAME =======================================
 
 //Game Loop
@@ -312,6 +316,7 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
+  
   var myDiv = document.getElementById("text");
   myDiv.innerHTML = "Diamond Count : " + diamondCount;
   myDiv.style.fontSize = "30px";
@@ -409,7 +414,7 @@ function update(){
 function render(){
 
   water.material.uniforms['time'].value += 1.0 / 60.0;
-
+  
   movePlayer();
   updatePhysics();
 
@@ -486,16 +491,15 @@ function addGround(){
 
     scene.add(ground);  
   
-    
      //Ammojs Section
     tempGround = ground;
      let transform = new Ammo.btTransform();
      transform.setIdentity();
-     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y + 77,tempGround.position.z ) );
+     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y +77 ,tempGround.position.z ) );
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
 
-     let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 10000* 0.5, 1 * 0.5, 10000* 0.5 ) );
+     let colShape = new Ammo.btBoxShape(new Ammo.btVector3(10000 *0.5,1*0.5,10000*0.5));
      colShape.setMargin( 0.05 );
 
      let localInertia = new Ammo.btVector3( 0, 0, 0 );
@@ -541,18 +545,25 @@ function handleKeyDown(event){
 
       case 87: //W: FORWARD
           moveDirection.forward = 1
+         
+          
+          
+
           break;
           
       case 83: //S: BACK
           moveDirection.back = 1
+         
           break;
           
       case 65: //A: LEFT
           moveDirection.left = 1
+          
           break;
           
       case 68: //D: RIGHT
           moveDirection.right = 1
+          
           break;
           
   }
@@ -1274,15 +1285,14 @@ function detectCollision(){
     let tag1 = userData1 ? userData1.tag : "none";
 
     if (tag0 == "player" && tag1 == "diamond"){
-      var pos = threeObject1.position;
-      //console.log(pos);
+      
       scene.remove(threeObject1);
       
       diamondCount++;
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
-      var pos = threeObject0.position;
-      //console.log(pos);
+      
+    
       scene.remove(threeObject0);
       diamondCount++;
       physicsWorld.removeRigidBody(rb0);
@@ -1430,11 +1440,18 @@ function addFire(){
 //still attempting mapping the physics models
 function criarConvexHullPhysicsShape(geometry) {
   var coords = geometry.attributes.position.array;
+//console.log(coords);
+  //console.log("coords should be printed");
   var tempBtVec3_1 = new Ammo.btVector3(0, 0, 0);
   var shape = new Ammo.btConvexHullShape();
+  for (var i = 0, il = coords.length; i < il; i+= 3) {
       tempBtVec3_1.setValue(coords[i], coords[i + 1], coords[i + 2]);
       var lastOne = (i >= (il - 3));
       shape.addPoint(tempBtVec3_1, lastOne);
-  
+  }
   return shape;
 }
+
+
+
+

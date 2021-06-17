@@ -302,7 +302,15 @@ addTrees3(-600, 350);
 addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
 
+//cannon on mapp
+let BallInWorld1 = false;
 
+let D1 = new THREE.Vector3(-187,10,-47); // the starting position of the ball
+let D2 = new THREE.Vector3(-54,10,-301); //used for the directional vector of the ball
+let ball;
+let pos = new THREE.Vector3();
+
+let ttl = 6, ttlCounter = 0;
 
 //=========================== EACH FRAME =======================================
 
@@ -407,6 +415,22 @@ function update(){
 function render(){
 
   water.material.uniforms['time'].value += 1.0 / 60.0;
+  ThrowBall();
+  
+  
+  if( BallInWorld1 ){
+     ttlCounter += delta;}
+
+
+  //if time to live has been exceeded then delete the ball
+  
+   if( ttlCounter > ttl ){
+    physicsWorld.removeRigidBody( ball.userData.physicsBody );
+    scene.remove(ball);
+   
+    ttlCounter = 0;
+    BallInWorld1 = false;  
+  }
 
   movePlayer();
   updatePhysics();
@@ -541,18 +565,22 @@ function handleKeyDown(event){
 
       case 87: //W: FORWARD
           moveDirection.forward = 1
+          console.log(player.position);
           break;
           
       case 83: //S: BACK
           moveDirection.back = 1
+          console.log(player.position); 
           break;
           
       case 65: //A: LEFT
           moveDirection.left = 1
+          console.log(player.position);
           break;
           
       case 68: //D: RIGHT
           moveDirection.right = 1
+          console.log(player.position);
           break;
           
   }
@@ -1252,4 +1280,77 @@ function detectCollision(){
 	
 	}
 
+}
+function ThrowBall(){
+  if(BallInWorld1){
+    return;
+  }
+   // Create a ball 
+   var dir = new THREE.Vector3();
+   dir.subVectors( D1, D2 ).normalize();
+  
+   
+   pos.copy( dir );
+   pos.add( D1 );
+  
+   ball = createBall(pos,D1);
+   
+   //shoot out the ball
+   let ballBody = ball.userData.physicsBody;
+  
+   pos.copy( dir );
+   pos.multiplyScalar( 70 );
+   ballBody.setLinearVelocity( new Ammo.btVector3( pos.x, pos.y, pos.z ) );
+  
+   BallInWorld1 = true;
+   arrBalls.push(ball);
+  
+  }
+
+
+function createBall(){
+                
+  let radius = 14;
+  let quat = {x: 0, y: 0, z: 0, w: 1};
+  let mass = 1;
+
+  //threeJS Section
+  let ball = new THREE.Mesh(new THREE.SphereBufferGeometry(radius), new THREE.MeshPhongMaterial({color: "#000000"}));
+
+  ball.position.set(pos.x, pos.y, pos.z);
+  
+  ball.castShadow = true;
+  ball.receiveShadow = true;
+  scene.add(ball);
+
+
+  //Ammojs Section
+  let transform = new Ammo.btTransform();
+  transform.setIdentity();
+  transform.setOrigin( new Ammo.btVector3( D1.x, D1.y, D1.z ) );
+  transform.setRotation( new Ammo.btQuaternion( quat.x, quat.y, quat.z, quat.w ) );
+  let motionState = new Ammo.btDefaultMotionState( transform );
+
+  let colShape = new Ammo.btSphereShape( radius );
+  colShape.setMargin( 0.05 );
+
+  let localInertia = new Ammo.btVector3( 0, 0, 0 );
+  colShape.calculateLocalInertia( mass, localInertia );
+
+  let rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, colShape, localInertia );
+  let body = new Ammo.btRigidBody( rbInfo );
+
+  body.setFriction(4);
+  body.setRollingFriction(10);
+
+  body.setActivationState( STATE.DISABLE_DEACTIVATION )
+
+
+  physicsWorld.addRigidBody( body );
+  rigidBodies.push(ball);
+  
+  ball.userData.physicsBody = body;
+  ball.userData.tag = "ball";
+  
+  return ball;
 }

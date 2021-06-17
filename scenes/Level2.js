@@ -87,13 +87,244 @@ skyBox();
 
 addCave(-480, -680);
 
+// Add House
+addHouse(600,550);
+
+// Add Fence
+let arrFencePositions = [
+  [650,420,Math.PI/2], [570,420,Math.PI/2] , [570,360,Math.PI/2] , [650,360,Math.PI/2] ,
+  [460,560,Math.PI/3],
+  [450,610,Math.PI/2],
+  [460,660,-Math.PI/3],
+  [500,700,-Math.PI/8],
+  [550,710,Math.PI],
+  [600,700,Math.PI/8],
+  [650,680,Math.PI/8],
+  [698,655,Math.PI/6],
+  [743,620,Math.PI/4],
+  [773,580,Math.PI/3],
+  [800,534,Math.PI/3],
+  [830,487,Math.PI/3],
+  [850,437,Math.PI/2.5],
+  [860,387,Math.PI/2],
+  [850,342,Math.PI/-2.5],
+  [833,297,Math.PI/-2.5],
+];
+
+for (var i = 0; i < arrFencePositions.length; i++){
+  addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
+}
+
+// Adding trees
+
+let arrTreePositions = [
+  [660,680],
+  [743,620],
+  [773,580],
+  [800,534],
+  [850,437],
+  [850,342],
+  [839,287],
+
+]
+
+for (var i = 0; i < arrTreePositions.length; i++){
+  addTrees(arrTreePositions[i][0]+19, arrTreePositions[i][1]+15);
+}
+
+let diamondArray = [
+  [750,680,0],
+  [850,640,0],
+  [900,560,0],
+  [950,480,0],
+  [950,480,0],
+  [950,380,0],
+
+]
+
+for (var i = 0; i < diamondArray.length; i++){
+  addDiamond(diamondArray[i][0], diamondArray[i][1], diamondArray[i][2]);
+}
+
+let mushroomArray = [
+  [900,500],
+  [940,500],
+  [860,500],
+  
+
+
+]
+
+for (var i = 0; i < mushroomArray.length; i++){
+  addMushroom(mushroomArray[i][0], mushroomArray[i][1]);
+}
+
+// Ureeshas code from level 1
+
+//addDiamond(900,400.5,0);
+addDiamond(50,225.5,0);
+addDiamond(75,65,0);
+addDiamond(-207,-125,0);
+addDiamond(-262,-198,0);
+addDiamond(-246,-295,0);
+addDiamond(-356,-163,0);
+addDiamond(-350,200,0);
+addDiamond(-274,263,0);
+addDiamond(-305,369,0);
+addDiamond(50,19,0);
+addDiamond(200,195,0);
+addDiamond(308,205,0);
+addDiamond(105,-205,0);
+addDiamond(305,-205,0);
+addDiamond(205,405,0);
+addDiamond(270,367,0);
+addDiamond(357,10,0);
+
+
+addTrees(0, 100); 
+addTrees2(450, 500);
+//addBush(450,500);
+addTrees(500, 500);
+
+//three near house
+addDiamond(-200, -175, 0);
+addTrees3(-250, -150);
+addDiamond(-300, -275, 0);
+addTrees2(-200, -200); 
+addTrees(-250, -200);
+addDiamond(-300, -175, 0);
+addTrees2(-300, -175);
+//addBush(-200,-200);
+
+//across path
+addTrees(150, -150);
+addTrees3(160, -100);
+
+//behind house
+addTrees3(650, 350);
+addTrees2(500, 200);
+//addBush(500,-50);
+//addBush(550,0);
+
+//border near house
+addTrees3(200, 550);
+addTrees2(150, 600); 
+addTrees(-200, 400);
+
+//loop one
+//mouth
+addDiamond(450, -200, 0);
+addDiamond(450, -150, 0);
+addTrees(400, -250);
+addTrees2(400, -475);
+addTrees(250, -500);
+//inside
+addTrees(550, -600);
+addDiamond(550, -625, 0);
+addDiamond(550, -650, 0);
+addTrees2(550, -675);
+//addBush(550,-600);
+addDiamond(550, -725, 0);
+addDiamond(575, -750, 0);
+addTrees3(550, -700);
+
+addDiamond(620, -750, 0);
+addDiamond(660, -750, 0);
+addDiamond(700, -740, 0);
+addTrees(600, -750);
+
+addDiamond(775, -700, 0);
+addDiamond(830, -600, 0);
+addDiamond(880, -550, 0);
+addDiamond(950, -350, 0);
+addDiamond(900, -200, 0);
+addDiamond(900, -150, 0);
+addDiamond(850, -150, 0);
+addDiamond(800, -175, 0);
+addDiamond(800, -175, 0);
+addTrees(750, -700);
+addTrees2(800, -600);
+addTrees(850, -500);
+addDiamond(800, -500, 0);
+addTrees2(900, -400);
+addTrees2(875, -350);
+addTrees3(850, -450);
+addDiamond(850, -500, 0);
+addTrees(900, -250);
+addTrees2(850, -200);
+addDiamond(900, -200, 0);
+addDiamond(600, -75, 0);
+addTrees(725, -250);
+addTrees(700, -300);
+addDiamond(500, 0, 0);
+
+//arrow bit
+addTrees2(-400, 950); //arrow tip
+addTrees(-500, 800); //right
+addTrees2(-250, 825); //left
+addTrees(-300, 575); //branch things
+addTrees3(-300, 625);
+
+
+//near cave
+addTrees(200, -550);
+addDiamond(600, -575, 0);
+addTrees2(200, -675);
+addDiamond(100, -475, 0);
+addDiamond(150, -275, 0);
+addDiamond(50, -675, 0);
+addDiamond(-50, -275, 0);
+addTrees(50, -650);
+addTrees3(100, -625);
+
+//near cave - other side
+addTrees(-450, -350);
+
+addTrees2(-600, 50);
+addTrees(-550, -200);
+addTrees3(-500, -325);
+
+//loop two
+addTrees(-750, 50);
+addDiamond(-700, 75, 0);
+addTrees3(-850, 50);
+addDiamond(-800, 100, 0);
+addTrees2(-875, 150);
+addDiamond(-900, 200, 0);
+addTrees(-900, 250);
+addTrees(-900, 300);
+addDiamond(-900, 275, 0);
+addTrees2(-900, 400);
+addTrees(-650, 500);
+addDiamond(-600, 425, 0);
+addDiamond(-600, 475, 0);
+addTrees3(-600, 350);
+addDiamond(-800, 475, 0);
+addTrees2(-700, 500);
+
+
+
 //=========================== EACH FRAME =======================================
+
 
 //Game Loop
 export const GameLoop = function(){
   requestAnimationFrame(GameLoop);
-
   update();
+
+  // start of aerial view
+  // SET X AND Y OF OBJECT YOU WANNA LOOK AT FROM ABOVE
+  let x = 600;
+  let z = 550;
+  // SET HEIGHT
+  let height = 700;
+
+  camera.position.set( x, height, z); 
+  camera.lookAt( x, 0, z); 
+  camera.up.set( 0, 0, 1 );
+  // end of aerial view
+
+
   render();
 }
 
@@ -104,6 +335,7 @@ function update(){
 
   var myDiv = document.getElementById("text");
   myDiv.innerHTML = "Diamond Count : " +diamondCount;
+  myDiv.style.fontSize = "30px";
 
   // for (let i = 0; i < scene.children.length; i++){
   //   if (scene.children[i].userData){
@@ -865,7 +1097,9 @@ function addHouse(x, z){
             
     var house = gltf.scene.children[0];            
     house.scale.set(1.6, 1.6, 1.6);            
-    house.position.set(x, 10, z);            
+    house.position.set(x, 10, z); 
+    house.rotateZ(-4*Math.PI/8)    
+       
     scene.add(gltf.scene);     
     
     //Ammojs Section

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Color, MeshStandardMaterial } from "three";
+import { Color, MeshStandardMaterial, Vector3 } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants";
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import index, { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
@@ -10,6 +10,13 @@ import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import * as Ammo from "ammo.js";
 
 //=========================== Global Variables =======================================
+
+
+
+
+
+
+
 
 var diamond;
 var mushroom;
@@ -59,9 +66,15 @@ setUpRenderer();
 var controls;
 setUpControls();
 
+// Set directional light
+//Create a DirectionalLight and turn on shadows for the light
+var light;
+setSunLight();
+
+
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 1);
-scene.add(ambientLightMain);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.5);
+//scene.add(ambientLightMain);
 
 //Set up Ground
 var ground;
@@ -464,6 +477,9 @@ function setUpCamera(){
 function setUpRenderer(){
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+
   document.body.appendChild(renderer.domElement);
 }
 
@@ -494,6 +510,8 @@ function addGround(){
   
   let groundLocation = '../../assets/models/ground/ground.glb';
   let loader = new GLTFLoader();
+
+  let material;
         
   loader.load(groundLocation, function(glb){
             
@@ -501,9 +519,20 @@ function addGround(){
     ground.scale.set(100, 100, 100);            
     ground.position.set(0, -70, 0);     
     
-    let material = new THREE.MeshBasicMaterial({color: 0x228B22});
+    material = new THREE.MeshStandardMaterial({color: 0x228B22});
     ground.material = material;
     ground.children[0].material = material;
+
+    ground.traverse( function ( child ) {
+
+      if ( child.isMesh ) {
+
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+
+    } );
+
     let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;
 
@@ -536,6 +565,29 @@ function addGround(){
      
           
   });
+
+  const planeGeometry = new THREE.PlaneGeometry( 20, 20, 32, 32 );
+  const planeMaterial = new THREE.MeshStandardMaterial( { color: 0x00ff00 } )
+  const plane = new THREE.Mesh( planeGeometry, planeMaterial );
+  plane.receiveShadow = true;
+  scene.add( plane );
+
+}
+
+
+function setSunLight(){
+
+  light  = new THREE.DirectionalLight( 0xffffff, 2 );
+  light.maxPolarAngle = Math.PI/2;
+  light.position.set( -90, 50, -100 ); //default; light shining from top
+  light.castShadow = true; // default false
+  scene.add( light );
+
+  //Set up shadow properties for the light
+  light.shadow.mapSize.width = 512; // default
+  light.shadow.mapSize.height = 512; // default
+  light.shadow.camera.near = 0.5; // default
+  light.shadow.camera.far = 500; // default
 
 }
 
@@ -694,21 +746,21 @@ function skyBox(){
 
   const skyUniforms = sky.material.uniforms;
 
-  skyUniforms[ 'turbidity' ].value = 10;
-  skyUniforms[ 'rayleigh' ].value = 0.3; //Horizon Intesnity in General
-  skyUniforms[ 'mieCoefficient' ].value = 0.00005; //Horizon Intensity at Point
+  skyUniforms[ 'turbidity' ].value = 0;
+  skyUniforms[ 'rayleigh' ].value = 0.5; //Horizon Intesnity in General
+  skyUniforms[ 'mieCoefficient' ].value = 0; //Horizon Intensity at Point
   skyUniforms[ 'mieDirectionalG' ].value = 1; //Intensity of Sun
 
   const parameters = {
-    elevation: 300,
-    azimuth: 50000
+    elevation: 25,
+    azimuth: 90
   };
 
   const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
   function updateSun() {
 
-    const phi = THREE.MathUtils.degToRad( -45 - parameters.elevation );
+    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
     const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
     sun.setFromSphericalCoords( 1, phi, theta );
@@ -721,6 +773,7 @@ function skyBox(){
 
   }
 
+  
   updateSun();
 
   const folderSky = gui.addFolder( 'Sky' );
@@ -916,7 +969,21 @@ function addTrees(x, z){
             
     var tree = gltf.scene.children[0];            
     tree.scale.set(0.1, 0.1, 0.1);            
-    tree.position.set(x, 19, z);            
+    tree.position.set(x, 19, z);    
+    
+    tree.traverse( function ( child ) {
+
+      console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        console.log(child.castShadow);
+      }
+
+    } );
+
     scene.add(tree);       
     
     //Ammojs Section
@@ -1082,7 +1149,8 @@ function addFlowers(x, z, explode, flowerLocation, flowerScale){
             
     flower = gltf.scene.children[0];            
     flower.scale.set(flowerScale, flowerScale, flowerScale);            
-    flower.position.set(x, 8, z);            
+    flower.position.set(x, 8, z); 
+               
     scene.add(flower);    
     
     tempFlower = flower;

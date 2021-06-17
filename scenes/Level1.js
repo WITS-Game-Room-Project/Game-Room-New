@@ -1352,9 +1352,11 @@ function detectCollision(){
       physicsWorld.removeRigidBody(rb0);
     }
 
+    var pos;
+
     if (tag0 == "player" && tag1 == "mushroom"){  
 
-      var pos = threeObject1.position;      
+      pos = threeObject1.position;      
       fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
@@ -1362,7 +1364,7 @@ function detectCollision(){
     }
     else if (tag0 == "mushroom" && tag1 == "player"){
             
-      var pos = threeObject1.position;      
+      pos = threeObject1.position;      
       fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
@@ -1371,7 +1373,7 @@ function detectCollision(){
 
     if (tag0 == "player" && tag1 == "flower"){  
 
-      var pos = threeObject1.position;      
+      pos = threeObject1.position;      
       fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;
@@ -1379,7 +1381,7 @@ function detectCollision(){
     }
     else if (tag0 == "flower" && tag1 == "player"){
             
-      var pos = threeObject1.position;      
+      pos = threeObject1.position;      
       fire.position.set(pos.x, pos.y, pos.z);
       scene.add(fire);
       health.value -= 0.1;

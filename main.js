@@ -6,12 +6,8 @@ import {GameLoop as Level3Loop} from './scenes/Level3.js';
 
 let levelNumber = 1;
 
-export default function changeLevelNumber(newLevelNumber){
-    this.levelNumber = newLevelNumber;
-}
 
 if (levelNumber == 1){
-    changeLevelFunc1(changeLevelNumber);
     Ammo().then(Level1Loop);
 
 }else if (levelNumber == 2){

@@ -68,7 +68,7 @@ setUpControls();
 
 
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.05);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLightMain);
 
 //Set up Light Post Lighting
@@ -80,6 +80,17 @@ scene.add(lightPostLight);
 var ground;
 var tempGround;
 addGround();
+
+//Add Minimap
+let width = window.innerWidth;
+let height = window.innerHeight;
+let orthiMulti = 0.4;
+const minimapHeight = 400;
+const minimapRenderer = new THREE.WebGLRenderer({canvas: document.querySelector("#minimap"), antialias: false});
+const minimapCam = new THREE.OrthographicCamera( orthiMulti* width/-2, orthiMulti* width/2, orthiMulti * height/2, orthiMulti * height/-2, 0, minimapHeight*1.2 );
+// const minimapCam = new THREE.PerspectiveCamera(50, (18/25)*window.innerWidth/window.innerHeight,10,minimapHeight*1.2);
+minimapCam.zoom = 0.1;
+addMinimap();
 
 //Set up Player
 var player;
@@ -217,7 +228,7 @@ function update(){
   }
 
   if (typeof player !== "undefined" && player != null && typeof player.position !== "undefined"){
-   console.log(player.position); 
+  //  console.log(player.position); 
   }
 
   if (tempPlayer != undefined){
@@ -322,8 +333,14 @@ function update(){
     }
   }
 
-  // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
-  // camera.position.y = playerPos.y + 220;
+  //Ortho update
+  if (typeof player !== "undefined" && player != null && player.position != null){
+    let camX = player.position.x;
+    let camZ = player.position.z;
+
+    minimapCam.position.set( camX, minimapHeight, camZ); 
+  }
+  
 }
 
 
@@ -336,6 +353,7 @@ function render(){
   updatePhysics();
 
   renderer.render(scene,camera);
+  minimapRenderer.render(scene,minimapCam);
 }
 
 
@@ -1812,9 +1830,15 @@ function addFire(){
 } );
 }
 
-function computeTriangleArea( a, b, c ) {
+function addMinimap(){
+  let camX = 0;
+  let camZ = 0;
 
-	return new THREE.Triangle.set( a, b, c ).getArea();
-
+  if (typeof player !== "undefined" && player != null && player.position != null){
+    camX = player.position.x;
+    camZ = player.position.z;
+  }
+  minimapCam.position.set( camX, minimapHeight, camZ); 
+  minimapCam.lookAt( 0, 0, 0); 
+  minimapCam.up.set( 0, 1, 0 );
 }
-

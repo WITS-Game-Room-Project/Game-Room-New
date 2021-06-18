@@ -4,7 +4,7 @@ import {GameLoop as Level1Loop} from "./scenes/Level1.js";
 import {GameLoop as Level2Loop} from "./scenes/Level2.js";
 // import {GameLoop as Level3Loop} from './scenes/Level3.js';
 
-let levelNumber = 1;
+let levelNumber = 2;
 
 export default function changeLevelNumber(newLevelNumber){
     levelNumber = newLevelNumber;

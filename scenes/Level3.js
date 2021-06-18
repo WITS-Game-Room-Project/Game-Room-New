@@ -20,7 +20,8 @@ var mushroom;
 var tempMushroom;
 //////////////////////////KIATA 
 var diamondCount = 0;
-
+var levelComplete = false;
+var liftCave = false;
 
 //Player Movement
 const playerMovement = 50;
@@ -98,12 +99,19 @@ addFire();
 //Add Enemy
 var enemy;
 const enemyStepsThreshold = 150;
-var enemyMoveDiff = 5;
-var enemySteps = enemyStepsThreshold + 1;
-var enemyCurrPathIdx = 0;
-var enemyPathList = [new coord(100,100), new coord(407, -150)]
-const enemyBurnDistance = 10;
-// addEnemy(100,25,100);
+
+
+//Add Minimap
+let width = window.innerWidth;
+let height = window.innerHeight;
+let orthiMulti = 0.4;
+const minimapHeight = 400;
+const minimapRenderer = new THREE.WebGLRenderer({canvas: document.querySelector("#minimap"), antialias: false});
+const minimapCam = new THREE.OrthographicCamera( orthiMulti* width/-2, orthiMulti* width/2, orthiMulti * height/2, orthiMulti * height/-2, 0, minimapHeight*1.2 );
+// const minimapCam = new THREE.PerspectiveCamera(50, (18/25)*window.innerWidth/window.innerHeight,10,minimapHeight*1.2);
+minimapCam.zoom = 0.1;
+addMinimap();
+
 
 
 
@@ -133,6 +141,7 @@ var health = document.getElementById("health")
 health.value -= 0; 
 var purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
 var orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
+var cave;
 addProps();
 
 //=========================== EACH FRAME =======================================
@@ -142,14 +151,46 @@ export function changeLevelFunc(changeLevelNumbert){
   changeLevelNumber = changeLevelNumbert
 }
 
+var enemies = []
 export const GameLoop = function(){
   requestAnimationFrame(GameLoop);
+  
+    
+  if (!levelComplete){
+    if (health.value <= 0){
+        return;
+      }
+   }
 
-  if (health.value <= 0){
-    return;
-  }
 
   update();
+    //Add Enemies at End
+    if (levelComplete){
+    
+      player.position.set(-147,22,-471);
+  
+      camera.position.set(-3,65,-406);
+      camera.lookAt(player.position);
+  
+      for (let i = 0; i < 8; i+= 1){
+          let enemyDist = 75;
+  
+          let x = enemyDist * Math.cos(Math.PI/4 * i);
+          let z = enemyDist * Math.sin(Math.PI/4 * i);
+  
+          enemies.push(addEnemy(player.position.x + x,-10,player.position.z + z));
+      }
+  
+      if (enemies[0].position.y < 22){
+          for (let i = 0; i < 8; i+= 1){
+              enemies[i].position.y += (delta*5);
+          }
+      }
+      else{
+        //EXIT THE GAME
+      }
+    }
+
   render();
 }
 
@@ -157,7 +198,13 @@ export const GameLoop = function(){
 function update(){
   delta = clockTime.getDelta();
 
-  controls.update();
+  if (!levelComplete){
+    controls.update();
+  }
+
+  if (liftCave && cave.position.y < 10){
+    cave.position.y += 25 * delta;
+  }
   
 
   //Del
@@ -175,28 +222,23 @@ function update(){
     curtain.style.setProperty("--h",'0%')
     curtain.style.setProperty("--opac",0);
 
-    //load level 2
-    changeLevelNumber(2);
+    levelComplete = true;
   }
 
-  if(diamondCount>=3){
+  if(diamondCount>=46){
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Proceed to the cave ...";
     myDiv.style.fontSize = "30px";
     if(player.position.x<-200 && player.position.x >-390 && player.position.z<-430 && player.position.z>-600){
       changeScene();
     }
+    
+    liftCave = true;
   }else{
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Diamond Count : " + diamondCount + "/46";
     myDiv.style.fontSize = "30px";
   }
-
-
-
-
-
-
 
 
   if (fire != undefined && kaboom){
@@ -223,114 +265,52 @@ function update(){
     camera.position.y = 150;
   }
 
-  if (typeof player !== "undefined" && player != null && typeof player.position !== "undefined"){
-  //  console.log(player.position); 
+  //Ortho update
+  if (typeof player !== "undefined" && player != null && player.position != null){
+    let camX = player.position.x;
+    let camZ = player.position.z;
+
+    minimapCam.position.set( camX, minimapHeight, camZ); 
   }
 
-  if (tempPlayer != undefined){
-    if (tempPlayer.userData != null){
-      if(tempPlayer.userData.physicsBody != null){
-        let playerPos = player.position;
-        let yFactor = 3;
-        let distanceAway = 500;
-        let velocity = tempPlayer.userData.physicsBody.getLinearVelocity().length();
-        let diffX = Math.abs(camera.position.x - playerPos.x + distanceAway);
-        let diffZ = Math.abs(camera.position.z - playerPos.z + distanceAway);
-        if (velocity > 0.01 || diffX > 1 || diffZ > 1){
-          let cameraMoveRate = 10*delta;
-          let horiSpeed = 2;
-          if (camera.position.x < playerPos.x + distanceAway){
-            camera.position.x += cameraMoveRate * horiSpeed;
-          }
-          if (camera.position.x > playerPos.x + distanceAway){
-            camera.position.x -= cameraMoveRate * horiSpeed;
-          }
-          if (camera.position.y < playerPos.y + distanceAway*yFactor){
-            camera.position.y += cameraMoveRate;
-          }
-          if (camera.position.y > playerPos.y + distanceAway*yFactor){
-            camera.position.y -= cameraMoveRate;
-          }
-          if (camera.position.z < playerPos.z + distanceAway){
-            camera.position.z += cameraMoveRate * horiSpeed;
-          }
-          if (camera.position.z > playerPos.z + distanceAway){
-            camera.position.z -= cameraMoveRate * horiSpeed;
+  if (!levelComplete){
+    if (tempPlayer != undefined){
+      if (tempPlayer.userData != null){
+        if(tempPlayer.userData.physicsBody != null){
+          let playerPos = player.position;
+          let yFactor = 3;
+          let distanceAway = 500;
+          let velocity = tempPlayer.userData.physicsBody.getLinearVelocity().length();
+          let diffX = Math.abs(camera.position.x - playerPos.x + distanceAway);
+          let diffZ = Math.abs(camera.position.z - playerPos.z + distanceAway);
+          if (velocity > 0.01 || diffX > 1 || diffZ > 1){
+            let cameraMoveRate = 10*delta;
+            let horiSpeed = 2;
+            if (camera.position.x < playerPos.x + distanceAway){
+              camera.position.x += cameraMoveRate * horiSpeed;
+            }
+            if (camera.position.x > playerPos.x + distanceAway){
+              camera.position.x -= cameraMoveRate * horiSpeed;
+            }
+            if (camera.position.y < playerPos.y + distanceAway*yFactor){
+              camera.position.y += cameraMoveRate;
+            }
+            if (camera.position.y > playerPos.y + distanceAway*yFactor){
+              camera.position.y -= cameraMoveRate;
+            }
+            if (camera.position.z < playerPos.z + distanceAway){
+              camera.position.z += cameraMoveRate * horiSpeed;
+            }
+            if (camera.position.z > playerPos.z + distanceAway){
+              camera.position.z -= cameraMoveRate * horiSpeed;
+            }
           }
         }
       }
     }
   }
 
-  //Move enemy up and down its path
-  if (typeof enemy !== "undefined" && enemy != null && typeof enemy.position !== "undefined"){
-    // console.log(enemy.position);
-    let currX = enemy.position.x;
-    let currZ = enemy.position.z;
-
-    let pathX = enemyPathList[enemyCurrPathIdx].x;
-    let pathZ = enemyPathList[enemyCurrPathIdx].z;
-
-    //Change direction
-    let reachedEnd = (Math.abs(parseInt(currX) - parseInt(pathX)) < enemyMoveDiff&& Math.abs(parseInt(currZ) - parseInt(pathZ)) < enemyMoveDiff);
-
-    if ( reachedEnd && (enemySteps > enemyStepsThreshold)){
-      if (enemyCurrPathIdx == 0){
-        enemyCurrPathIdx++;
-      }else{
-        enemyCurrPathIdx--;
-      }
-
-      pathX = enemyPathList[enemyCurrPathIdx].x;
-      pathZ = enemyPathList[enemyCurrPathIdx].z;
-
-      enemySteps = 0;
-    }    
-
-    //Move player to path
-    let enemyMovementSpeed = 5;
-
-    let diffX = currX - pathX;
-    let diffZ = currZ - pathZ;
-
-    let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
-
-    diffX /= normLength;
-    diffZ /= normLength;
-
-    diffX *= enemyMovementSpeed;
-    diffZ *= enemyMovementSpeed;
-
-    enemy.translateX(-diffX * delta);
-    enemy.translateZ(-diffZ * delta);
-
-    enemySteps++;
-    
-    if (typeof camera  !== "undefined"){
-      // console.log(enemy.position)
-      // enemy.lookAt(camera.position);
-    }
-  }
   
-  
-  if (typeof enemy !== "undefined" && enemy != null){
-    if (typeof player !== "undefined" && player != null){
-      let playerPos = player.position;
-      let enemyPos = enemy.position;
-
-      let distanceBetw = Math.sqrt((playerPos.x - enemyPos.x)^2 + (playerPos.y - enemyPos.y)^2 + (playerPos.z - enemyPos.z)^2)
-      
-      if (distanceBetw < enemyBurnDistance){
-        if (distanceBetw < 2){
-          health.value -= 10000;
-        }
-        health.value -= 10 *delta ;
-      }
-    }
-  }
-
-  // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
-  // camera.position.y = playerPos.y + 220;
 }
 
 
@@ -339,10 +319,15 @@ function render(){
 
   water.material.uniforms['time'].value += 1.0 / 60.0;
   
-  movePlayer();
-  updatePhysics();
-
+  if (!levelComplete){
+    movePlayer();
+    updatePhysics();
+  }
+  // Step world
+  physicsWorld.stepSimulation( delta, 10 );
+  
   renderer.render(scene,camera);
+  minimapRenderer.render(scene,minimapCam);
 }
 
 
@@ -628,6 +613,10 @@ function changeScene() {
       curtain.style.setProperty("--w",'100%')
       curtain.style.setProperty("--h",'100%')
       curtain.style.setProperty("--opac",opac);
+
+      levelComplete = true;
+      //SHRAV: Fade into level Complete then unfade and when user dies
+      //fade again
     },2000)
 };
 
@@ -1296,7 +1285,7 @@ function addCave(x, z){
         
   loader.load(caveLocation, function(gltf){
             
-    var cave = gltf.scene;            
+    cave = gltf.scene;            
     cave.scale.set(0.3, 0.3, 0.3);            
     cave.position.set(x, -150, z);
     cave.rotation.y = Math.PI;    
@@ -1489,6 +1478,7 @@ addTrees3(-600, 350);
 addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
 
+
 addCave(-480, -680);
 
 //Set up trees
@@ -1588,8 +1578,7 @@ function movePlayer(){
 }
 
 function updatePhysics(){
-  // Step world
-  physicsWorld.stepSimulation( delta, 10 );
+  
 
   // Update rigid bodies
   for ( let i = 0; i < rigidBodies.length; i++ ) {
@@ -1631,14 +1620,11 @@ function detectCollision(){
     let tag1 = userData1 ? userData1.tag : "none";
 
     if (tag0 == "player" && tag1 == "diamond"){
-      
       scene.remove(threeObject1);
       
       diamondCount++;
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
-      
-    
       scene.remove(threeObject0);
       diamondCount++;
       physicsWorld.removeRigidBody(rb0);
@@ -1751,6 +1737,8 @@ function addEnemy(x,y,z){
 
 
   scene.add(enemy);
+
+  return enemy;
 }
 
 function enemyEye(){
@@ -1793,3 +1781,15 @@ function computeTriangleArea( a, b, c ) {
 
 }
 
+function addMinimap(){
+  let camX = 0;
+  let camZ = 0;
+
+  if (typeof player !== "undefined" && player != null && player.position != null){
+    camX = player.position.x;
+    camZ = player.position.z;
+  }
+  minimapCam.position.set( camX, minimapHeight, camZ); 
+  minimapCam.lookAt( 0, 0, 0); 
+  minimapCam.up.set( 0, 1, 0 );
+}

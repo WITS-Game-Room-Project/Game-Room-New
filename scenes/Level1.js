@@ -10,10 +10,11 @@ import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import coord from '../classes/coord.class';
 import * as Ammo from "ammo.js";
 //import {levelTwo as Level2Loop} from "../main.js";
-
+// import changeLevelNumber from "../main.js";
 
 //=========================== Global Variables =======================================
 
+var changeLevelNumber;
 var diamond;
 var mushroom;
 var tempMushroom;
@@ -139,6 +140,10 @@ addProps();
 //=========================== EACH FRAME =======================================
 
 //Game Loop
+export function changeLevelFunc(changeLevelNumbert){
+  changeLevelNumber = changeLevelNumbert
+}
+
 export const GameLoop = function(){
   requestAnimationFrame(GameLoop);
 
@@ -162,7 +167,7 @@ function update(){
     curtain.style.setProperty("--opac",0);
 
     //load level 2
-    Level2Loop()
+    changeLevelNumber(2);
   }
 
   var myDiv = document.getElementById("text");
@@ -410,7 +415,7 @@ function addGround(){
 
     } );
 
-    let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
+    materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;    
 
     scene.add(ground);  

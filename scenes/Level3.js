@@ -69,7 +69,7 @@ setUpControls();
 
 
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.05);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLightMain);
 
 //Set up Light Post Lighting
@@ -125,6 +125,10 @@ addOcean();
 
 //Set up skybox
 // Sky
+const sunParameters = {
+  elevation: -5,
+  azimuth: 90
+};
 var boxHelper;
 let sky = new Sky();
 let skyUniforms = sky.material.uniforms;
@@ -135,6 +139,9 @@ skyBox();
 addHouse(400, 300);
 
 //Add props
+var fence;
+var fences = [];
+var dolphin;
 var flower;
 var tempFlower;
 var health = document.getElementById("health")
@@ -239,6 +246,14 @@ function update(){
     myDiv.innerHTML = "Diamond Count : " + diamondCount + "/46";
     myDiv.style.fontSize = "30px";
   }
+
+
+  sunParameters.elevation += delta;
+  updateSun();
+  var x = sky.material.uniforms[ 'sunPosition' ].value.x;
+  var y = sky.material.uniforms[ 'sunPosition' ].value.y;
+  var z = sky.material.uniforms[ 'sunPosition' ].value.z;
+  directLight.position.set(x, y, z);
 
 
   if (fire != undefined && kaboom){
@@ -400,7 +415,7 @@ function addGround(){
   //RIGIDBODY DYNAMIC END
   let colShape = new Ammo.btBoxShape(new Ammo.btVector3(10000 *0.5,1*0.5,10000*0.5));
   colShape.setMargin( 0.05 );
-  console.log(colShape);
+  //console.log(colShape);
 
   let localInertia = new Ammo.btVector3( 0, 0, 0 );
   colShape.calculateLocalInertia( massG, localInertia );
@@ -426,7 +441,7 @@ function addGround(){
 
 function setSunLight(){
   
-  directLight  = new THREE.DirectionalLight( 0xffffff, 2 );
+  directLight  = new THREE.DirectionalLight( 0xffffff, 0.5 );
   let directLightPos = sun.multiplyScalar(500);
   directLight.castShadow = true;
 
@@ -442,6 +457,8 @@ function setSunLight(){
   directLight.shadow.mapSize.height = 1000; // default
   directLight.shadow.camera.near = 10; // default
   directLight.shadow.camera.far = 1500; // default
+
+  
 
   scene.add(directLight);
 
@@ -634,29 +651,6 @@ function skyBox(){
   skyUniforms[ 'mieCoefficient' ].value = 0.00005; //Horizon Intensity at Point
   skyUniforms[ 'mieDirectionalG' ].value = 1; //Intensity of Sun
 
-  const parameters = {
-    elevation: 25,
-    azimuth: 90
-  };
-
-  const pmremGenerator = new THREE.PMREMGenerator( renderer );
-
-
-  function updateSun() {
-    
-    const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
-    const theta = THREE.MathUtils.degToRad( parameters.azimuth );
-
-    sun.setFromSphericalCoords( 1, phi, theta );
-    //sun.set.z = 0;
-
-    sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
-    water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
-
-    scene.environment = pmremGenerator.fromScene( sky ).texture;
-
-  }
-
   
   updateSun();
 
@@ -665,8 +659,8 @@ function skyBox(){
   setSunLight();
 
   const folderSky = gui.addFolder( 'Sky' );
-  folderSky.add( parameters, 'elevation', 0, 180, 0.1 ).onChange( updateSun );
-  folderSky.add( parameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
+  folderSky.add( sunParameters, 'elevation', 0, 180, 0.1 ).onChange( updateSun );
+  folderSky.add( sunParameters, 'azimuth', - 180, 180, 0.1 ).onChange( updateSun );
   folderSky.open();
 
   const waterUniforms = water.material.uniforms;
@@ -708,6 +702,23 @@ function skyBox(){
     
 //   let skybox = new THREE.Mesh( skyboxGeo, materialArray );
 //   scene.add( skybox );
+
+}
+
+function updateSun() {  
+
+  const pmremGenerator = new THREE.PMREMGenerator( renderer );
+    
+  const phi = THREE.MathUtils.degToRad( 90 - sunParameters.elevation );
+  const theta = THREE.MathUtils.degToRad( sunParameters.azimuth );
+
+  sun.setFromSphericalCoords( 1, phi, theta );
+  //sun.set.z = 0;
+
+  sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
+  water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
+
+  scene.environment = pmremGenerator.fromScene( sky ).texture;
 
 }
 
@@ -1008,6 +1019,63 @@ function addTrees3(x, z){
 }
 
 
+function addDolphin(x, z){
+
+  let dolphinLocation = '../../assets/models/dolphin/scene.gltf';
+  let loader = new GLTFLoader();
+
+        
+  loader.load(dolphinLocation, function(gltf){
+
+    dolphin = gltf.scene.children[0];            
+    dolphin.scale.set(0.3, 0.3, 0.3);            
+    dolphin.position.set(x, 22, z);    
+    
+    dolphin.traverse( function ( child ) {
+
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+
+    } );
+    console.log(dolphin);
+
+
+    scene.add(dolphin);   
+
+    //Ammojs Section
+    let tempDolphin = dolphin;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( tempDolphin.position.x, tempDolphin.position.y, tempDolphin.position.z ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let dolphinSize = new THREE.Box3().setFromObject(dolphin).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( dolphinSize.x/2, dolphinSize.y/2, dolphinSize.z/2) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massG, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
+          
+  });
+  
+}
+
+
+
 function addMushroom(x, z, explode){
   let mushroomLocation = '../../assets/models/mushroom/scene.gltf';
   let loader = new GLTFLoader();
@@ -1018,7 +1086,7 @@ function addMushroom(x, z, explode){
             
     mushroom = gltf.scene.children[0];            
     mushroom.scale.set(0.07, 0.07, 0.07);            
-    mushroom.position.set(x, 8, z);            
+    mushroom.position.set(x, 15, z);            
 
     mushroom.traverse( function ( child ) {
 
@@ -1127,10 +1195,9 @@ function addFence(x, z, r){
         
   loader.load(fenceLocation, function(gltf){
             
-    var fence = gltf.scene.children[0];            
+    fence = gltf.scene.children[0];            
     fence.scale.set(0.38,0.25,0.25);            
-    fence.position.set(x, 1, z); 
-    fence.rotation.z = r           
+    fence.position.set(x, 1, z);          
 
     fence.traverse( function ( child ) {
 
@@ -1139,10 +1206,12 @@ function addFence(x, z, r){
         
         child.castShadow = true;
         child.receiveShadow = true;
+
       }
 
     } );
 
+    fences[fences.length] = fence;
     scene.add(gltf.scene);     
     
     //Ammojs Section
@@ -1335,226 +1404,238 @@ function addCave(x, z){
 
 function addProps(){
   //Add Diamonds
-//body of island
-addDiamond(125,250.5,0);
-addDiamond(50,225.5,0);
-addDiamond(75,65,0);
-addDiamond(-207,-125,0);
-addDiamond(-262,-198,0);
-addDiamond(-246,-295,0);
-addDiamond(-356,-163,0);
-addDiamond(-350,200,0);
-addDiamond(-274,263,0);
-addDiamond(-305,369,0);
-addDiamond(50,19,0);
-addDiamond(200,195,0);
-addDiamond(308,205,0);
-addDiamond(105,-205,0);
-addDiamond(305,-205,0);
-addDiamond(205,405,0);
-addDiamond(270,367,0);
-addDiamond(357,10,0);
-on();
+  //body of island
+  addDiamond(125,250.5,0);
+  addDiamond(50,225.5,0);
+  addDiamond(75,65,0);
+  addDiamond(-207,-125,0);
+  addDiamond(-262,-198,0);
+  addDiamond(-246,-295,0);
+  addDiamond(-356,-163,0);
+  addDiamond(-350,200,0);
+  addDiamond(-274,263,0);
+  addDiamond(-305,369,0);
+  addDiamond(50,19,0);
+  addDiamond(200,195,0);
+  addDiamond(308,205,0);
+  addDiamond(105,-205,0);
+  addDiamond(305,-205,0);
+  addDiamond(205,405,0);
+  addDiamond(270,367,0);
+  addDiamond(357,10,0);
+  on();
 
 
-addTrees(0, 100); //origin - house ish - near blob
-addTrees2(450, 500);
-//addBush(450,500);
-addTrees(500, 500);
+  addTrees(0, 100); //origin - house ish - near blob
+  addTrees2(450, 500);
+  //addBush(450,500);
+  addTrees(500, 500);
 
-//three near house
-addDiamond(-200, -175, 0);
-addTrees3(-250, -150);
-addDiamond(-300, -275, 0);
-addTrees2(-200, -200); 
-addTrees(-250, -200);
-addDiamond(-300, -175, 0);
-addTrees2(-300, -175);
-//addBush(-200,-200);
+  //three near house
+  addDiamond(-200, -175, 0);
+  addTrees3(-250, -150);
+  addDiamond(-300, -275, 0);
+  addTrees2(-200, -200); 
+  addTrees(-250, -200);
+  addDiamond(-300, -175, 0);
+  addTrees2(-300, -175);
+  //addBush(-200,-200);
 
-//across path
-addTrees(150, -150);
-addTrees3(160, -100);
+  //across path
+  addTrees(150, -150);
+  addTrees3(160, -100);
 
-//behind house
-addTrees3(650, 350);
-addTrees2(500, 200);
-//addBush(500,-50);
-//addBush(550,0);
+  //behind house
+  addTrees3(650, 350);
+  addTrees2(500, 200);
+  //addBush(500,-50);
+  //addBush(550,0);
 
-//border near house
-addTrees3(200, 550);
-addTrees2(150, 600); 
-addTrees(-200, 400);
+  //border near house
+  addTrees3(200, 550);
+  addTrees2(150, 600); 
+  addTrees(-200, 400);
 
-//loop one
-//mouth
-addDiamond(450, -200, 0);
-addDiamond(450, -150, 0);
-addTrees(400, -250);
-addTrees2(400, -475);
-addTrees(250, -500);
-//inside
-addTrees(550, -600);
-addDiamond(550, -625, 0);
-addDiamond(550, -650, 0);
-addTrees2(550, -675);
-//addBush(550,-600);
-addDiamond(550, -725, 0);
-addDiamond(575, -750, 0);
-addTrees3(550, -700);
+  //loop one
+  //mouth
+  addDiamond(450, -200, 0);
+  addDiamond(450, -150, 0);
+  addTrees(400, -250);
+  addTrees2(400, -475);
+  addTrees(250, -500);
+  //inside
+  addTrees(550, -600);
+  addDiamond(550, -625, 0);
+  addDiamond(550, -650, 0);
+  addTrees2(550, -675);
+  //addBush(550,-600);
+  addDiamond(550, -725, 0);
+  addDiamond(575, -750, 0);
+  addTrees3(550, -700);
 
-addDiamond(620, -750, 0);
-addDiamond(660, -750, 0);
-addDiamond(700, -740, 0);
-addTrees(600, -750);
+  addDiamond(620, -750, 0);
+  addDiamond(660, -750, 0);
+  addDiamond(700, -740, 0);
+  addTrees(600, -750);
 
-addDiamond(775, -700, 0);
-addDiamond(830, -600, 0);
-addDiamond(880, -550, 0);
-addDiamond(950, -350, 0);
-addDiamond(900, -200, 0);
-addDiamond(900, -150, 0);
-addDiamond(850, -150, 0);
-addDiamond(800, -175, 0);
-addDiamond(800, -175, 0);
-addTrees(750, -700);
-addTrees2(800, -600);
-addTrees(850, -500);
-addDiamond(800, -500, 0);
-addTrees2(900, -400);
-addTrees2(875, -350);
-addTrees3(850, -450);
-addDiamond(850, -500, 0);
-addTrees(900, -250);
-addTrees2(850, -200);
-addDiamond(900, -200, 0);
-addDiamond(600, -25, 0);
-addTrees(725, -250);
-addTrees(700, -300);
-addDiamond(500, 0, 0);
+  addDiamond(775, -700, 0);
+  addDiamond(830, -600, 0);
+  addDiamond(880, -550, 0);
+  addDiamond(950, -350, 0);
+  addDiamond(900, -200, 0);
+  addDiamond(900, -150, 0);
+  addDiamond(850, -150, 0);
+  addDiamond(800, -175, 0);
+  addDiamond(800, -175, 0);
+  addTrees(750, -700);
+  addTrees2(800, -600);
+  addTrees(850, -500);
+  addDiamond(800, -500, 0);
+  addTrees2(900, -400);
+  addTrees2(875, -350);
+  addTrees3(850, -450);
+  addDiamond(850, -500, 0);
+  addTrees(900, -250);
+  addTrees2(850, -200);
+  addDiamond(900, -200, 0);
+  addDiamond(600, -25, 0);
+  addTrees(725, -250);
+  addTrees(700, -300);
+  addDiamond(500, 0, 0);
 
-//arrow bit
-addTrees2(-400, 950); //arrow tip
-addTrees(-500, 800); //right
-addTrees2(-250, 825); //left
-addTrees(-300, 575); //branch things
-addTrees3(-300, 625);
-
-
-//near cave
-addTrees(200, -550);
-addDiamond(600, -575, 0);
-addTrees2(200, -675);
-addDiamond(100, -475, 0);
-addDiamond(150, -275, 0);
-addDiamond(50, -675, 0);
-addDiamond(-50, -275, 0);
-addTrees(50, -650);
-addTrees3(100, -625);
-
-//near cave - other side
-addTrees(-450, -350);
-
-addTrees2(-600, 50);
-addTrees(-550, -200);
-addTrees3(-500, -325);
-
-//loop two
-addTrees(-750, 50);
-addDiamond(-700, 75, 0);
-addTrees3(-850, 50);
-addDiamond(-800, 100, 0);
-addTrees2(-875, 150);
-addDiamond(-900, 200, 0);
-addTrees(-900, 250);
-addTrees(-900, 300);
-addDiamond(-900, 275, 0);
-addTrees2(-900, 400);
-addTrees(-650, 500);
-addDiamond(-600, 425, 0);
-addDiamond(-600, 475, 0);
-addTrees3(-600, 350);
-addDiamond(-800, 475, 0);
-addTrees2(-700, 500);
+  //arrow bit
+  addTrees2(-400, 950); //arrow tip
+  addTrees(-500, 800); //right
+  addTrees2(-250, 825); //left
+  addTrees(-300, 575); //branch things
+  addTrees3(-300, 625);
 
 
-addCave(-480, -680);
+  //near cave
+  addTrees(200, -550);
+  addDiamond(600, -575, 0);
+  addTrees2(200, -675);
+  addDiamond(100, -475, 0);
+  addDiamond(150, -275, 0);
+  addDiamond(50, -675, 0);
+  addDiamond(-50, -275, 0);
+  addTrees(50, -650);
+  addTrees3(100, -625);
 
-//Set up trees
-// let arrTreePositions = [
-//   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
-// ];
+  //near cave - other side
+  addTrees(-450, -350);
 
+  addTrees2(-600, 50);
+  addTrees(-550, -200);
+  addTrees3(-500, -325);
+
+  //loop two
+  addTrees(-750, 50);
+  addDiamond(-700, 75, 0);
+  addTrees3(-850, 50);
+  addDiamond(-800, 100, 0);
+  addTrees2(-875, 150);
+  addDiamond(-900, 200, 0);
+  addTrees(-900, 250);
+  addTrees(-900, 300);
+  addDiamond(-900, 275, 0);
+  addTrees2(-900, 400);
+  addTrees(-650, 500);
+  addDiamond(-600, 425, 0);
+  addDiamond(-600, 475, 0);
+  addTrees3(-600, 350);
+  addDiamond(-800, 475, 0);
+  addTrees2(-700, 500);
+
+  addCave(-480, -680);
+
+  //Set up trees
+  // let arrTreePositions = [
+  //   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
+  // ];
 
 
 
-let arrTreePositions = [
-  [-420,700]
-];
 
-for (var i = 0; i < arrTreePositions.length; i++){
-  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
+  let arrTreePositions = [
+    [-420,700]
+  ];
+
+  for (var i = 0; i < arrTreePositions.length; i++){
+    addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
+  }
+
+  //Add mushrooms
+
+  let arrMushroomPositions = [
+    [-345, 818, true], [-363, 865, true], [-380, 914, true], [-395, 798, true], [-431, 898, true], [-415, 850, true], [170, 200, true], 
+    [170, 340, true], [-720, 60, true], [220, 175, true], [540, 200, false], [560, 205, false], [550, 180, false], [575, 230, false], 
+    [350, 230, true], [-700, 90, true], [-650, 100, true], [-680, 150, true], [-600, 120, true], [-660, 200, true], [-750, 250, true],
+    [350, 0, true], [790, -480, true], [830, -300, false], [920, -450, true], [870, -250, false], [960, -250, true], [850, -350, false],
+    [450, -450, true], [270, -250, false], [160, -250, true], [50, -350, false],
+  ];
+
+  for (var i = 0; i < arrMushroomPositions.length; i++){
+    addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1], arrMushroomPositions[i][2]);
+  }
+
+  // Add flowers
+
+
+
+  let arrFlowerPositions = [
+    [-310, 710], [100, -15], [10, -10], [-5, -150], [15, -455], [-230, 400], [-15, 250], [-500, 15], [-60, 10], [650, 120], [75, 425],
+    [350, -610], [620, 20], [430, -30], [80, -450], [40, 450], [270, -20], [60, -50], [50, -300], [70, -50], [60, -20], 
+    [500, 400], [-50, 120]
+  ];
+
+  let arrFlowerInfo = [
+    [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], 
+    [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15], [false, purpleFlower, 80], 
+    [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, purpleFlower, 80],
+    [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80],
+    [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, orangeFlower, 15],
+    [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15]
+  ];
+
+  for (var i = 0; i < arrFlowerPositions.length; i++){
+    addFlowers(arrFlowerPositions[i][0], arrFlowerPositions[i][1], arrFlowerInfo[i][0], arrFlowerInfo[i][1], arrFlowerInfo[i][2]);
+  }
+
+
+  //Add bushes
+
+  let arrBushPositions = [
+    [-420,700,0], [125,310,Math.PI/6],[125,190,-Math.PI/6]
+  ]
+
+  for (var i = 0; i < arrBushPositions.length; i++){
+    addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
+  }
+
+  //Add fences
+
+  let arrFencePositions = [
+    [300,500,Math.PI/2 *0.5], [250,250,0], [199,240,-Math.PI/8], [199,340,-Math.PI/8], [155,218,-Math.PI/6], [155,317,-Math.PI/6]
+  ];
+
+  for (var i = 0; i < arrFencePositions.length; i++){
+    addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
+  }
+
+  // Add dolphin
+  let arrDolphinPositions = [
+    [500, 600], [0, 200], [-600, -400], [-350, 900]
+  ];
+
+  for (var i = 0; i < arrDolphinPositions.length; i++){
+    addDolphin(arrDolphinPositions[i][0], arrDolphinPositions[i][1]);
+  }
+
+  
+
 }
 
-//Add mushrooms
-
-let arrMushroomPositions = [
-  [-345, 818, true], [-363, 865, true], [-380, 914, true], [-395, 798, true], [-431, 898, true], [-415, 850, true], [170, 200, true], 
-  [170, 340, true], [-720, 60, true], [220, 175, true], [540, 200, false], [560, 205, false], [550, 180, false], [575, 230, false], 
-  [350, 230, true], [-700, 90, true], [-650, 100, true], [-680, 150, true], [-600, 120, true], [-660, 200, true], [-750, 250, true],
-  [350, 0, true], [790, -480, true], [830, -300, false], [920, -450, true], [870, -250, false], [960, -250, true], [850, -350, false],
-  [450, -450, true], [270, -250, false], [160, -250, true], [50, -350, false],
-];
-
-for (var i = 0; i < arrMushroomPositions.length; i++){
-  addMushroom(arrMushroomPositions[i][0], arrMushroomPositions[i][1], arrMushroomPositions[i][2]);
-}
-
-// Add flowers
-
-
-
-let arrFlowerPositions = [
-  [-310, 710], [100, -15], [10, -10], [-5, -150], [15, -455], [-230, 400], [-15, 250], [-500, 15], [-60, 10], [650, 120], [75, 425],
-  [350, -610], [620, 20], [430, -30], [80, -450], [40, 450], [270, -20], [60, -50], [50, -300], [70, -50], [60, -20], 
-  [500, 400], [-50, 120]
-];
-
-let arrFlowerInfo = [
-  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], 
-  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15], [false, purpleFlower, 80], 
-  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, purpleFlower, 80],
-  [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80], [false, purpleFlower, 80],
-  [false, orangeFlower, 15], [false, purpleFlower, 80], [false, orangeFlower, 15], [false, orangeFlower, 15],
-  [false, orangeFlower, 15], [false, orangeFlower, 15], [false, orangeFlower, 15]
-];
-
-for (var i = 0; i < arrFlowerPositions.length; i++){
-  addFlowers(arrFlowerPositions[i][0], arrFlowerPositions[i][1], arrFlowerInfo[i][0], arrFlowerInfo[i][1], arrFlowerInfo[i][2]);
-}
-
-
-//Add bushes
-
-let arrBushPositions = [
-  [-420,700,0], [125,310,Math.PI/6],[125,190,-Math.PI/6]
-]
-
-for (var i = 0; i < arrBushPositions.length; i++){
-  addBush(arrBushPositions[i][0], arrBushPositions[i][1],arrBushPositions[i][2]);
-}
-
-//Add fences
-
-let arrFencePositions = [
-  [300,500,Math.PI/2 *0.5], [250,250,0], [199,240,-Math.PI/8], [199,340,-Math.PI/8], [155,218,-Math.PI/6], [155,317,-Math.PI/6]
-];
-
-for (var i = 0; i < arrFencePositions.length; i++){
-  addFence(arrFencePositions[i][0], arrFencePositions[i][1],arrFencePositions[i][2]);
-}
-}
 
 
 
@@ -1636,7 +1717,6 @@ function detectCollision(){
 
       pos = threeObject1.position;      
       fire.position.set(pos.x, pos.y, pos.z);
-      scene.add(fire);
       health.value -= 0.1;
       kaboom = true;
     }
@@ -1644,7 +1724,6 @@ function detectCollision(){
             
       pos = threeObject1.position;      
       fire.position.set(pos.x, pos.y, pos.z);
-      scene.add(fire);
       health.value -= 0.1;
       kaboom = true;
     }

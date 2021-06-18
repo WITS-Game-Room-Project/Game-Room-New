@@ -322,7 +322,7 @@ function update(){
 function render(){
 
   water.material.uniforms['time'].value += 1.0 / 60.0;
-
+  
   movePlayer();
   updatePhysics();
 
@@ -414,17 +414,16 @@ function addGround(){
     ground.children[1].material = materialSide;    
 
     scene.add(ground);  
-    
-    
+  
      //Ammojs Section
-     tempGround = ground;
+    tempGround = ground;
      let transform = new Ammo.btTransform();
      transform.setIdentity();
-     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y +77,tempGround.position.z ) );
+     transform.setOrigin( new Ammo.btVector3( tempGround.position.x, tempGround.position.y +77 ,tempGround.position.z ) );
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
 
-     let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 10000* 0.5, 1 * 0.5, 10000* 0.5 ) );
+     let colShape = new Ammo.btBoxShape(new Ammo.btVector3(10000 *0.5,1*0.5,10000*0.5));
      colShape.setMargin( 0.05 );
 
      let localInertia = new Ammo.btVector3( 0, 0, 0 );
@@ -501,18 +500,25 @@ function handleKeyDown(event){
 
       case 87: //W: FORWARD
           moveDirection.forward = 1
+         
+          
+          
+
           break;
           
       case 83: //S: BACK
           moveDirection.back = 1
+         
           break;
           
       case 65: //A: LEFT
           moveDirection.left = 1
+          
           break;
           
       case 68: //D: RIGHT
           moveDirection.right = 1
+          
           break;
           
   }
@@ -1532,11 +1538,15 @@ function detectCollision(){
     let tag1 = userData1 ? userData1.tag : "none";
 
     if (tag0 == "player" && tag1 == "diamond"){
+      
       scene.remove(threeObject1);
+      
       diamondCount++;
       changeScene();
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
+      
+    
       scene.remove(threeObject0);
       diamondCount++;
       changeScene();

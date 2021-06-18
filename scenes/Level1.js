@@ -88,7 +88,6 @@ var tempPlayer;
 addPlayer(-50,20,-50);
 
 var tempDiamond;
-
 //Set up Fire
 var fire;
 var fireMixer; 
@@ -146,6 +145,10 @@ export function changeLevelFunc(changeLevelNumbert){
 export const GameLoop = function(){
   requestAnimationFrame(GameLoop);
 
+  if (health.value <= 0){
+    return;
+  }
+
   update();
   render();
 }
@@ -153,7 +156,9 @@ export const GameLoop = function(){
 //At Each Frame
 function update(){
   delta = clockTime.getDelta();
+
   controls.update();
+  
 
   //Del
   if (typeof boxHelper !== "undefined" && boxHelper != null){
@@ -183,7 +188,7 @@ function update(){
     }
   }else{
     var myDiv = document.getElementById("text");
-    myDiv.innerHTML = "Diamond Count : " + diamondCount + "/40";
+    myDiv.innerHTML = "Diamond Count : " + diamondCount + "/46";
     myDiv.style.fontSize = "30px";
   }
 
@@ -211,9 +216,9 @@ function update(){
     camera.position.y = 150;
   }
 
-  // if (typeof player !== "undefined" && player != null && typeof player.position !== "undefined"){
-    
-  // }
+  if (typeof player !== "undefined" && player != null && typeof player.position !== "undefined"){
+   console.log(player.position); 
+  }
 
   if (tempPlayer != undefined){
     if (tempPlayer.userData != null){
@@ -259,7 +264,6 @@ function update(){
     let pathX = enemyPathList[enemyCurrPathIdx].x;
     let pathZ = enemyPathList[enemyCurrPathIdx].z;
 
-    // console.log(enemySteps)
     //Change direction
     let reachedEnd = (Math.abs(parseInt(currX) - parseInt(pathX)) < enemyMoveDiff&& Math.abs(parseInt(currZ) - parseInt(pathZ)) < enemyMoveDiff);
 
@@ -391,7 +395,6 @@ function addGround(){
   let groundLocation = '../../assets/models/ground/ground.glb';
   let loader = new GLTFLoader();
 
-  let material;
         
   loader.load(groundLocation, function(glb){
             
@@ -409,7 +412,6 @@ function addGround(){
 
       if ( child.isMesh ) {
 
-        // child.castShadow = true;
         child.receiveShadow = true;
       }
 
@@ -428,8 +430,11 @@ function addGround(){
      transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
      let motionState = new Ammo.btDefaultMotionState( transform );
 
+     
+     //RIGIDBODY DYNAMIC END
      let colShape = new Ammo.btBoxShape(new Ammo.btVector3(10000 *0.5,1*0.5,10000*0.5));
      colShape.setMargin( 0.05 );
+     console.log(colShape);
 
      let localInertia = new Ammo.btVector3( 0, 0, 0 );
      colShape.calculateLocalInertia( massG, localInertia );
@@ -441,6 +446,8 @@ function addGround(){
      body.setRollingFriction(10);
 
      physicsWorld.addRigidBody( body );
+
+     
      
           
   });
@@ -478,16 +485,6 @@ function setSunLight(){
 
   scene.add(directLight);
 
-  // boxHelper = new THREE.BoxHelper(directLight,0x00ffff);
-  // scene.add(boxHelper);
-
-  // let lightBoxgeo = new THREE.BoxGeometry(1000,1000,1000)
-  // let lightBoxMat = new THREE.MeshBasicMaterial({color: 0xff00ff, wireframe: true});
-
-  // let lightBox = new THREE.Mesh(lightBoxgeo, lightBoxMat);
-  // lightBox.position.set(directLightPos.x,directLightPos.y,directLightPos.z);
-  // console.log(lightBox.position);
-  // scene.add(lightBox);
 
 }
 
@@ -900,13 +897,12 @@ function addTrees(x, z){
     
     tree.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
+     
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -952,13 +948,12 @@ function addTrees2(x, z){
     
     tree.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
+   
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1007,13 +1002,11 @@ function addTrees3(x, z){
     
     tree.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1065,13 +1058,12 @@ function addMushroom(x, z, explode){
 
     mushroom.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
+   
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1123,13 +1115,11 @@ function addFlowers(x, z, explode, flowerLocation, flowerScale){
 
     flower.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1180,13 +1170,11 @@ function addFence(x, z, r){
 
     fence.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1237,13 +1225,11 @@ function addBush(x, z, r){
 
     bush.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1288,13 +1274,12 @@ function addHouse(x, z){
     
     house.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
+     
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1341,15 +1326,14 @@ function addCave(x, z){
     cave.position.set(x, 10, z);
     cave.rotation.y = Math.PI;    
 
-    CanvasTexture.traverse( function ( child ) {
+    cave.traverse( function ( child ) {
 
-      // console.log(child.castShadow);
+    
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        // console.log(child.castShadow);
       }
 
     } );
@@ -1729,7 +1713,7 @@ function detectCollision(){
 function addEnemy(x,y,z){
   //Entire Enemy Object
   enemy = new THREE.Group();
-
+  
 
   //Big Body
   let geometry = new THREE.SphereGeometry(5,32,32);
@@ -1749,17 +1733,24 @@ function addEnemy(x,y,z){
 
 
   let eye1 = enemyEye();
-  
   let eye2 = enemyEye();
+  let eye3 = enemyEye();
+  let eye4 = enemyEye();
 
   face.add(faceNoEyes);
 
-  eye1.position.set(0.5*4,0.5,1*1.5);
+  eye1.position.set(0.5*4,0.5,1.5);
 
-  eye2.position.set(-0.5*4,0.5,1*1.5);
+  eye2.position.set(-0.5*4,0.5,1.5);
+
+  eye3.position.set(0.5*4,0.5,-1.5);
+
+  eye4.position.set(-0.5*4,0.5,-1.5);
 
   face.add(eye1);
   face.add(eye2);
+  face.add(eye3);
+  face.add(eye4);
 
   //Adding face to enemy
 
@@ -1769,6 +1760,20 @@ function addEnemy(x,y,z){
   enemy.position.set(x,y,z);
   enemy.scale.set(2,2,2);
   enemy.userData.tag = "enemy";
+
+  enemy.traverse( function ( child ) {
+
+    // console.log(child.castShadow);
+
+    if ( child.isMesh ) {
+      
+      child.castShadow = true;
+      child.receiveShadow = true;
+      // console.log(child.castShadow);
+    }
+
+  } );
+
 
   scene.add(enemy);
 }
@@ -1805,5 +1810,11 @@ function addFire(){
     fire.material = fireMaterial;
 
 } );
+}
+
+function computeTriangleArea( a, b, c ) {
+
+	return new THREE.Triangle.set( a, b, c ).getArea();
+
 }
 

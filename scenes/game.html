@@ -5,6 +5,7 @@
     <script type="text/javascript" src="Level2.js"></script>
     <script type="text/javascript" src="Level3.js"></script>
     <script type="module" src="../main.js"></script>
+    <script src ="../js/ammo.js"></script>
 
 
     <title>Start</title>
@@ -156,7 +157,7 @@ var kiara = false;
 
  var runGame = function(str)
 {
-    
+    console.log(str);
     // document.getElementById("name").style.display = "none";
     // document.getElementById("brand").style.display = "none"; //level 2 button - i was lazy :|
     // document.getElementById("one").style.display = "none";
@@ -166,12 +167,12 @@ var kiara = false;
     // Ammo().then(levelLoop);
     if(str == 1)
     {
-        Ammo().then(level1Loop);
+        openL
     }
 
     if(str == 2)
     {
-        Ammo().then(llevel2Loop);
+        Ammo().then(level2Loop);
     }
     if(str == 3)
     {

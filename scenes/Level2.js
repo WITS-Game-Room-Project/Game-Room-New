@@ -310,6 +310,70 @@ addTrees3(-600, 350);
 addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
 AddCannon(-185,-47);
+
+// ADDING stuff TO TOP LEFT OF WORLD
+
+addTrees2(-600,-800)
+addTrees(-600,-1000)
+addTrees3(-700,-800)
+addTrees(-790,-850)
+addTrees(-800,-1000)
+addTrees2(-400,-900)
+addTrees3(-400,-700)
+addTrees3(-650,-900)
+addBush(-500,-900,0)
+addBush(-400,-500,0)
+addBush(-350,-750,0)
+
+bias = 45
+
+addDiamond(-600+ bias,-800)
+addDiamond(-600+ bias,-1000)
+addDiamond(-700+ bias,-800)
+addDiamond(-790+ bias,-850)
+addDiamond(-800+ bias,-1000)
+addDiamond(-400+ bias,-900)
+addDiamond(-400+ bias,-700)
+addDiamond(-650+ bias,-900)
+
+bias = 90
+
+addMushroom(-600+ bias,-800,true)
+addMushroom(-600+ bias,-1000,true)
+addMushroom(-700+ bias,-800,true)
+addMushroom(-790+ bias,-850,true)
+addMushroom(-800+ bias,-1000,true)
+addMushroom(-400+ bias,-900,true)
+addMushroom(-400+ bias,-700,true)
+addMushroom(-650+ bias,-900,true)
+
+
+addTrees2(-50,-700)
+addTrees3(-75,-800)
+addTrees(-150,-860)
+addTrees3(-200,-920)
+addTrees(-150,-700)
+addTrees3(-200,-780)
+addBush(-260,-830,0)
+addTrees2(-260,-500)
+addTrees(-280,-600)
+addTrees(-300,-700)
+addTrees3(-170,-600)
+
+bias = 40
+
+addDiamond(-75 + bias,-800)
+addDiamond(-200+ bias,-920)
+addDiamond(-260+ bias,-830,0)
+addDiamond(-280+ bias,-600)
+
+bias = 90
+addMushroom(-75 + bias,-800,true)
+addMushroom(-200+ bias,-920,true)
+addMushroom(-260+ bias,-830,0,true)
+addMushroom(-280+ bias,-600,true)
+
+
 //cannon on mapp
 let BallInWorld1 = false;
 
@@ -348,10 +412,10 @@ export const GameLoop = function(){
 
   // start of aerial view
   // SET X AND Y OF OBJECT YOU WANNA LOOK AT FROM ABOVE
-  let x = 0;
-  let z = 0;
+  let x = 400;
+  let z = -800;
   // SET HEIGHT
-  let height = 1500;
+  let height = 750;
 
   camera.position.set( x, height, z); 
   camera.lookAt( x, 0, z); 

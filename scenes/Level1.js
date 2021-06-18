@@ -170,9 +170,22 @@ function update(){
     changeLevelNumber(2);
   }
 
-  var myDiv = document.getElementById("text");
-  myDiv.innerHTML = "Diamond Count : " + diamondCount;
-  myDiv.style.fontSize = "30px";
+  if(diamondCount>=3){
+    var myDiv = document.getElementById("text");
+    myDiv.innerHTML = "Proceed to the cave ...";
+    myDiv.style.fontSize = "30px";
+    if(player.position.x<-200 && player.position.x >-390 && player.position.z<-430 && player.position.z>-600){
+      changeScene();
+    }
+  }else{
+    var myDiv = document.getElementById("text");
+    myDiv.innerHTML = "Diamond Count : " + diamondCount + "/40";
+    myDiv.style.fontSize = "30px";
+  }
+
+
+
+
 
 
   // for (let i = 0; i < scene.children.length; i++){
@@ -643,7 +656,7 @@ function changeScene() {
       curtain.style.setProperty("--w",'100%')
       curtain.style.setProperty("--h",'100%')
       curtain.style.setProperty("--opac",opac);
-    },100)
+    },2000)
 };
 
 
@@ -1546,14 +1559,12 @@ function detectCollision(){
       scene.remove(threeObject1);
       
       diamondCount++;
-      changeScene();
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
       
     
       scene.remove(threeObject0);
       diamondCount++;
-      changeScene();
       physicsWorld.removeRigidBody(rb0);
     }
 

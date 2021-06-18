@@ -7,7 +7,7 @@ import {GameLoop as Level2Loop} from "./scenes/Level2.js";
 let levelNumber = 1;
 
 export default function changeLevelNumber(newLevelNumber){
-    levelNumber = newLevelNumber;
+    this.levelNumber = newLevelNumber;
 }
 
 console.log(levelNumber);

@@ -15,6 +15,8 @@ import * as Ammo from "ammo.js";
 //=========================== Global Variables =======================================
 
 var changeLevelNumber;
+let myVar2 = null;
+
 var diamond;
 var mushroom;
 var tempMushroom;
@@ -222,25 +224,40 @@ function update(){
   if(opac==1){
     clearTimeout(myVar)
     //loading screen
-    let loadingScreen = document.getElementById("loadingScreen")
-    loadingScreen.style.setProperty("--zVal",'3')
+      liftCave = true;
+      for (let index = 0; index < 60; index++) {
+        setTimeout(function(){   
+          ambientLightMain.intensity += 0.025
+          skyUniforms[ 'rayleigh' ].value += 0.010;
+          curtain = document.getElementById("render")
+          opac = parseFloat(window.getComputedStyle(curtain,null).getPropertyValue("--opac"));
+          opac -= 0.01
+          curtain.style.setProperty("--w",'100%')
+          curtain.style.setProperty("--h",'100%')
+          curtain.style.setProperty("--opac",opac);   
+        }, 400);
+      }
 
-    curtain.style.setProperty("--w",'0%')
-    curtain.style.setProperty("--h",'0%')
-    curtain.style.setProperty("--opac",0);
+      curtain.style.setProperty("--w",'0%')
+      curtain.style.setProperty("--h",'0%')
+      curtain.style.setProperty("--opac",1);
+        
+      levelComplete = true;
 
-    levelComplete = true;
   }
 
-  if(diamondCount>=46){
+  if(opac<-0){
+
+    }
+
+  if(diamondCount>=3){
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Proceed to the cave ...";
     myDiv.style.fontSize = "30px";
-    if(player.position.x<-200 && player.position.x >-390 && player.position.z<-430 && player.position.z>-600){
-      changeScene();
-    }
+    diamondCount=0;
+    changeScene()
     
-    liftCave = true;
+    
   }else{
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Diamond Count : " + diamondCount + "/46";
@@ -324,8 +341,6 @@ function update(){
       }
     }
   }
-
-  
 }
 
 
@@ -631,10 +646,9 @@ function changeScene() {
       curtain.style.setProperty("--h",'100%')
       curtain.style.setProperty("--opac",opac);
 
-      levelComplete = true;
       //SHRAV: Fade into level Complete then unfade and when user dies
       //fade again
-    },2000)
+    },100)
 };
 
 

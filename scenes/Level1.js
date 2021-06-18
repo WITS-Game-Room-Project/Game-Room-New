@@ -643,7 +643,6 @@ function changeScene() {
       curtain.style.setProperty("--w",'100%')
       curtain.style.setProperty("--h",'100%')
       curtain.style.setProperty("--opac",opac);
-      console.log(opac)
     },100)
 };
 

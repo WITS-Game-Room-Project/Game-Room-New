@@ -215,12 +215,19 @@ function update(){
   }
 
 
+<<<<<<< HEAD
   sunParameters.elevation += delta;
   updateSun();
   var x = sky.material.uniforms[ 'sunPosition' ].value.x;
   var y = sky.material.uniforms[ 'sunPosition' ].value.y;
   var z = sky.material.uniforms[ 'sunPosition' ].value.z;
   directLight.position.set(x, y, z);
+=======
+
+
+
+
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 
 
   if (fire != undefined && kaboom){
@@ -285,6 +292,79 @@ function update(){
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+  //Move enemy up and down its path
+  if (typeof enemy !== "undefined" && enemy != null && typeof enemy.position !== "undefined"){
+    // console.log(enemy.position);
+    let currX = enemy.position.x;
+    let currZ = enemy.position.z;
+
+    let pathX = enemyPathList[enemyCurrPathIdx].x;
+    let pathZ = enemyPathList[enemyCurrPathIdx].z;
+
+    //Change direction
+    let reachedEnd = (Math.abs(parseInt(currX) - parseInt(pathX)) < enemyMoveDiff&& Math.abs(parseInt(currZ) - parseInt(pathZ)) < enemyMoveDiff);
+
+    if ( reachedEnd && (enemySteps > enemyStepsThreshold)){
+      if (enemyCurrPathIdx == 0){
+        enemyCurrPathIdx++;
+      }else{
+        enemyCurrPathIdx--;
+      }
+
+      pathX = enemyPathList[enemyCurrPathIdx].x;
+      pathZ = enemyPathList[enemyCurrPathIdx].z;
+
+      enemySteps = 0;
+    }    
+
+    //Move player to path
+    let enemyMovementSpeed = 5;
+
+    let diffX = currX - pathX;
+    let diffZ = currZ - pathZ;
+
+    let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
+
+    diffX /= normLength;
+    diffZ /= normLength;
+
+    diffX *= enemyMovementSpeed;
+    diffZ *= enemyMovementSpeed;
+
+    enemy.translateX(-diffX * delta);
+    enemy.translateZ(-diffZ * delta);
+
+    enemySteps++;
+    
+    if (typeof camera  !== "undefined"){
+      // console.log(enemy.position)
+      // enemy.lookAt(camera.position);
+    }
+  }
+  
+  
+  if (typeof enemy !== "undefined" && enemy != null){
+    if (typeof player !== "undefined" && player != null){
+      let playerPos = player.position;
+      let enemyPos = enemy.position;
+
+      let distanceBetw = Math.sqrt((playerPos.x - enemyPos.x)^2 + (playerPos.y - enemyPos.y)^2 + (playerPos.z - enemyPos.z)^2)
+      
+      if (distanceBetw < enemyBurnDistance){
+        if (distanceBetw < 2){
+          health.value -= 10000;
+        }
+        health.value -= 10 *delta ;
+      }
+    }
+  }
+
+  // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
+  // camera.position.y = playerPos.y + 220;
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 }
 
 

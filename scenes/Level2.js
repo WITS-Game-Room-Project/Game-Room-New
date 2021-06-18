@@ -312,7 +312,6 @@ let pos = new THREE.Vector3();
 
 let ttl = 6, ttlCounter = 0;
 
-
 //=========================== EACH FRAME =======================================
 
 
@@ -482,13 +481,7 @@ function setUpControls(){
   // gui.add( controls, 'screenSpacePanning' );
 }
 
-function on() {
-  document.getElementById("overlay").style.display = "block";
-}
 
-function off() {
-  document.getElementById("overlay").style.display = "none";
-}
 
 function addGround(){
   

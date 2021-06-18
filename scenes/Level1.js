@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Color, Mesh, MeshStandardMaterial, Vector3 } from "three";
+import { CanvasTexture, Color, Mesh, MeshStandardMaterial, Vector3 } from "three";
 import { cameraFOV, cameraNear, cameraFar } from "../utils/constants";
 import { MapControls } from "three/examples/jsm/controls/OrbitControls";
 import index, { GUI } from 'three/examples/jsm/libs/dat.gui.module.js';
@@ -9,9 +9,12 @@ import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import coord from '../classes/coord.class';
 import * as Ammo from "ammo.js";
+//import {levelTwo as Level2Loop} from "../main.js";
+// import changeLevelNumber from "../main.js";
 
 //=========================== Global Variables =======================================
 
+var changeLevelNumber;
 var diamond;
 var mushroom;
 var tempMushroom;
@@ -21,6 +24,7 @@ var diamondCount = 0;
 
 //Player Movement
 const playerMovement = 50;
+
 
 // Physics stuff
 let physicsWorld,rigidBodies = [], tmpTrans;
@@ -60,14 +64,11 @@ setUpRenderer();
 var controls;
 setUpControls();
 
-// Set directional light
-//Create a DirectionalLight and turn on shadows for the light
-var light;
-setSunLight();
+
 
 
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.1);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.05);
 scene.add(ambientLightMain);
 
 //Set up Light Post Lighting
@@ -116,8 +117,13 @@ var mirrorMesh;
 addOcean();
 
 //Set up skybox
-// var sun = new THREE.Vector3();
-// skyBox();
+// Sky
+var boxHelper;
+let sky = new Sky();
+let skyUniforms = sky.material.uniforms;
+var sun = new THREE.Vector3();
+var directLight;
+skyBox();
 //Add mushroom house
 addHouse(400, 300);
 
@@ -133,6 +139,10 @@ addProps();
 //=========================== EACH FRAME =======================================
 
 //Game Loop
+export function changeLevelFunc(changeLevelNumbert){
+  changeLevelNumber = changeLevelNumbert
+}
+
 export const GameLoop = function(){
   requestAnimationFrame(GameLoop);
 
@@ -145,25 +155,43 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-  if (typeof player !== "undefined" && player != null){
-    // console.log(player.position);
+  //Del
+  if (typeof boxHelper !== "undefined" && boxHelper != null){
+    boxHelper.update();
   }
 
-  var myDiv = document.getElementById("text");
-  myDiv.innerHTML = "Diamond Count : " + diamondCount;
-  myDiv.style.fontSize = "30px";
+  if(opac==1){
+    clearTimeout(myVar)
+    //loading screen
+    let loadingScreen = document.getElementById("loadingScreen")
+    loadingScreen.style.setProperty("--zVal",'3')
+
+    curtain.style.setProperty("--w",'0%')
+    curtain.style.setProperty("--h",'0%')
+    curtain.style.setProperty("--opac",0);
+
+    //load level 2
+    changeLevelNumber(2);
+  }
+
+  if(diamondCount>=3){
+    var myDiv = document.getElementById("text");
+    myDiv.innerHTML = "Proceed to the cave ...";
+    myDiv.style.fontSize = "30px";
+    if(player.position.x<-200 && player.position.x >-390 && player.position.z<-430 && player.position.z>-600){
+      changeScene();
+    }
+  }else{
+    var myDiv = document.getElementById("text");
+    myDiv.innerHTML = "Diamond Count : " + diamondCount + "/40";
+    myDiv.style.fontSize = "30px";
+  }
 
 
-  // for (let i = 0; i < scene.children.length; i++){
-  //   if (scene.children[i].userData){
-  //     if (scene.children[i].userData.tag){
-  //       if (scene.children[i].userData.tag == 'diamond'){
-  //         scene.children[i].rotateZ(2 * Math.PI * delta);
-  //       }
-  //     }
-  //   }
-    
-  // }
+
+
+
+
 
 
   if (fire != undefined && kaboom){
@@ -378,9 +406,11 @@ function addGround(){
     ground.scale.set(100, 100, 100);            
     ground.position.set(0, -70, 0);     
     
-    material = new THREE.MeshStandardMaterial({color: 0x228B22});
+    let material = new THREE.MeshStandardMaterial({color: 0x228B22});
     ground.material = material;
     ground.children[0].material = material;
+    let materialSide = new THREE.MeshStandardMaterial({color: 0x654321});
+    ground.children[1].material = materialSide;
 
     ground.traverse( function ( child ) {
 
@@ -392,7 +422,7 @@ function addGround(){
 
     } );
 
-    let materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
+    materialSide = new THREE.MeshBasicMaterial({color: 0x654321});
     ground.children[1].material = materialSide;    
 
     scene.add(ground);  
@@ -435,23 +465,36 @@ function addGround(){
 
 
 function setSunLight(){
+  
+  directLight  = new THREE.DirectionalLight( 0xffffff, 2 );
+  let directLightPos = sun.multiplyScalar(500);
+  directLight.castShadow = true;
 
-  light  = new THREE.DirectionalLight( 0xffffff, 3 );
-  light.maxPolarAngle = Math.PI/4;
-  light.position.set( -90, 50, -100 ); //default; light shining from top
-  light.castShadow = true; // default false
-  light.shadow.camera.left = -500;
-  light.shadow.camera.right = 500;
-  light.shadow.camera.top = 500;
-  light.shadow.camera.bottom = -500;
-
-  scene.add( light );
+  directLight.position.set(directLightPos.x,directLightPos.y,directLightPos.z);
+  directLight.lookAt(new THREE.Vector3(0,20,0)); //default; light shining from top
+  directLight.shadow.camera.left = -1000;
+  directLight.shadow.camera.right = 1000;
+  directLight.shadow.camera.top = 500;
+  directLight.shadow.camera.bottom = -500;
 
   //Set up shadow properties for the light
-  light.shadow.mapSize.width = 10000; // default
-  light.shadow.mapSize.height = 10000; // default
-  light.shadow.camera.near = 0.5; // default
-  light.shadow.camera.far = 100; // default
+  directLight.shadow.mapSize.width = 2000; // default
+  directLight.shadow.mapSize.height = 1000; // default
+  directLight.shadow.camera.near = 10; // default
+  directLight.shadow.camera.far = 1500; // default
+
+  scene.add(directLight);
+
+  // boxHelper = new THREE.BoxHelper(directLight,0x00ffff);
+  // scene.add(boxHelper);
+
+  // let lightBoxgeo = new THREE.BoxGeometry(1000,1000,1000)
+  // let lightBoxMat = new THREE.MeshBasicMaterial({color: 0xff00ff, wireframe: true});
+
+  // let lightBox = new THREE.Mesh(lightBoxgeo, lightBoxMat);
+  // lightBox.position.set(directLightPos.x,directLightPos.y,directLightPos.z);
+  // console.log(lightBox.position);
+  // scene.add(lightBox);
 
 }
 
@@ -603,23 +646,38 @@ function addOcean(){
   water.rotation.x = - Math.PI / 2;
 
   scene.add( water );
-
-
-
-
 }
+
+let myVar = 0;
+let opac = 0;
+let curtain = null;
+
+function changeScene() {
+    // Trigger animation
+    myVar = setInterval(function(){
+      ambientLightMain.intensity -= 0.025
+      skyUniforms[ 'rayleigh' ].value -= 0.010;
+      curtain = document.getElementById("render")
+      opac = parseFloat(window.getComputedStyle(curtain,null).getPropertyValue("--opac"));
+      opac += 0.01
+      curtain.style.setProperty("--w",'100%')
+      curtain.style.setProperty("--h",'100%')
+      curtain.style.setProperty("--opac",opac);
+    },2000)
+};
+
+
+
 
 function skyBox(){
 
-  const sky = new Sky();
   sky.scale.setScalar( 10000 );
   scene.add( sky );
 
-  const skyUniforms = sky.material.uniforms;
 
-  skyUniforms[ 'turbidity' ].value = 0;
-  skyUniforms[ 'rayleigh' ].value = 0.5; //Horizon Intesnity in General
-  skyUniforms[ 'mieCoefficient' ].value = 0; //Horizon Intensity at Point
+  skyUniforms[ 'turbidity' ].value = 10;
+  skyUniforms[ 'rayleigh' ].value = 0.2; //Horizon Intesnity in General
+  skyUniforms[ 'mieCoefficient' ].value = 0.00005; //Horizon Intensity at Point
   skyUniforms[ 'mieDirectionalG' ].value = 1; //Intensity of Sun
 
   const parameters = {
@@ -629,8 +687,9 @@ function skyBox(){
 
   const pmremGenerator = new THREE.PMREMGenerator( renderer );
 
-  function updateSun() {
 
+  function updateSun() {
+    
     const phi = THREE.MathUtils.degToRad( 90 - parameters.elevation );
     const theta = THREE.MathUtils.degToRad( parameters.azimuth );
 
@@ -646,6 +705,10 @@ function skyBox(){
 
   
   updateSun();
+
+  // Set directional light
+  //Create a DirectionalLight and turn on shadows for the light
+  setSunLight();
 
   const folderSky = gui.addFolder( 'Sky' );
   folderSky.add( parameters, 'elevation', 0, 180, 0.1 ).onChange( updateSun );
@@ -844,13 +907,13 @@ function addTrees(x, z){
     
     tree.traverse( function ( child ) {
 
-      console.log(child.castShadow);
+      // console.log(child.castShadow);
 
       if ( child.isMesh ) {
         
         child.castShadow = true;
         child.receiveShadow = true;
-        console.log(child.castShadow);
+        // console.log(child.castShadow);
       }
 
     } );
@@ -892,7 +955,21 @@ function addTrees2(x, z){
 
     var tree = gltf.scene.children[0];            
     tree.scale.set(3, 3, 3);            
-    tree.position.set(x, 10, z);            
+    tree.position.set(x, 10, z);      
+    
+    tree.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
     scene.add(tree);   
 
     //Ammojs Section
@@ -933,7 +1010,22 @@ function addTrees3(x, z){
 
     var tree = gltf.scene.children[0];            
     tree.scale.set(35, 35, 35);            
-    tree.position.set(x, 10, z);            
+    tree.position.set(x, 10, z);    
+    
+    tree.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
+
     scene.add(tree);   
 
     //Ammojs Section
@@ -977,6 +1069,20 @@ function addMushroom(x, z, explode){
     mushroom = gltf.scene.children[0];            
     mushroom.scale.set(0.07, 0.07, 0.07);            
     mushroom.position.set(x, 8, z);            
+
+    mushroom.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
     scene.add(mushroom);    
     
     tempMushroom = mushroom;
@@ -1021,6 +1127,19 @@ function addFlowers(x, z, explode, flowerLocation, flowerScale){
     flower = gltf.scene.children[0];            
     flower.scale.set(flowerScale, flowerScale, flowerScale);            
     flower.position.set(x, 8, z); 
+
+    flower.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
                
     scene.add(flower);    
     
@@ -1065,6 +1184,20 @@ function addFence(x, z, r){
     fence.scale.set(0.38,0.25,0.25);            
     fence.position.set(x, 10, z); 
     fence.rotation.z = r           
+
+    fence.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
     scene.add(gltf.scene);     
     
     //Ammojs Section
@@ -1108,6 +1241,20 @@ function addBush(x, z, r){
 
 
     bush.material = new THREE.MeshStandardMaterial({color: 0x6428a6});
+
+    bush.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
     scene.add(gltf.scene);       
           
     //Ammojs Section
@@ -1144,7 +1291,22 @@ function addHouse(x, z){
             
     var house = gltf.scene.children[0];            
     house.scale.set(1.6, 1.6, 1.6);            
-    house.position.set(x, 10, z);            
+    house.position.set(x, 10, z);      
+    
+    house.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
+
     scene.add(gltf.scene);     
     
     //Ammojs Section
@@ -1185,6 +1347,19 @@ function addCave(x, z){
     cave.scale.set(0.3, 0.3, 0.3);            
     cave.position.set(x, 10, z);
     cave.rotation.y = Math.PI;    
+
+    CanvasTexture.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
  
     scene.add(cave);
     

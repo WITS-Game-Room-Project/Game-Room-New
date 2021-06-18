@@ -302,14 +302,14 @@ addTrees3(-500, -325);
 
 //loop two
 
- addTrees2(-900, 400);
+addTrees2(-900, 400);
 addTrees(-650, 500);
 addDiamond(-600, 425, 0);
 addDiamond(-600, 475, 0);
 addTrees3(-600, 350);
 addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
-
+AddCannon(-185,-47);
 //cannon on mapp
 let BallInWorld1 = false;
 
@@ -348,10 +348,10 @@ export const GameLoop = function(){
 
   // start of aerial view
   // SET X AND Y OF OBJECT YOU WANNA LOOK AT FROM ABOVE
-  let x = -600;
-  let z = -800;
+  let x = 0;
+  let z = 0;
   // SET HEIGHT
-  let height = 700;
+  let height = 1500;
 
   camera.position.set( x, height, z); 
   camera.lookAt( x, 0, z); 
@@ -620,22 +620,22 @@ function handleKeyDown(event){
 
       case 87: //W: FORWARD
           moveDirection.forward = 1
-          console.log(player.position);
+        
           break;
           
       case 83: //S: BACK
           moveDirection.back = 1
-          console.log(player.position); 
+          
           break;
           
       case 65: //A: LEFT
           moveDirection.left = 1
-          console.log(player.position);
+          
           break;
           
       case 68: //D: RIGHT
           moveDirection.right = 1
-          console.log(player.position);
+          
           break;
           
   }
@@ -1413,6 +1413,15 @@ function detectCollision(){
       kaboom = true;
     }
 	
+    else if(tag0 == "ball" && tag1 == "player"){
+      scene.remove(threeObject0);
+      physicsWorld.removeRigidBody(rb0);
+     //negate health here
+    }
+    else if(tag0 == "player" && tag1 == "ball"){}
+	   scene.remove(threeObject1);
+     physicsWorld.removeRigidBody(rb1);
+    //negate health here
 	}
 
 }
@@ -1439,6 +1448,8 @@ function ThrowBall(){
   
    BallInWorld1 = true;
    arrBalls.push(ball);
+
+   AddCannon();
   
   }
 
@@ -1511,4 +1522,45 @@ function addFire(){
     fire.material = fireMaterial;
 
 } );
+}
+//ask for help on loading a model
+function AddCannon(x,z){
+  let CLocation = '../../assets/models/stylized_cannon/scene.gltf';
+  let loader = new GLTFLoader();
+
+        
+  loader.load(CLocation, function(gltf){
+
+    var cannon = gltf.scene.children[0];            
+    cannon.scale.set(3, 3, 3);            
+    cannon.position.set(x, 10, z);            
+    scene.add(cannon);   
+
+    //Ammojs Section
+    let Tempcannon = cannon;
+    let transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin( new Ammo.btVector3( Tempcannon.position.x, Tempcannon.position.y,Tempcannon.position.z ) );
+    transform.setRotation( new Ammo.btQuaternion( 0, 0, 0,1 ) );
+    let motionState = new Ammo.btDefaultMotionState( transform );
+
+    let CannonSize = new THREE.Box3().setFromObject(cannon).getSize();
+
+    let colShape = new Ammo.btBoxShape( new Ammo.btVector3( CannonSize.x/2, CannonSize.y, CannonSize.z/2) );
+    colShape.setMargin( 0.05 );
+
+    let localInertia = new Ammo.btVector3( 0, 0, 0 );
+    colShape.calculateLocalInertia( massG, localInertia );
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( massG, motionState, colShape, localInertia );
+    let body = new Ammo.btRigidBody( rbInfo );
+
+    body.setFriction(4);
+    body.setRollingFriction(10);
+
+    physicsWorld.addRigidBody( body );
+          
+  });
+ 
+
 }

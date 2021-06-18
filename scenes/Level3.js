@@ -215,25 +215,13 @@ function update(){
   }
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   sunParameters.elevation += delta;
   updateSun();
   var x = sky.material.uniforms[ 'sunPosition' ].value.x;
   var y = sky.material.uniforms[ 'sunPosition' ].value.y;
   var z = sky.material.uniforms[ 'sunPosition' ].value.z;
   directLight.position.set(x, y, z);
-=======
-=======
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 
-
-
-
-<<<<<<< HEAD
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
-=======
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 
 
   if (fire != undefined && kaboom){
@@ -298,8 +286,7 @@ function update(){
       }
     }
   }
-<<<<<<< HEAD
-=======
+
 
   //Move enemy up and down its path
   if (typeof enemy !== "undefined" && enemy != null && typeof enemy.position !== "undefined"){
@@ -334,8 +321,6 @@ function update(){
 
     let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
 
-<<<<<<< HEAD
-=======
   //Move enemy up and down its path
   if (typeof enemy !== "undefined" && enemy != null && typeof enemy.position !== "undefined"){
     // console.log(enemy.position);
@@ -369,7 +354,6 @@ function update(){
 
     let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
 
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
     diffX /= normLength;
     diffZ /= normLength;
 
@@ -386,13 +370,10 @@ function update(){
       // enemy.lookAt(camera.position);
     }
   }
-<<<<<<< HEAD
+
   
+
   
-=======
-  
-  
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
   if (typeof enemy !== "undefined" && enemy != null){
     if (typeof player !== "undefined" && player != null){
       let playerPos = player.position;
@@ -411,10 +392,7 @@ function update(){
 
   // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
   // camera.position.y = playerPos.y + 220;
-<<<<<<< HEAD
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
-=======
->>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
+
 }
 
 
@@ -1940,5 +1918,6 @@ function computeTriangleArea( a, b, c ) {
 
 	return new THREE.Triangle.set( a, b, c ).getArea();
 
+}
 }
 

@@ -1091,7 +1091,7 @@ function addMushroom(x, z, explode){
             
     mushroom = gltf.scene.children[0];            
     mushroom.scale.set(0.07, 0.07, 0.07);            
-    mushroom.position.set(x, 8, z);            
+    mushroom.position.set(x, 15, z);            
 
     mushroom.traverse( function ( child ) {
 

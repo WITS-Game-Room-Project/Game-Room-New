@@ -99,17 +99,6 @@ addCave(795, -832);
 // Add House
 addHouse(600,550);
 
-//Add Minimap
-let width = window.innerWidth;
-let height = window.innerHeight;
-let orthiMulti = 0.4;
-const minimapHeight = 400;
-const minimapRenderer = new THREE.WebGLRenderer({canvas: document.querySelector("#minimap"), antialias: false});
-const minimapCam = new THREE.OrthographicCamera( orthiMulti* width/-2, orthiMulti* width/2, orthiMulti * height/2, orthiMulti * height/-2, 0, minimapHeight*1.2 );
-// const minimapCam = new THREE.PerspectiveCamera(50, (18/25)*window.innerWidth/window.innerHeight,10,minimapHeight*1.2);
-minimapCam.zoom = 0.1;
-addMinimap();
-
 // Add Fence
 let arrFencePositions = [
   [650,420,Math.PI/2], [570,420,Math.PI/2] , [570,360,Math.PI/2] , [650,360,Math.PI/2] ,
@@ -423,14 +412,14 @@ export const GameLoop = function(){
 
   // start of aerial view
   // SET X AND Y OF OBJECT YOU WANNA LOOK AT FROM ABOVE
-  // let x = 400;
-  // let z = -800;
-  // // SET HEIGHT
-  // let height = 750;
+  let x = 400;
+  let z = -800;
+  // SET HEIGHT
+  let height = 750;
 
-  // camera.position.set( x, height, z); 
-  // camera.lookAt( x, 0, z); 
-  // camera.up.set( 0, 1, 0 );
+  camera.position.set( x, height, z); 
+  camera.lookAt( x, 0, z); 
+  camera.up.set( 0, 1, 0 );
   // end of aerial view
 
 
@@ -542,13 +531,8 @@ function update(){
     }
   }
   
-  //Ortho update
-  if (typeof player !== "undefined" && player != null && player.position != null){
-    let camX = player.position.x;
-    let camZ = player.position.z;
-
-    minimapCam.position.set( camX, minimapHeight, camZ); 
-  }
+  // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
+  // camera.position.y = playerPos.y + 220;
 }
 
 
@@ -1643,17 +1627,4 @@ function AddCannon(x,z){
   });
  
 
-}
-
-function addMinimap(){
-  let camX = 0;
-  let camZ = 0;
-
-  if (typeof player !== "undefined" && player != null && player.position != null){
-    camX = player.position.x;
-    camZ = player.position.z;
-  }
-  minimapCam.position.set( camX, minimapHeight, camZ); 
-  minimapCam.lookAt( 0, 0, 0); 
-  minimapCam.up.set( 0, 1, 0 );
 }

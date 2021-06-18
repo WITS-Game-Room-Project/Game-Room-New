@@ -22,8 +22,7 @@ var mushroom;
 var tempMushroom;
 //////////////////////////KIATA 
 var diamondCount = 0;
-var levelComplete = false;
-var liftCave = false;
+
 
 //Player Movement
 const playerMovement = 50;
@@ -101,19 +100,12 @@ addFire();
 //Add Enemy
 var enemy;
 const enemyStepsThreshold = 150;
-
-
-//Add Minimap
-let width = window.innerWidth;
-let height = window.innerHeight;
-let orthiMulti = 0.4;
-const minimapHeight = 400;
-const minimapRenderer = new THREE.WebGLRenderer({canvas: document.querySelector("#minimap"), antialias: false});
-const minimapCam = new THREE.OrthographicCamera( orthiMulti* width/-2, orthiMulti* width/2, orthiMulti * height/2, orthiMulti * height/-2, 0, minimapHeight*1.2 );
-// const minimapCam = new THREE.PerspectiveCamera(50, (18/25)*window.innerWidth/window.innerHeight,10,minimapHeight*1.2);
-minimapCam.zoom = 0.1;
-addMinimap();
-
+var enemyMoveDiff = 5;
+var enemySteps = enemyStepsThreshold + 1;
+var enemyCurrPathIdx = 0;
+var enemyPathList = [new coord(100,100), new coord(407, -150)]
+const enemyBurnDistance = 10;
+// addEnemy(100,25,100);
 
 
 
@@ -150,7 +142,6 @@ var health = document.getElementById("health")
 health.value -= 0; 
 var purpleFlower = '../../assets/models/flowers/purple_flower/scene.gltf';
 var orangeFlower = '../../assets/models/flowers/orange_flower/scene.gltf';
-var cave;
 addProps();
 
 //=========================== EACH FRAME =======================================
@@ -160,46 +151,14 @@ export function changeLevelFunc(changeLevelNumbert){
   changeLevelNumber = changeLevelNumbert
 }
 
-var enemies = []
 export const GameLoop = function(){
   requestAnimationFrame(GameLoop);
-  
-    
-  if (!levelComplete){
-    if (health.value <= 0){
-        return;
-      }
-   }
 
+  if (health.value <= 0){
+    return;
+  }
 
   update();
-    //Add Enemies at End
-    if (levelComplete){
-    
-      player.position.set(-147,22,-471);
-  
-      camera.position.set(-3,65,-406);
-      camera.lookAt(player.position);
-  
-      for (let i = 0; i < 8; i+= 1){
-          let enemyDist = 75;
-  
-          let x = enemyDist * Math.cos(Math.PI/4 * i);
-          let z = enemyDist * Math.sin(Math.PI/4 * i);
-  
-          enemies.push(addEnemy(player.position.x + x,-10,player.position.z + z));
-      }
-  
-      if (enemies[0].position.y < 22){
-          for (let i = 0; i < 8; i+= 1){
-              enemies[i].position.y += (delta*5);
-          }
-      }
-      else{
-        //EXIT THE GAME
-      }
-    }
-
   render();
 }
 
@@ -207,13 +166,7 @@ export const GameLoop = function(){
 function update(){
   delta = clockTime.getDelta();
 
-  if (!levelComplete){
-    controls.update();
-  }
-
-  if (liftCave && cave.position.y < 10){
-    cave.position.y += 25 * delta;
-  }
+  controls.update();
   
 
   //Del
@@ -244,20 +197,17 @@ function update(){
         
       levelComplete = true;
 
+    //load level 2
+    changeLevelNumber(2);
   }
-
-  if(opac<-0){
-
-    }
 
   if(diamondCount>=3){
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Proceed to the cave ...";
     myDiv.style.fontSize = "30px";
-    diamondCount=0;
-    changeScene()
-    
-    
+    if(player.position.x<-200 && player.position.x >-390 && player.position.z<-430 && player.position.z>-600){
+      changeScene();
+    }
   }else{
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Diamond Count : " + diamondCount + "/46";
@@ -297,45 +247,39 @@ function update(){
     camera.position.y = 150;
   }
 
-  //Ortho update
-  if (typeof player !== "undefined" && player != null && player.position != null){
-    let camX = player.position.x;
-    let camZ = player.position.z;
-
-    minimapCam.position.set( camX, minimapHeight, camZ); 
+  if (typeof player !== "undefined" && player != null && typeof player.position !== "undefined"){
+  //  console.log(player.position); 
   }
 
-  if (!levelComplete){
-    if (tempPlayer != undefined){
-      if (tempPlayer.userData != null){
-        if(tempPlayer.userData.physicsBody != null){
-          let playerPos = player.position;
-          let yFactor = 3;
-          let distanceAway = 500;
-          let velocity = tempPlayer.userData.physicsBody.getLinearVelocity().length();
-          let diffX = Math.abs(camera.position.x - playerPos.x + distanceAway);
-          let diffZ = Math.abs(camera.position.z - playerPos.z + distanceAway);
-          if (velocity > 0.01 || diffX > 1 || diffZ > 1){
-            let cameraMoveRate = 10*delta;
-            let horiSpeed = 2;
-            if (camera.position.x < playerPos.x + distanceAway){
-              camera.position.x += cameraMoveRate * horiSpeed;
-            }
-            if (camera.position.x > playerPos.x + distanceAway){
-              camera.position.x -= cameraMoveRate * horiSpeed;
-            }
-            if (camera.position.y < playerPos.y + distanceAway*yFactor){
-              camera.position.y += cameraMoveRate;
-            }
-            if (camera.position.y > playerPos.y + distanceAway*yFactor){
-              camera.position.y -= cameraMoveRate;
-            }
-            if (camera.position.z < playerPos.z + distanceAway){
-              camera.position.z += cameraMoveRate * horiSpeed;
-            }
-            if (camera.position.z > playerPos.z + distanceAway){
-              camera.position.z -= cameraMoveRate * horiSpeed;
-            }
+  if (tempPlayer != undefined){
+    if (tempPlayer.userData != null){
+      if(tempPlayer.userData.physicsBody != null){
+        let playerPos = player.position;
+        let yFactor = 3;
+        let distanceAway = 500;
+        let velocity = tempPlayer.userData.physicsBody.getLinearVelocity().length();
+        let diffX = Math.abs(camera.position.x - playerPos.x + distanceAway);
+        let diffZ = Math.abs(camera.position.z - playerPos.z + distanceAway);
+        if (velocity > 0.01 || diffX > 1 || diffZ > 1){
+          let cameraMoveRate = 10*delta;
+          let horiSpeed = 2;
+          if (camera.position.x < playerPos.x + distanceAway){
+            camera.position.x += cameraMoveRate * horiSpeed;
+          }
+          if (camera.position.x > playerPos.x + distanceAway){
+            camera.position.x -= cameraMoveRate * horiSpeed;
+          }
+          if (camera.position.y < playerPos.y + distanceAway*yFactor){
+            camera.position.y += cameraMoveRate;
+          }
+          if (camera.position.y > playerPos.y + distanceAway*yFactor){
+            camera.position.y -= cameraMoveRate;
+          }
+          if (camera.position.z < playerPos.z + distanceAway){
+            camera.position.z += cameraMoveRate * horiSpeed;
+          }
+          if (camera.position.z > playerPos.z + distanceAway){
+            camera.position.z -= cameraMoveRate * horiSpeed;
           }
         }
       }
@@ -349,15 +293,10 @@ function render(){
 
   water.material.uniforms['time'].value += 1.0 / 60.0;
   
-  if (!levelComplete){
-    movePlayer();
-    updatePhysics();
-  }
-  // Step world
-  physicsWorld.stepSimulation( delta, 10 );
-  
+  movePlayer();
+  updatePhysics();
+
   renderer.render(scene,camera);
-  minimapRenderer.render(scene,minimapCam);
 }
 
 
@@ -645,10 +584,7 @@ function changeScene() {
       curtain.style.setProperty("--w",'100%')
       curtain.style.setProperty("--h",'100%')
       curtain.style.setProperty("--opac",opac);
-
-      //SHRAV: Fade into level Complete then unfade and when user dies
-      //fade again
-    },100)
+    },2000)
 };
 
 
@@ -1368,7 +1304,7 @@ function addCave(x, z){
         
   loader.load(caveLocation, function(gltf){
             
-    cave = gltf.scene;            
+    var cave = gltf.scene;            
     cave.scale.set(0.3, 0.3, 0.3);            
     cave.position.set(x, -150, z);
     cave.rotation.y = Math.PI;    
@@ -1418,166 +1354,166 @@ function addCave(x, z){
 
 function addProps(){
   //Add Diamonds
-  //body of island
-  addDiamond(125,250.5,0);
-  addDiamond(50,225.5,0);
-  addDiamond(75,65,0);
-  addDiamond(-207,-125,0);
-  addDiamond(-262,-198,0);
-  addDiamond(-246,-295,0);
-  addDiamond(-356,-163,0);
-  addDiamond(-350,200,0);
-  addDiamond(-274,263,0);
-  addDiamond(-305,369,0);
-  addDiamond(50,19,0);
-  addDiamond(200,195,0);
-  addDiamond(308,205,0);
-  addDiamond(105,-205,0);
-  addDiamond(305,-205,0);
-  addDiamond(205,405,0);
-  addDiamond(270,367,0);
-  addDiamond(357,10,0);
-  on();
+//body of island
+addDiamond(125,250.5,0);
+addDiamond(50,225.5,0);
+addDiamond(75,65,0);
+addDiamond(-207,-125,0);
+addDiamond(-262,-198,0);
+addDiamond(-246,-295,0);
+addDiamond(-356,-163,0);
+addDiamond(-350,200,0);
+addDiamond(-274,263,0);
+addDiamond(-305,369,0);
+addDiamond(50,19,0);
+addDiamond(200,195,0);
+addDiamond(308,205,0);
+addDiamond(105,-205,0);
+addDiamond(305,-205,0);
+addDiamond(205,405,0);
+addDiamond(270,367,0);
+addDiamond(357,10,0);
+on();
 
 
-  addTrees(0, 100); //origin - house ish - near blob
-  addTrees2(450, 500);
-  //addBush(450,500);
-  addTrees(500, 500);
+addTrees(0, 100); //origin - house ish - near blob
+addTrees2(450, 500);
+//addBush(450,500);
+addTrees(500, 500);
 
-  //three near house
-  addDiamond(-200, -175, 0);
-  addTrees3(-250, -150);
-  addDiamond(-300, -275, 0);
-  addTrees2(-200, -200); 
-  addTrees(-250, -200);
-  addDiamond(-300, -175, 0);
-  addTrees2(-300, -175);
-  //addBush(-200,-200);
+//three near house
+addDiamond(-200, -175, 0);
+addTrees3(-250, -150);
+addDiamond(-300, -275, 0);
+addTrees2(-200, -200); 
+addTrees(-250, -200);
+addDiamond(-300, -175, 0);
+addTrees2(-300, -175);
+//addBush(-200,-200);
 
-  //across path
-  addTrees(150, -150);
-  addTrees3(160, -100);
+//across path
+addTrees(150, -150);
+addTrees3(160, -100);
 
-  //behind house
-  addTrees3(650, 350);
-  addTrees2(500, 200);
-  //addBush(500,-50);
-  //addBush(550,0);
+//behind house
+addTrees3(650, 350);
+addTrees2(500, 200);
+//addBush(500,-50);
+//addBush(550,0);
 
-  //border near house
-  addTrees3(200, 550);
-  addTrees2(150, 600); 
-  addTrees(-200, 400);
+//border near house
+addTrees3(200, 550);
+addTrees2(150, 600); 
+addTrees(-200, 400);
 
-  //loop one
-  //mouth
-  addDiamond(450, -200, 0);
-  addDiamond(450, -150, 0);
-  addTrees(400, -250);
-  addTrees2(400, -475);
-  addTrees(250, -500);
-  //inside
-  addTrees(550, -600);
-  addDiamond(550, -625, 0);
-  addDiamond(550, -650, 0);
-  addTrees2(550, -675);
-  //addBush(550,-600);
-  addDiamond(550, -725, 0);
-  addDiamond(575, -750, 0);
-  addTrees3(550, -700);
+//loop one
+//mouth
+addDiamond(450, -200, 0);
+addDiamond(450, -150, 0);
+addTrees(400, -250);
+addTrees2(400, -475);
+addTrees(250, -500);
+//inside
+addTrees(550, -600);
+addDiamond(550, -625, 0);
+addDiamond(550, -650, 0);
+addTrees2(550, -675);
+//addBush(550,-600);
+addDiamond(550, -725, 0);
+addDiamond(575, -750, 0);
+addTrees3(550, -700);
 
-  addDiamond(620, -750, 0);
-  addDiamond(660, -750, 0);
-  addDiamond(700, -740, 0);
-  addTrees(600, -750);
+addDiamond(620, -750, 0);
+addDiamond(660, -750, 0);
+addDiamond(700, -740, 0);
+addTrees(600, -750);
 
-  addDiamond(775, -700, 0);
-  addDiamond(830, -600, 0);
-  addDiamond(880, -550, 0);
-  addDiamond(950, -350, 0);
-  addDiamond(900, -200, 0);
-  addDiamond(900, -150, 0);
-  addDiamond(850, -150, 0);
-  addDiamond(800, -175, 0);
-  addDiamond(800, -175, 0);
-  addTrees(750, -700);
-  addTrees2(800, -600);
-  addTrees(850, -500);
-  addDiamond(800, -500, 0);
-  addTrees2(900, -400);
-  addTrees2(875, -350);
-  addTrees3(850, -450);
-  addDiamond(850, -500, 0);
-  addTrees(900, -250);
-  addTrees2(850, -200);
-  addDiamond(900, -200, 0);
-  addDiamond(600, -25, 0);
-  addTrees(725, -250);
-  addTrees(700, -300);
-  addDiamond(500, 0, 0);
+addDiamond(775, -700, 0);
+addDiamond(830, -600, 0);
+addDiamond(880, -550, 0);
+addDiamond(950, -350, 0);
+addDiamond(900, -200, 0);
+addDiamond(900, -150, 0);
+addDiamond(850, -150, 0);
+addDiamond(800, -175, 0);
+addDiamond(800, -175, 0);
+addTrees(750, -700);
+addTrees2(800, -600);
+addTrees(850, -500);
+addDiamond(800, -500, 0);
+addTrees2(900, -400);
+addTrees2(875, -350);
+addTrees3(850, -450);
+addDiamond(850, -500, 0);
+addTrees(900, -250);
+addTrees2(850, -200);
+addDiamond(900, -200, 0);
+addDiamond(600, -25, 0);
+addTrees(725, -250);
+addTrees(700, -300);
+addDiamond(500, 0, 0);
 
-  //arrow bit
-  addTrees2(-400, 950); //arrow tip
-  addTrees(-500, 800); //right
-  addTrees2(-250, 825); //left
-  addTrees(-300, 575); //branch things
-  addTrees3(-300, 625);
-
-
-  //near cave
-  addTrees(200, -550);
-  addDiamond(600, -575, 0);
-  addTrees2(200, -675);
-  addDiamond(100, -475, 0);
-  addDiamond(150, -275, 0);
-  addDiamond(50, -675, 0);
-  addDiamond(-50, -275, 0);
-  addTrees(50, -650);
-  addTrees3(100, -625);
-
-  //near cave - other side
-  addTrees(-450, -350);
-
-  addTrees2(-600, 50);
-  addTrees(-550, -200);
-  addTrees3(-500, -325);
-
-  //loop two
-  addTrees(-750, 50);
-  addDiamond(-700, 75, 0);
-  addTrees3(-850, 50);
-  addDiamond(-800, 100, 0);
-  addTrees2(-875, 150);
-  addDiamond(-900, 200, 0);
-  addTrees(-900, 250);
-  addTrees(-900, 300);
-  addDiamond(-900, 275, 0);
-  addTrees2(-900, 400);
-  addTrees(-650, 500);
-  addDiamond(-600, 425, 0);
-  addDiamond(-600, 475, 0);
-  addTrees3(-600, 350);
-  addDiamond(-800, 475, 0);
-  addTrees2(-700, 500);
-
-  addCave(-480, -680);
-
-  //Set up trees
-  // let arrTreePositions = [
-  //   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
-  // ];
+//arrow bit
+addTrees2(-400, 950); //arrow tip
+addTrees(-500, 800); //right
+addTrees2(-250, 825); //left
+addTrees(-300, 575); //branch things
+addTrees3(-300, 625);
 
 
+//near cave
+addTrees(200, -550);
+addDiamond(600, -575, 0);
+addTrees2(200, -675);
+addDiamond(100, -475, 0);
+addDiamond(150, -275, 0);
+addDiamond(50, -675, 0);
+addDiamond(-50, -275, 0);
+addTrees(50, -650);
+addTrees3(100, -625);
+
+//near cave - other side
+addTrees(-450, -350);
+
+addTrees2(-600, 50);
+addTrees(-550, -200);
+addTrees3(-500, -325);
+
+//loop two
+addTrees(-750, 50);
+addDiamond(-700, 75, 0);
+addTrees3(-850, 50);
+addDiamond(-800, 100, 0);
+addTrees2(-875, 150);
+addDiamond(-900, 200, 0);
+addTrees(-900, 250);
+addTrees(-900, 300);
+addDiamond(-900, 275, 0);
+addTrees2(-900, 400);
+addTrees(-650, 500);
+addDiamond(-600, 425, 0);
+addDiamond(-600, 475, 0);
+addTrees3(-600, 350);
+addDiamond(-800, 475, 0);
+addTrees2(-700, 500);
+
+addCave(-480, -680);
+
+//Set up trees
+// let arrTreePositions = [
+//   [0, 0], [50, 50], [200, 200], [525, 50], [25, 500], [300, 150]
+// ];
 
 
-  let arrTreePositions = [
-    [-420,700]
-  ];
 
-  for (var i = 0; i < arrTreePositions.length; i++){
-    addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
-  }
+
+let arrTreePositions = [
+  [-420,700]
+];
+
+for (var i = 0; i < arrTreePositions.length; i++){
+  addTrees(arrTreePositions[i][0], arrTreePositions[i][1]);
+}
 
   //Add mushrooms
 
@@ -1673,7 +1609,8 @@ function movePlayer(){
 }
 
 function updatePhysics(){
-  
+  // Step world
+  physicsWorld.stepSimulation( delta, 10 );
 
   // Update rigid bodies
   for ( let i = 0; i < rigidBodies.length; i++ ) {
@@ -1715,11 +1652,14 @@ function detectCollision(){
     let tag1 = userData1 ? userData1.tag : "none";
 
     if (tag0 == "player" && tag1 == "diamond"){
+      
       scene.remove(threeObject1);
       
       diamondCount++;
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
+      
+    
       scene.remove(threeObject0);
       diamondCount++;
       physicsWorld.removeRigidBody(rb0);
@@ -1830,8 +1770,6 @@ function addEnemy(x,y,z){
 
 
   scene.add(enemy);
-
-  return enemy;
 }
 
 function enemyEye(){
@@ -1874,15 +1812,3 @@ function computeTriangleArea( a, b, c ) {
 
 }
 
-function addMinimap(){
-  let camX = 0;
-  let camZ = 0;
-
-  if (typeof player !== "undefined" && player != null && player.position != null){
-    camX = player.position.x;
-    camZ = player.position.z;
-  }
-  minimapCam.position.set( camX, minimapHeight, camZ); 
-  minimapCam.lookAt( 0, 0, 0); 
-  minimapCam.up.set( 0, 1, 0 );
-}

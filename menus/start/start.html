@@ -1,0 +1,169 @@
+<!-- HTML  -->
+<head>
+    <link rel="stylesheet" href="./start.css">
+    <title>Start</title>
+</head>
+
+<div id="name">
+    <h1>RIMURU</h1>
+
+</div>
+
+<div id="one">
+    <a onclick="runGame1()">LEVEL 1</a>
+</div>
+
+<div id="brand">
+    <a onclick="runGame2()">LEVEL 2</a>
+</div>
+
+<div id="three">
+    <a onclick="runGame3()">LEVEL 3</a>
+</div>
+
+
+<div id = "footer" class="footer">
+    <p>
+        Brought to you by <strong> GameRoom </strong>
+    </p>
+</div>
+
+<!-- STYLING -->
+<style>
+    .footer {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      color: white;
+      text-align: center;
+      font-size: 30;
+      margin-bottom: 5;
+    }
+
+    h1 {
+        -webkit-text-stroke: 2px black;
+    }
+
+</style>
+
+
+<!-- JS -->
+<script type = "text/javascript" src=".../main.js">
+    
+let start = document.querySelector('#brand');
+let one = document.querySelector('#one');
+let three = document.querySelector('#three')
+
+let ex = 10;
+function swing(element) {
+
+    function update(time) {
+        
+        const x = Math.sin(time / 1231) * ex;
+        const y = Math.sin(time / 1458) * ex;
+
+        element.style.transform = [
+            `rotateX(${x}deg)`,
+            `rotateY(${y}deg)`
+        ].join(' ');
+
+        requestAnimationFrame(update);
+    }
+    update(0); //love your nested functions
+}
+
+swing(start);
+swing(one);
+swing(three);
+
+
+let start_button = start.querySelector('a');
+let one_button = one.querySelector('a');
+let three_button = three.querySelector('a');
+
+let og_color = start_button.style.color;
+let og_color2 = one_button.style.color;
+let og_color3 = three_button.style.color;
+let inter = 0;
+
+// level 2 button
+start.addEventListener('mouseover', (e) => {
+  
+ ex = 20;  
+ inter = setInterval(()=>{  
+    start_button.style.color = '#'+Math.floor(Math.random()*16777215).toString(16); 
+  }, 1000); 
+  
+});
+
+
+start.addEventListener('mouseout', (e) => {
+  
+  ex = 10;
+  clearInterval(inter);
+  start_button.style.color = og_color; 
+  
+});
+
+
+//level one button
+one.addEventListener('mouseover', (e) => {
+  
+  ex = 20;  
+  inter = setInterval(()=>{  
+     one_button.style.color = '#'+Math.floor(Math.random()*16777215).toString(16); 
+   }, 1000); 
+   
+ });
+ 
+ 
+ one.addEventListener('mouseout', (e) => {
+   
+   ex = 10;
+   clearInterval(inter);
+   one_button.style.color = og_color2; 
+   
+ });
+
+ //level 3
+ three.addEventListener('mouseover', (e) => {
+  
+  ex = 20;  
+  inter = setInterval(()=>{  
+     three_button.style.color = '#'+Math.floor(Math.random()*16777215).toString(16); 
+   }, 1000); 
+   
+ });
+ 
+ 
+ three.addEventListener('mouseout', (e) => {
+   
+   ex = 10;
+   clearInterval(inter);
+   three_button.style.color = og_color3; 
+   
+ });
+
+
+
+ var runGame = function(levelLoop)
+{
+    document.getElementById("name").style.display = "none";
+    document.getElementById("brand").style.display = "none"; //level 2 button - i was lazy :|
+    document.getElementById("one").style.display = "none";
+    document.getElementById("three").style.display = "none";
+    document.getElementById("footer").style.display = "none";
+
+    
+
+    // disappears now :?
+    // Ammo().then(levelLoop);
+
+}
+
+</script>
+
+
+
+<!-- type = "text/javascript" src="Level1.js" -->

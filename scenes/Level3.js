@@ -216,6 +216,7 @@ function update(){
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   sunParameters.elevation += delta;
   updateSun();
   var x = sky.material.uniforms[ 'sunPosition' ].value.x;
@@ -223,10 +224,15 @@ function update(){
   var z = sky.material.uniforms[ 'sunPosition' ].value.z;
   directLight.position.set(x, y, z);
 =======
+=======
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 
 
 
 
+<<<<<<< HEAD
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
+=======
 >>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 
 
@@ -328,6 +334,42 @@ function update(){
 
     let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
 
+<<<<<<< HEAD
+=======
+  //Move enemy up and down its path
+  if (typeof enemy !== "undefined" && enemy != null && typeof enemy.position !== "undefined"){
+    // console.log(enemy.position);
+    let currX = enemy.position.x;
+    let currZ = enemy.position.z;
+
+    let pathX = enemyPathList[enemyCurrPathIdx].x;
+    let pathZ = enemyPathList[enemyCurrPathIdx].z;
+
+    //Change direction
+    let reachedEnd = (Math.abs(parseInt(currX) - parseInt(pathX)) < enemyMoveDiff&& Math.abs(parseInt(currZ) - parseInt(pathZ)) < enemyMoveDiff);
+
+    if ( reachedEnd && (enemySteps > enemyStepsThreshold)){
+      if (enemyCurrPathIdx == 0){
+        enemyCurrPathIdx++;
+      }else{
+        enemyCurrPathIdx--;
+      }
+
+      pathX = enemyPathList[enemyCurrPathIdx].x;
+      pathZ = enemyPathList[enemyCurrPathIdx].z;
+
+      enemySteps = 0;
+    }    
+
+    //Move player to path
+    let enemyMovementSpeed = 5;
+
+    let diffX = currX - pathX;
+    let diffZ = currZ - pathZ;
+
+    let normLength = Math.sqrt(diffX * diffX + diffZ * diffZ);
+
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
     diffX /= normLength;
     diffZ /= normLength;
 
@@ -344,8 +386,13 @@ function update(){
       // enemy.lookAt(camera.position);
     }
   }
+<<<<<<< HEAD
   
   
+=======
+  
+  
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
   if (typeof enemy !== "undefined" && enemy != null){
     if (typeof player !== "undefined" && player != null){
       let playerPos = player.position;
@@ -364,6 +411,9 @@ function update(){
 
   // camera.position.set(playerPos.x + 180, playerPos.y + 180, playerPos.z + 180);
   // camera.position.y = playerPos.y + 220;
+<<<<<<< HEAD
+>>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
+=======
 >>>>>>> parent of 16f984d (Level 3 transitiion and minimap)
 }
 

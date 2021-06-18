@@ -174,7 +174,7 @@ function update(){
     changeLevelNumber(2);
   }
 
-  if(diamondCount>=3){
+  if(diamondCount>=40){
     var myDiv = document.getElementById("text");
     myDiv.innerHTML = "Proceed to the cave ...";
     myDiv.style.fontSize = "30px";
@@ -186,13 +186,6 @@ function update(){
     myDiv.innerHTML = "Diamond Count : " + diamondCount + "/40";
     myDiv.style.fontSize = "30px";
   }
-
-
-
-
-
-
-
 
   if (fire != undefined && kaboom){
     scale += 0.1;

@@ -11,7 +11,10 @@ import * as Ammo from "ammo.js";
 
 //=========================== Global Variables =======================================
 
+var changeLevelNumber;
 var diamond;
+var mushroom;
+var tempMushroom;
 //////////////////////////KIATA 
 var diamondCount = 0;
 
@@ -73,6 +76,12 @@ var tempPlayer;
 addPlayer(-50,30,-50);
 var tempDiamond;
 
+//Set up Fire
+var fire;
+var fireMixer; 
+var scale = 1.5; 
+var kaboom = false;
+addFire();
 
 //Set up onEvents
 setOnEvents();
@@ -85,7 +94,7 @@ addOcean();
 var sun = new THREE.Vector3();
 skyBox();
 
-addCave(-480, -680);
+addCave(795, -832);
 
 // Add House
 addHouse(600,550);
@@ -109,6 +118,21 @@ let arrFencePositions = [
   [860,387,Math.PI/2],
   [850,342,Math.PI/-2.5],
   [833,297,Math.PI/-2.5],
+
+
+  // These are for bototm part of island
+
+  [25,900,Math.PI/2],
+  [-125,900,Math.PI/2],
+  [-125,800,Math.PI/2],
+  [ 25,800,Math.PI/2],
+  [-125,700,Math.PI/2],
+  [ 25,700,Math.PI/2],
+  [-125,600,Math.PI/2],
+  [ 25,600,Math.PI/2],
+  [-125,500,Math.PI/2],
+  [25,500,Math.PI/2],
+
 ];
 
 for (var i = 0; i < arrFencePositions.length; i++){
@@ -116,7 +140,8 @@ for (var i = 0; i < arrFencePositions.length; i++){
 }
 
 // Adding trees
-
+let test = 35
+let bias = 20
 let arrTreePositions = [
   [660,680],
   [743,620],
@@ -126,11 +151,26 @@ let arrTreePositions = [
   [850,342],
   [839,287],
 
+  [25 - bias,900 + test], // BOTTOM HALF OF ISLAND
+  [-125 - bias,900 + test],
+  [-125 - bias,800 + test],
+  [ 25 - bias,800 + test],
+  [-125 - bias,700 + test],
+  [ 25 - bias,700 + test],
+  [-125 - bias,600 + test],
+  [ 25 - bias,600 + test],
+  [-125 - bias,500 + test],
+  [25 - bias,500 + test],
+
+
+
+
 ]
 
 for (var i = 0; i < arrTreePositions.length; i++){
   addTrees(arrTreePositions[i][0]+19, arrTreePositions[i][1]+15);
 }
+
 
 let diamondArray = [
   [750,680,0],
@@ -140,28 +180,55 @@ let diamondArray = [
   [950,480,0],
   [950,380,0],
 
+  [-50,500],
+  [-50,600],
+  [-50,700],
+  [-50,800],
+  [-50,900],
+  [-50,1000],
+
+
 ]
 
 for (var i = 0; i < diamondArray.length; i++){
   addDiamond(diamondArray[i][0], diamondArray[i][1], diamondArray[i][2]);
 }
 
-let mushroomArray = [
-  [900,500],
-  [940,500],
-  [860,500],
-  
+test = 25
 
+let mushroomArray = [
+  [-50,550, true],
+  [-50,650, true],
+  [-50,750, true],
+  [-50,850, true],
+  [-50,950, true],
+  [-50,1050, true],
+  [-50,1050, true],
+  [-360,270, true],
+  [-320,370, true],
+  [-280,470, true],
 
 ]
 
 for (var i = 0; i < mushroomArray.length; i++){
-  addMushroom(mushroomArray[i][0], mushroomArray[i][1]);
+  addMushroom(mushroomArray[i][0], mushroomArray[i][1], mushroomArray[i][2]);
 }
 
-// Ureeshas code from level 1
+let bushArray = [
+  [-250,500,Math.PI/2],
+  [-290,400,Math.PI/2],
+  [-330,300,Math.PI/2],
+  [-390,200,Math.PI/2],
+  [-50,900,Math.PI/2],
+  [-50,1000,Math.PI/2],
+]
 
-//addDiamond(900,400.5,0);
+for (var i = 0; i < bushArray.length; i++){
+  addBush(bushArray[i][0], bushArray[i][1],bushArray[i][2]);
+}
+
+
+
 addDiamond(50,225.5,0);
 addDiamond(75,65,0);
 addDiamond(-207,-125,0);
@@ -183,10 +250,8 @@ addDiamond(357,10,0);
 
 addTrees(0, 100); 
 addTrees2(450, 500);
-//addBush(450,500);
 addTrees(500, 500);
 
-//three near house
 addDiamond(-200, -175, 0);
 addTrees3(-250, -150);
 addDiamond(-300, -275, 0);
@@ -194,73 +259,25 @@ addTrees2(-200, -200);
 addTrees(-250, -200);
 addDiamond(-300, -175, 0);
 addTrees2(-300, -175);
-//addBush(-200,-200);
 
-//across path
 addTrees(150, -150);
 addTrees3(160, -100);
 
-//behind house
 addTrees3(650, 350);
 addTrees2(500, 200);
-//addBush(500,-50);
-//addBush(550,0);
 
-//border near house
+
 addTrees3(200, 550);
 addTrees2(150, 600); 
 addTrees(-200, 400);
 
-//loop one
-//mouth
+
 addDiamond(450, -200, 0);
 addDiamond(450, -150, 0);
 addTrees(400, -250);
 addTrees2(400, -475);
 addTrees(250, -500);
-//inside
-addTrees(550, -600);
-addDiamond(550, -625, 0);
-addDiamond(550, -650, 0);
-addTrees2(550, -675);
-//addBush(550,-600);
-addDiamond(550, -725, 0);
-addDiamond(575, -750, 0);
-addTrees3(550, -700);
 
-addDiamond(620, -750, 0);
-addDiamond(660, -750, 0);
-addDiamond(700, -740, 0);
-addTrees(600, -750);
-
-addDiamond(775, -700, 0);
-addDiamond(830, -600, 0);
-addDiamond(880, -550, 0);
-addDiamond(950, -350, 0);
-addDiamond(900, -200, 0);
-addDiamond(900, -150, 0);
-addDiamond(850, -150, 0);
-addDiamond(800, -175, 0);
-addDiamond(800, -175, 0);
-addTrees(750, -700);
-addTrees2(800, -600);
-addTrees(850, -500);
-addDiamond(800, -500, 0);
-addTrees2(900, -400);
-addTrees2(875, -350);
-addTrees3(850, -450);
-addDiamond(850, -500, 0);
-addTrees(900, -250);
-addTrees2(850, -200);
-addDiamond(900, -200, 0);
-addDiamond(600, -75, 0);
-addTrees(725, -250);
-addTrees(700, -300);
-addDiamond(500, 0, 0);
-
-//arrow bit
-addTrees2(-400, 950); //arrow tip
-addTrees(-500, 800); //right
 addTrees2(-250, 825); //left
 addTrees(-300, 575); //branch things
 addTrees3(-300, 625);
@@ -280,21 +297,12 @@ addTrees3(100, -625);
 //near cave - other side
 addTrees(-450, -350);
 
-addTrees2(-600, 50);
-addTrees(-550, -200);
+// addTrees(-550, -200);
 addTrees3(-500, -325);
 
 //loop two
-addTrees(-750, 50);
-addDiamond(-700, 75, 0);
-addTrees3(-850, 50);
-addDiamond(-800, 100, 0);
-addTrees2(-875, 150);
-addDiamond(-900, 200, 0);
-addTrees(-900, 250);
-addTrees(-900, 300);
-addDiamond(-900, 275, 0);
-addTrees2(-900, 400);
+
+ addTrees2(-900, 400);
 addTrees(-650, 500);
 addDiamond(-600, 425, 0);
 addDiamond(-600, 475, 0);
@@ -314,6 +322,24 @@ let ttl = 6, ttlCounter = 0;
 
 //=========================== EACH FRAME =======================================
 
+let myVar = 0;
+let opac = 0;
+let curtain = null;
+
+function changeScene() {
+    // Trigger animation
+    myVar = setInterval(function(){
+      ambientLightMain.intensity -= 0.025
+      skyUniforms[ 'rayleigh' ].value -= 0.010;
+      curtain = document.getElementById("render")
+      opac = parseFloat(window.getComputedStyle(curtain,null).getPropertyValue("--opac"));
+      opac += 0.01
+      curtain.style.setProperty("--w",'100%')
+      curtain.style.setProperty("--h",'100%')
+      curtain.style.setProperty("--opac",opac);
+    },2000)
+};
+
 
 //Game Loop
 export const GameLoop = function(){
@@ -322,14 +348,14 @@ export const GameLoop = function(){
 
   // start of aerial view
   // SET X AND Y OF OBJECT YOU WANNA LOOK AT FROM ABOVE
-  // let x = 600;
-  // let z = 550;
-  // // SET HEIGHT
-  // let height = 700;
+  let x = -600;
+  let z = -800;
+  // SET HEIGHT
+  let height = 700;
 
-  // camera.position.set( x, height, z); 
-  // camera.lookAt( x, 0, z); 
-  // camera.up.set( 0, 0, 1 );
+  camera.position.set( x, height, z); 
+  camera.lookAt( x, 0, z); 
+  camera.up.set( 0, 1, 0 );
   // end of aerial view
 
 
@@ -341,9 +367,44 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-  var myDiv = document.getElementById("text");
-  myDiv.innerHTML = "Diamond Count : " +diamondCount;
-  myDiv.style.fontSize = "30px";
+
+  if(opac==1){
+    clearTimeout(myVar)
+    //loading screen
+    let loadingScreen = document.getElementById("loadingScreen")
+    loadingScreen.style.setProperty("--zVal",'3')
+
+    curtain.style.setProperty("--w",'0%')
+    curtain.style.setProperty("--h",'0%')
+    curtain.style.setProperty("--opac",0);
+
+    //load level 2
+    changeLevelNumber(2);
+  }
+
+  if(diamondCount>=2){
+    var myDiv = document.getElementById("text");
+    myDiv.innerHTML = "Proceed to the cave ...";
+    myDiv.style.fontSize = "30px";
+    if(player.position.x<-200 && player.position.x >-390 && player.position.z<-430 && player.position.z>-600){
+      changeScene();
+    }
+  }else{
+    var myDiv = document.getElementById("text");
+    myDiv.innerHTML = "Diamond Count : " + diamondCount + "/40";
+    myDiv.style.fontSize = "30px";
+  }
+
+  if (fire != undefined && kaboom){
+    scale += 0.1;
+    fire.scale.set(scale, scale, scale);
+
+    if (scale > 12){
+      scale = 1;
+      kaboom = false;
+      scene.remove(fire);
+    }
+  }
 
   // for (let i = 0; i < scene.children.length; i++){
   //   if (scene.children[i].userData){
@@ -1015,20 +1076,64 @@ function addTrees3(x, z){
     
 }
 
-
-function addMushroom(x, z){
+function addMushroom(x, z, explode){
   let mushroomLocation = '../../assets/models/mushroom/scene.gltf';
   let loader = new GLTFLoader();
         
   loader.load(mushroomLocation, function(gltf){
+
+    var unreasonableScale = 1;
             
-    var mushroom = gltf.scene.children[0];            
-    mushroom.scale.set(0.05, 0.05, 0.05);            
+    mushroom = gltf.scene.children[0];            
+    mushroom.scale.set(0.07, 0.07, 0.07);            
     mushroom.position.set(x, 8, z);            
-    scene.add(gltf.scene);       
+
+    mushroom.traverse( function ( child ) {
+
+      // console.log(child.castShadow);
+
+      if ( child.isMesh ) {
+        
+        child.castShadow = true;
+        child.receiveShadow = true;
+        // console.log(child.castShadow);
+      }
+
+    } );
+
+    scene.add(mushroom);    
+    
+    tempMushroom = mushroom;
+    let transformMush = new Ammo.btTransform();
+
+    transformMush.setIdentity();
+
+    transformMush.setOrigin(new Ammo.btVector3(tempMushroom.position.x, tempMushroom.position.y, tempMushroom.position.z));
+    transformMush.setRotation(new Ammo.btQuaternion(-Math.PI/2,0,0,1));
+    let motionState = new Ammo.btDefaultMotionState( transformMush );
+    let mushroomSize = new THREE.Box3().setFromObject(mushroom).getSize();
+
+    let colShape = new Ammo.btBoxShape(new Ammo.btVector3(unreasonableScale*mushroomSize.x/2,unreasonableScale*mushroomSize.y/2,unreasonableScale*mushroomSize.z/2));
+    colShape.setMargin(0.05);
+
+    let rbInfo = new Ammo.btRigidBodyConstructionInfo( Ammo.NULL, motionState, colShape, Ammo.NULL );
+    let body = new Ammo.btRigidBody( rbInfo );
+    
+    body.setActivationState( STATE.DISABLE_DEACTIVATION )
+    physicsWorld.addRigidBody( body );
+
+    body.threeObject = mushroom;
+    tempMushroom.userData.physicsBody = body;
+    mushroom.userData.physicsBody = body;
+
+    if (explode){ mushroom.userData.tag = "mushroom"; }
+       
+
+    rigidBodies.push(tempMushroom);
           
   });
 }
+
 
 function addFence(x, z, r){
   let fenceLocation = '../../assets/models/fence/scene.gltf';
@@ -1257,19 +1362,55 @@ function detectCollision(){
     let userData1 = threeObject1 ? threeObject1.userData : null;
     let tag0 = userData0 ? userData0.tag : "none";
     let tag1 = userData1 ? userData1.tag : "none";
-    
+
     if (tag0 == "player" && tag1 == "diamond"){
-      var pos = threeObject1.position;
-      //console.log(pos);
+      
       scene.remove(threeObject1);
+      
       diamondCount++;
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
-      var pos = threeObject0.position;
-      //console.log(pos);
+      
+    
       scene.remove(threeObject0);
       diamondCount++;
       physicsWorld.removeRigidBody(rb0);
+    }
+
+    var pos;
+
+    if (tag0 == "player" && tag1 == "mushroom"){  
+
+      pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
+    else if (tag0 == "mushroom" && tag1 == "player"){
+            
+      pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
+
+    if (tag0 == "player" && tag1 == "flower"){  
+
+      pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
+    }
+    else if (tag0 == "flower" && tag1 == "player"){
+            
+      pos = threeObject1.position;      
+      fire.position.set(pos.x, pos.y, pos.z);
+      scene.add(fire);
+      health.value -= 0.1;
+      kaboom = true;
     }
 	
 	}
@@ -1347,4 +1488,27 @@ function createBall(){
   ball.userData.tag = "ball";
   
   return ball;
+}
+
+function addFire(){
+
+  let fireLocation = '../../assets/models/sun-animated-test/source/boom.glb';
+  let fireTextureLocation = '../../assets/models/sun-animated-test/textures/FLAME.jpg';
+
+
+  let loaders = new GLTFLoader();
+
+  loaders.load(fireLocation, function ( gltf ) {
+
+    fire = gltf.scene.children[0];
+
+    fire.scale.set(0, 0, 0);
+
+    let fireTexture = new THREE.TextureLoader().load(fireTextureLocation);
+      
+    let fireMaterial = new THREE.MeshStandardMaterial({map: fireTexture});
+
+    fire.material = fireMaterial;
+
+} );
 }

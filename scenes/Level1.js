@@ -9,6 +9,8 @@ import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import coord from '../classes/coord.class';
 import * as Ammo from "ammo.js";
+//import {levelTwo as Level2Loop} from "../main.js";
+
 
 //=========================== Global Variables =======================================
 
@@ -21,6 +23,7 @@ var diamondCount = 0;
 
 //Player Movement
 const playerMovement = 50;
+
 
 // Physics stuff
 let physicsWorld,rigidBodies = [], tmpTrans;
@@ -67,7 +70,7 @@ setSunLight();
 
 
 //Set up Main Ambient Lighting
-var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.1);
+var ambientLightMain = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLightMain);
 
 //Set up Light Post Lighting
@@ -116,8 +119,11 @@ var mirrorMesh;
 addOcean();
 
 //Set up skybox
-// var sun = new THREE.Vector3();
-// skyBox();
+// Sky
+let sky = new Sky();
+let skyUniforms = sky.material.uniforms;
+var sun = new THREE.Vector3();
+skyBox();
 //Add mushroom house
 addHouse(400, 300);
 
@@ -145,8 +151,18 @@ function update(){
   delta = clockTime.getDelta();
   controls.update();
 
-  if (typeof player !== "undefined" && player != null){
-    // console.log(player.position);
+  if(opac==1){
+    clearTimeout(myVar)
+    //loading screen
+    let loadingScreen = document.getElementById("loadingScreen")
+    loadingScreen.style.setProperty("--zVal",'3')
+
+    curtain.style.setProperty("--w",'0%')
+    curtain.style.setProperty("--h",'0%')
+    curtain.style.setProperty("--opac",0);
+
+    //load level 2
+    Level2Loop()
   }
 
   var myDiv = document.getElementById("text");
@@ -378,9 +394,11 @@ function addGround(){
     ground.scale.set(100, 100, 100);            
     ground.position.set(0, -70, 0);     
     
-    material = new THREE.MeshStandardMaterial({color: 0x228B22});
+    let material = new THREE.MeshStandardMaterial({color: 0x228B22});
     ground.material = material;
     ground.children[0].material = material;
+    let materialSide = new THREE.MeshStandardMaterial({color: 0x654321});
+    ground.children[1].material = materialSide;
 
     ground.traverse( function ( child ) {
 
@@ -597,23 +615,39 @@ function addOcean(){
   water.rotation.x = - Math.PI / 2;
 
   scene.add( water );
-
-
-
-
 }
+
+let myVar = 0;
+let opac = 0;
+let curtain = null;
+
+function changeScene() {
+    // Trigger animation
+    myVar = setInterval(function(){
+      ambientLightMain.intensity -= 0.025
+      skyUniforms[ 'rayleigh' ].value -= 0.010;
+      curtain = document.getElementById("render")
+      opac = parseFloat(window.getComputedStyle(curtain,null).getPropertyValue("--opac"));
+      opac += 0.01
+      curtain.style.setProperty("--w",'100%')
+      curtain.style.setProperty("--h",'100%')
+      curtain.style.setProperty("--opac",opac);
+      console.log(opac)
+    },100)
+};
+
+
+
 
 function skyBox(){
 
-  const sky = new Sky();
   sky.scale.setScalar( 10000 );
   scene.add( sky );
 
-  const skyUniforms = sky.material.uniforms;
 
-  skyUniforms[ 'turbidity' ].value = 0;
-  skyUniforms[ 'rayleigh' ].value = 0.5; //Horizon Intesnity in General
-  skyUniforms[ 'mieCoefficient' ].value = 0; //Horizon Intensity at Point
+  skyUniforms[ 'turbidity' ].value = 10;
+  skyUniforms[ 'rayleigh' ].value = 0.2; //Horizon Intesnity in General
+  skyUniforms[ 'mieCoefficient' ].value = 0.00005; //Horizon Intensity at Point
   skyUniforms[ 'mieDirectionalG' ].value = 1; //Intensity of Sun
 
   const parameters = {
@@ -1500,10 +1534,12 @@ function detectCollision(){
     if (tag0 == "player" && tag1 == "diamond"){
       scene.remove(threeObject1);
       diamondCount++;
+      changeScene();
       physicsWorld.removeRigidBody(rb1);
     }else if (tag0 == "diamond" && tag1 == "player"){
       scene.remove(threeObject0);
       diamondCount++;
+      changeScene();
       physicsWorld.removeRigidBody(rb0);
     }
 

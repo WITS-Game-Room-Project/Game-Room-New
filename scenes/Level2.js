@@ -303,7 +303,6 @@ addDiamond(-800, 475, 0);
 addTrees2(-700, 500);
 
 
-
 //=========================== EACH FRAME =======================================
 
 
@@ -457,13 +456,7 @@ function setUpControls(){
   // gui.add( controls, 'screenSpacePanning' );
 }
 
-function on() {
-  document.getElementById("overlay").style.display = "block";
-}
 
-function off() {
-  document.getElementById("overlay").style.display = "none";
-}
 
 function addGround(){
   

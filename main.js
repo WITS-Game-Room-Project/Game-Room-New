@@ -19,3 +19,19 @@ if (levelNumber == 1){
 //     Ammo().then(Leve3Loop);
 // }
 
+
+function levelOne(){
+    Ammo().then(Level1Loop);
+}
+
+
+levelOne();
+
+export function levelTwo() {Ammo().then(Level2Loop);}
+
+
+
+
+
+
+
